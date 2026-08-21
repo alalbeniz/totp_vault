@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TOTP Vault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main id="app">
+    <section id="loadingView" class="center-view">
+      <img class="brand-icon" src="icons/icon128.png" alt="">
+      <h1>TOTP Vault</h1>
+      <p>Abriendo bóveda…</p>
+    </section>
+
+    <section id="setupView" class="center-view hidden">
+      <img class="brand-icon" src="icons/icon128.png" alt="">
+      <h1>Crear bóveda</h1>
+      <p class="lead">Tus secretos TOTP se cifrarán localmente con AES‑256‑GCM.</p>
+
+      <form id="setupForm" class="auth-form">
+        <label>
+          Contraseña maestra
+          <div class="password-wrap">
+            <input id="setupPassword" type="password" minlength="8" autocomplete="new-password" required>
+            <button class="reveal-btn" type="button" data-reveal="setupPassword" aria-label="Mostrar contraseña"><svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 1 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg></button>
+          </div>
+        </label>
+        <label>
+          Repetir contraseña
+          <div class="password-wrap">
+            <input id="setupPassword2" type="password" minlength="8" autocomplete="new-password" required>
+            <button class="reveal-btn" type="button" data-reveal="setupPassword2" aria-label="Mostrar contraseña"><svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 1 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg></button>
+          </div>
+        </label>
+        <button class="btn primary full" type="submit">Crear bóveda</button>
+        <p id="setupError" class="message error hidden"></p>
+      </form>
+
+      <div class="auth-separator"><span>o</span></div>
+      <button id="setupImportBtn" class="btn secondary full" type="button">Importar copia cifrada</button>
+      <input id="setupImportFile" type="file" accept="application/json,.json" hidden>
+    </section>
+
+    <section id="unlockView" class="center-view hidden">
+      <img class="brand-icon" src="icons/icon128.png" alt="">
+      <h1>TOTP Vault</h1>
+      <p class="lead">Introduce tu contraseña maestra.</p>
+
+      <form id="unlockForm" class="auth-form">
+        <label>
+          Contraseña maestra
+          <div class="password-wrap">
+            <input id="unlockPassword" type="password" autocomplete="current-password" required autofocus>
+            <button class="reveal-btn" type="button" data-reveal="unlockPassword" aria-label="Mostrar contraseña"><svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 1 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg></button>
+          </div>
+        </label>
+        <button class="btn primary full" type="submit">Desbloquear</button>
+        <p id="unlockError" class="message error hidden"></p>
+      </form>
+      <p class="security-note">La contraseña no se almacena. Sin ella no es posible recuperar los secretos.</p>
+    </section>
+
+    <section id="vaultView" class="hidden">
+      <header class="topbar">
+        <div class="brand-row">
+          <img src="icons/icon48.png" class="mini-icon" alt="">
+          <div>
+            <h1>TOTP Vault</h1>
+            <p id="vaultStatus" class="subtitle">Bóveda desbloqueada</p>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="settingsBtn" class="icon-btn" type="button" title="Ajustes" aria-label="Ajustes">
+            <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14,12.94a7.43,7.43,0,0,0,.05-.94,7.43,7.43,0,0,0-.05-.94l2.03-1.58a.5.5,0,0,0,.12-.64l-1.92-3.32a.5.5,0,0,0-.6-.22l-2.39.96a7.28,7.28,0,0,0-1.63-.94L14.4,2.8a.5.5,0,0,0-.49-.4H10.09a.5.5,0,0,0-.49.4L9.25,5.32a7.28,7.28,0,0,0-1.63.94l-2.39-.96a.5.5,0,0,0-.6.22L2.71,8.84a.5.5,0,0,0,.12.64l2.03,1.58a7.43,7.43,0,0,0-.05.94,7.43,7.43,0,0,0,.05.94L2.83,14.52a.5.5,0,0,0-.12.64l1.92,3.32a.5.5,0,0,0,.6.22l2.39-.96a7.28,7.28,0,0,0,1.63.94l.35,2.52a.5.5,0,0,0,.49.4h3.82a.5.5,0,0,0,.49-.4l.35-2.52a7.28,7.28,0,0,0,1.63-.94l2.39.96a.5.5,0,0,0,.6-.22l1.92-3.32a.5.5,0,0,0-.12-.64ZM12,15.5A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+          </button>
+          <button id="lockBtn" class="icon-btn" type="button" title="Bloquear ahora" aria-label="Bloquear">
+            <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-6 0V6a2 2 0 1 1 4 0v2Zm1 8.75A1.75 1.75 0 1 1 13.75 15 1.75 1.75 0 0 1 12 16.75Z"/></svg>
+          </button>
+          <button id="toggleAdd" class="icon-btn primary" type="button" aria-label="Añadir TOTP" title="Añadir TOTP">
+            <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5a1 1 0 1 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m1.35-5.15A6.5 6.5 0 1 1 5 11.5a6.5 6.5 0 0 1 13 0Z"/></svg>
+        <input id="searchInput" class="search-input" type="text" placeholder="Buscar cuentas..." autocomplete="off">
+      </section>
+
+      <section id="addPanel" class="panel hidden">
+        <div class="panel-title-row">
+          <h2 id="addPanelTitle">Añadir TOTP</h2>
+          <button id="closeAdd" class="close-btn" type="button" aria-label="Cerrar">×</button>
+        </div>
+        <form id="addForm">
+          <label>
+            Nombre o descripción
+            <input id="name" type="text" maxlength="100" placeholder="Ej. VPN empresa" autocomplete="off" required>
+          </label>
+
+          <label>
+            Secreto Base32 u otpauth://
+            <div class="password-wrap">
+              <input id="secret" type="password" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off" spellcheck="false" required>
+              <button class="reveal-btn" type="button" data-reveal="secret" aria-label="Mostrar secreto"><svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><svg class="eye-icon eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 1 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg></button>
+            </div>
+          </label>
+
+          <label class="icon-picker-label">
+            Icono
+            <div class="icon-picker-row">
+              <div id="iconPreview" class="icon-preview" aria-hidden="true"></div>
+              <select id="iconSelect" aria-label="Icono de la cuenta">
+                <option value="auto">Automático</option>
+                <option value="outlook">Outlook / Microsoft 365</option>
+                <option value="microsoft">Microsoft</option>
+                <option value="google">Google</option>
+                <option value="github">GitHub</option>
+                <option value="aws">AWS</option>
+                <option value="azure">Azure</option>
+                <option value="cloudflare">Cloudflare</option>
+                <option value="apple">Apple / iCloud</option>
+                <option value="meta">Meta / Facebook / Instagram</option>
+                <option value="dropbox">Dropbox</option>
+                <option value="vpn">VPN</option>
+                <option value="custom">Personalizado…</option>
+              </select>
+            </div>
+            <div id="customIconControls" class="custom-icon-controls hidden">
+              <button id="chooseCustomIcon" class="btn secondary icon-upload-btn" type="button">Elegir imagen</button>
+              <button id="clearCustomIcon" class="btn secondary icon-clear-btn hidden" type="button">Quitar</button>
+              <input id="customIconFile" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" hidden>
+              <span class="icon-help">PNG, JPG o WebP · se guarda cifrado y reducido a 96×96.</span>
+            </div>
+          </label>
+
+          <div class="form-actions">
+            <button id="cancelAdd" class="btn secondary" type="button">Cancelar</button>
+            <button id="saveAddBtn" class="btn primary" type="submit">Guardar</button>
+          </div>
+          <p id="formError" class="message error hidden"></p>
+        </form>
+      </section>
+
+      <section id="settingsPanel" class="panel hidden">
+        <div class="panel-title-row">
+          <h2>Ajustes y seguridad</h2>
+          <button id="closeSettings" class="close-btn" type="button" aria-label="Cerrar">×</button>
+        </div>
+
+        <label>
+          Bloqueo automático
+          <select id="autoLockSelect">
+            <option value="0">Hasta cerrar el navegador</option>
+            <option value="1">1 minuto</option>
+            <option value="5">5 minutos</option>
+            <option value="15">15 minutos</option>
+            <option value="30">30 minutos</option>
+            <option value="60">1 hora</option>
+          </select>
+        </label>
+
+        <div class="settings-grid">
+          <button id="exportBtn" class="btn secondary" type="button">Exportar cifrado</button>
+          <button id="importBtn" class="btn secondary" type="button">Importar cifrado</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden>
+        </div>
+
+        <button id="changePasswordToggle" class="btn secondary full" type="button">Cambiar contraseña maestra</button>
+
+        <form id="changePasswordForm" class="nested-panel hidden">
+          <label>
+            Contraseña actual
+            <input id="currentPassword" type="password" autocomplete="current-password" required>
+          </label>
+          <label>
+            Nueva contraseña
+            <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required>
+          </label>
+          <label>
+            Repetir nueva contraseña
+            <input id="newPassword2" type="password" minlength="8" autocomplete="new-password" required>
+          </label>
+          <button class="btn primary full" type="submit">Actualizar contraseña</button>
+          <p id="changePasswordError" class="message error hidden"></p>
+        </form>
+
+        <p id="settingsMessage" class="message hidden"></p>
+      </section>
+
+      <section id="emptyState" class="empty hidden">
+        <div class="empty-lock">＋</div>
+        <strong>No hay TOTP guardados</strong>
+        <span>Pulsa + para añadir el primero.</span>
+      </section>
+
+      <section id="totpList" class="list"></section>
+
+      <footer>
+        <span class="footer-security"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7 0V6a2 2 0 1 1 4 0v2Z"/></svg>AES‑256‑GCM · datos locales</span>
+      </footer>
+    </section>
+  </main>
+
+  <template id="totpTemplate">
+    <article class="totp-card">
+      <button class="menu-btn" type="button" title="Más opciones" aria-label="Más opciones">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>
+      </button>
+      <div class="card-menu hidden">
+        <button class="menu-item edit-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5-4-4L4 16v4Zm12.5-16.5 4 4 1.2-1.2a1.4 1.4 0 0 0 0-2l-2-2a1.4 1.4 0 0 0-2 0Z"/></svg><span>Editar</span></button>
+        <button class="menu-item delete-item" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8v11h10V8M9 8V5h6v3M5 8h14"/></svg><span>Eliminar</span></button>
+      </div>
+
+      <div class="card-main">
+        <div class="card-identity">
+          <div class="card-badge"></div>
+          <div class="card-title-wrap">
+            <div class="card-title"></div>
+            <div class="card-meta"></div>
+          </div>
+        </div>
+
+        <div class="card-live">
+          <button class="code code-copy" type="button" title="Copiar código"></button>
+          <div class="timer-wrap" title="Segundos restantes">
+            <svg class="timer" width="34" height="34" viewBox="0 0 36 36" aria-hidden="true">
+              <circle class="timer-bg" cx="18" cy="18" r="15"></circle>
+              <circle class="timer-progress" cx="18" cy="18" r="15"></circle>
+            </svg>
+            <span class="seconds"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn fill-btn primary" type="button"><svg class="btn-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M5 8v11h11v-5"/></svg><span>Rellenar</span></button>
+        <button class="btn copy-btn secondary" type="button"><svg class="btn-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg><span>Copiar</span></button>
+      </div>
+      <div class="status" aria-live="polite"></div>
+    </article>
+  </template>
+
+  <script src="popup.js"></script>
+</body>
+</html>
