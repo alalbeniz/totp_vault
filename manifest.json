@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TOTP Vault",
-  "version": "2.7.0",
-  "description": "Bóveda TOTP local cifrada con iconos automáticos, selector manual e iconos personalizados cifrados.",
+  "version": "2.7.10",
+  "description": "Bóveda TOTP local cifrada con icono del render y aro exterior eliminado.",
   "permissions": [
     "storage",
     "activeTab",
