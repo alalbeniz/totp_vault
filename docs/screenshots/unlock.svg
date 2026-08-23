@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="720" viewBox="0 0 520 720">
+  <rect width="520" height="720" fill="#2e4957"/>
+  <g transform="translate(186 82)">
+    <path d="M74 0 138 24v54c0 50-26 89-64 113C36 167 10 128 10 78V24Z" fill="none" stroke="#c8dfe2" stroke-width="6"/>
+    <rect x="51" y="58" width="46" height="44" rx="9" fill="#c8dfe2"/>
+    <path d="M58 58V46a16 16 0 0 1 32 0v12" fill="none" stroke="#c8dfe2" stroke-width="7"/>
+    <circle cx="74" cy="78" r="4" fill="#2e4957"/>
+    <text x="74" y="128" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#c8dfe2">TOTP</text>
+  </g>
+  <text x="260" y="332" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#eaffff">TOTP Vault</text>
+  <text x="260" y="372" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#c8dfe2">Introduce tu contraseña maestra</text>
+
+  <rect x="58" y="430" width="404" height="70" rx="18" fill="#415c6b" stroke="#87a1ab" stroke-width="2"/>
+  <text x="84" y="473" font-family="Arial,sans-serif" font-size="18" fill="#c8dfe2">Contraseña maestra</text>
+  <g transform="translate(420 455)" stroke="#eaffff" fill="none" stroke-width="2.5">
+    <path d="M-12 0s6-8 12-8 12 8 12 8-6 8-12 8S-12 0-12 0Z"/>
+    <circle cx="0" cy="0" r="3.5"/>
+  </g>
+
+  <rect x="58" y="526" width="404" height="62" rx="16" fill="#87a1ab"/>
+  <text x="260" y="565" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#eaffff">Desbloquear</text>
+
+  <text x="260" y="636" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#c8dfe2">La contraseña no se almacena.</text>
+  <text x="260" y="658" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#c8dfe2">Sin ella no es posible recuperar los secretos.</text>
+</svg>
