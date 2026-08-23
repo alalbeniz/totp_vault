@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="820" viewBox="0 0 760 820">
+  <rect width="760" height="820" rx="24" fill="#2e4957"/>
+  <rect x="24" y="24" width="712" height="772" rx="22" fill="#375261" stroke="#688391" stroke-width="2"/>
+
+  <g transform="translate(48 44)">
+    <path d="M28 0 52 9v20c0 19-10 34-24 43C14 63 4 48 4 29V9Z" fill="none" stroke="#c8dfe2" stroke-width="3"/>
+    <rect x="19" y="23" width="18" height="17" rx="3" fill="#c8dfe2"/>
+    <path d="M22 23v-5a6 6 0 0 1 12 0v5" fill="none" stroke="#c8dfe2" stroke-width="3"/>
+    <circle cx="28" cy="31" r="2" fill="#2e4957"/>
+  </g>
+  <text x="116" y="74" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#eaffff">TOTP Vault</text>
+  <text x="116" y="98" font-family="Arial,sans-serif" font-size="14" fill="#c8dfe2">Bóveda TOTP local y cifrada</text>
+
+  <g fill="#4a6675" stroke="#87a1ab" stroke-width="1.5">
+    <circle cx="606" cy="68" r="24"/><circle cx="666" cy="68" r="24"/><circle cx="726" cy="68" r="24"/>
+  </g>
+  <text x="606" y="77" text-anchor="middle" font-family="Arial" font-size="30" fill="#eaffff">+</text>
+  <text x="666" y="76" text-anchor="middle" font-family="Arial" font-size="22" fill="#eaffff">⚙</text>
+  <text x="726" y="76" text-anchor="middle" font-family="Arial" font-size="21" fill="#eaffff">🔒</text>
+
+  <rect x="48" y="126" width="664" height="58" rx="18" fill="#415c6b" stroke="#87a1ab"/>
+  <circle cx="78" cy="155" r="10" fill="none" stroke="#eaffff" stroke-width="3"/>
+  <path d="m85 162 8 8" stroke="#eaffff" stroke-width="3" stroke-linecap="round"/>
+  <text x="108" y="162" font-family="Arial" font-size="18" fill="#c8dfe2">Buscar cuentas…</text>
+
+  <g font-family="Arial,sans-serif">
+    <g transform="translate(48 206)">
+      <rect width="664" height="116" rx="20" fill="#415c6b" stroke="#688391"/>
+      <circle cx="48" cy="46" r="28" fill="#eaffff"/><text x="48" y="54" text-anchor="middle" font-size="17" font-weight="700" fill="#375261">MS</text>
+      <text x="92" y="39" font-size="19" font-weight="700" fill="#eaffff">Outlook trabajo</text>
+      <text x="92" y="62" font-size="14" fill="#c8dfe2">Microsoft</text>
+      <text x="465" y="48" font-family="monospace" font-size="26" font-weight="700" fill="#eaffff">816 237</text>
+      <circle cx="588" cy="40" r="18" fill="none" stroke="#a7bfc7" stroke-width="3"/><text x="588" y="45" text-anchor="middle" font-size="12" fill="#eaffff">18</text>
+      <rect x="300" y="70" width="122" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="361" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Rellenar</text>
+      <rect x="434" y="70" width="110" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="489" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Copiar</text>
+      <text x="622" y="91" font-size="24" fill="#eaffff">⋮</text>
+    </g>
+
+    <g transform="translate(48 336)">
+      <rect width="664" height="116" rx="20" fill="#415c6b" stroke="#688391"/>
+      <circle cx="48" cy="46" r="28" fill="#eaffff"/><text x="48" y="54" text-anchor="middle" font-size="17" font-weight="700" fill="#375261">G</text>
+      <text x="92" y="39" font-size="19" font-weight="700" fill="#eaffff">Google Personal</text>
+      <text x="92" y="62" font-size="14" fill="#c8dfe2">Google</text>
+      <text x="465" y="48" font-family="monospace" font-size="26" font-weight="700" fill="#eaffff">125 948</text>
+      <circle cx="588" cy="40" r="18" fill="none" stroke="#a7bfc7" stroke-width="3"/><text x="588" y="45" text-anchor="middle" font-size="12" fill="#eaffff">18</text>
+      <rect x="300" y="70" width="122" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="361" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Rellenar</text>
+      <rect x="434" y="70" width="110" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="489" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Copiar</text>
+      <text x="622" y="91" font-size="24" fill="#eaffff">⋮</text>
+    </g>
+
+    <g transform="translate(48 466)">
+      <rect width="664" height="116" rx="20" fill="#415c6b" stroke="#688391"/>
+      <circle cx="48" cy="46" r="28" fill="#2e4957"/><text x="48" y="54" text-anchor="middle" font-size="15" font-weight="700" fill="#eaffff">GH</text>
+      <text x="92" y="39" font-size="19" font-weight="700" fill="#eaffff">GitHub</text>
+      <text x="92" y="62" font-size="14" fill="#c8dfe2">GitHub</text>
+      <text x="465" y="48" font-family="monospace" font-size="26" font-weight="700" fill="#eaffff">049 651</text>
+      <circle cx="588" cy="40" r="18" fill="none" stroke="#a7bfc7" stroke-width="3"/><text x="588" y="45" text-anchor="middle" font-size="12" fill="#eaffff">18</text>
+      <rect x="300" y="70" width="122" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="361" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Rellenar</text>
+      <rect x="434" y="70" width="110" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="489" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Copiar</text>
+      <text x="622" y="91" font-size="24" fill="#eaffff">⋮</text>
+    </g>
+
+    <g transform="translate(48 596)">
+      <rect width="664" height="116" rx="20" fill="#415c6b" stroke="#688391"/>
+      <circle cx="48" cy="46" r="28" fill="#87a1ab"/><text x="48" y="54" text-anchor="middle" font-size="16" font-weight="700" fill="#eaffff">VPN</text>
+      <text x="92" y="39" font-size="19" font-weight="700" fill="#eaffff">VPN Empresa</text>
+      <text x="92" y="62" font-size="14" fill="#c8dfe2">OpenVPN</text>
+      <text x="465" y="48" font-family="monospace" font-size="26" font-weight="700" fill="#eaffff">562 310</text>
+      <circle cx="588" cy="40" r="18" fill="none" stroke="#a7bfc7" stroke-width="3"/><text x="588" y="45" text-anchor="middle" font-size="12" fill="#eaffff">18</text>
+      <rect x="300" y="70" width="122" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="361" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Rellenar</text>
+      <rect x="434" y="70" width="110" height="32" rx="12" fill="#4a6675" stroke="#87a1ab"/><text x="489" y="91" text-anchor="middle" font-size="13" fill="#eaffff">Copiar</text>
+      <text x="622" y="91" font-size="24" fill="#eaffff">⋮</text>
+    </g>
+  </g>
+
+  <rect x="48" y="736" width="664" height="42" rx="14" fill="#4a6675"/>
+  <text x="380" y="763" text-anchor="middle" font-family="Arial" font-size="14" fill="#c8dfe2">🔒  Bóveda desbloqueada · Hasta cerrar el navegador</text>
+</svg>
