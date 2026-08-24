@@ -1120,3 +1120,42 @@ select:focus,
 .totp-card:hover {
   box-shadow: none !important;
 }
+
+
+/* ===== v2.8.0 · Selector inline OTP/TOTP ===== */
+.inline-picker-settings {
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+.settings-help {
+  margin: -5px 2px 10px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.inline-site-controls {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: -2px 0 12px;
+}
+
+.inline-site-controls .btn {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 11px;
+}
+
+.inline-site-status {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.inline-site-status.ok { color: var(--success); }
+.inline-site-status.error { color: var(--danger); }

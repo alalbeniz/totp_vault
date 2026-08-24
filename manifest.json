@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TOTP Vault",
-  "version": "2.7.10",
-  "description": "Bóveda TOTP local cifrada con icono del render y aro exterior eliminado.",
+  "version": "2.8.2",
+  "description": "Bóveda TOTP local cifrada con selector inline OTP y escudo oscuro en estado inactivo para mejor contraste.",
   "permissions": [
     "storage",
     "activeTab",
@@ -24,5 +24,23 @@
     "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
-  }
+  },
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/services/*.svg"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ]
+    }
+  ]
 }

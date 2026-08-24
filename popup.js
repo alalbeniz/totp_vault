@@ -3,7 +3,9 @@ const STORAGE_SETTINGS = "settings";
 const SESSION_KEY = "vaultSession";
 
 const DEFAULT_SETTINGS = {
-  autoLockMinutes: 5
+  autoLockMinutes: 5,
+  inlinePickerMode: "off",
+  inlineAllowedOrigins: []
 };
 
 const KDF_ITERATIONS = 310000;
@@ -307,6 +309,8 @@ function bindUi() {
   $("#lockBtn").addEventListener("click", lockVault);
 
   $("#autoLockSelect").addEventListener("change", saveAutoLockSetting);
+  $("#inlinePickerMode").addEventListener("change", saveInlinePickerMode);
+  $("#inlineSiteToggle").addEventListener("click", toggleInlineCurrentSite);
   $("#exportBtn").addEventListener("click", exportEncryptedBackup);
   $("#importBtn").addEventListener("click", () => $("#importFile").click());
   $("#importFile").addEventListener("change", (e) => importEncryptedBackup(e.target.files?.[0], false));
@@ -341,7 +345,10 @@ function bindUi() {
 async function loadSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   state.settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
+  if (!Array.isArray(state.settings.inlineAllowedOrigins)) state.settings.inlineAllowedOrigins = [];
   $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
+  $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
+  await updateInlinePickerSettingsUi();
 }
 
 async function restoreSession() {
@@ -552,6 +559,8 @@ function showSettings(open) {
   if (open) {
     $("#addPanel").classList.add("hidden");
     $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
+    $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
+    updateInlinePickerSettingsUi();
   } else {
     $("#changePasswordForm").classList.add("hidden");
     $("#changePasswordForm").reset();
@@ -566,6 +575,163 @@ async function saveAutoLockSetting() {
   await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
   await touchSession();
   showMessage("#settingsMessage", "Bloqueo automático actualizado.", "ok");
+}
+
+function inlineAllOrigins() {
+  return ["http://*/*", "https://*/*"];
+}
+
+function originPattern(origin) {
+  return `${origin}/*`;
+}
+
+async function getActiveWebOrigin() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const url = new URL(tab?.url || "");
+    if (!/^https?:$/.test(url.protocol)) return null;
+    return { origin: url.origin, tabId: tab.id };
+  } catch {
+    return null;
+  }
+}
+
+async function saveInlineSettings() {
+  state.settings.inlineAllowedOrigins = [...new Set(state.settings.inlineAllowedOrigins || [])].sort();
+  await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
+  try {
+    await chrome.runtime.sendMessage({ type: "totpVault:inline:refreshRegistration" });
+  } catch {}
+  await updateInlinePickerSettingsUi();
+}
+
+async function saveInlinePickerMode(event) {
+  hideMessage("#settingsMessage");
+  const nextMode = event.target.value;
+  const previousMode = state.settings.inlinePickerMode || "off";
+
+  try {
+    if (nextMode === "all") {
+      const granted = await chrome.permissions.request({ origins: inlineAllOrigins() });
+      if (!granted) throw new Error("Chrome no concedió acceso a todos los sitios.");
+    } else if (previousMode === "all" && nextMode !== "all") {
+      // Al abandonar el modo global retiramos el permiso amplio. Los sitios
+      // concretos se podrán autorizar individualmente en modo "site".
+      try { await chrome.permissions.remove({ origins: inlineAllOrigins() }); } catch {}
+    }
+
+    state.settings.inlinePickerMode = nextMode;
+    await saveInlineSettings();
+    await injectInlinePickerIntoCurrentTab();
+
+    if (nextMode === "off") {
+      showMessage("#settingsMessage", "Selector junto al campo desactivado.", "ok");
+    } else if (nextMode === "site") {
+      showMessage("#settingsMessage", "Autoriza los sitios donde quieras usar el selector.", "ok");
+    } else {
+      showMessage("#settingsMessage", "Selector habilitado en todos los sitios web.", "ok");
+    }
+  } catch (err) {
+    state.settings.inlinePickerMode = previousMode;
+    event.target.value = previousMode;
+    await saveInlineSettings();
+    showMessage("#settingsMessage", err.message || "No se pudo actualizar el selector.", "error");
+  }
+}
+
+async function toggleInlineCurrentSite() {
+  hideMessage("#settingsMessage");
+  const current = await getActiveWebOrigin();
+  if (!current) {
+    showMessage("#settingsMessage", "La pestaña actual no es una página http/https compatible.", "error");
+    return;
+  }
+
+  const origin = current.origin;
+  const pattern = originPattern(origin);
+  const allowed = new Set(state.settings.inlineAllowedOrigins || []);
+  const alreadyAllowed = allowed.has(origin);
+
+  try {
+    if (alreadyAllowed) {
+      allowed.delete(origin);
+      try { await chrome.permissions.remove({ origins: [pattern] }); } catch {}
+    } else {
+      const granted = await chrome.permissions.request({ origins: [pattern] });
+      if (!granted) throw new Error(`Chrome no concedió acceso a ${origin}.`);
+      allowed.add(origin);
+    }
+
+    state.settings.inlineAllowedOrigins = [...allowed];
+    state.settings.inlinePickerMode = "site";
+    $("#inlinePickerMode").value = "site";
+    await saveInlineSettings();
+    if (!alreadyAllowed) await injectInlinePickerIntoCurrentTab();
+    showMessage(
+      "#settingsMessage",
+      alreadyAllowed ? `Acceso retirado para ${origin}.` : `Selector habilitado en ${origin}.`,
+      "ok"
+    );
+  } catch (err) {
+    showMessage("#settingsMessage", err.message || "No se pudo cambiar el permiso del sitio.", "error");
+  }
+}
+
+async function updateInlinePickerSettingsUi() {
+  const mode = state.settings.inlinePickerMode || "off";
+  const controls = $("#inlineSiteControls");
+  const button = $("#inlineSiteToggle");
+  const status = $("#inlineSiteStatus");
+  if (!controls || !button || !status) return;
+
+  controls.classList.toggle("hidden", mode !== "site");
+  status.className = "inline-site-status";
+  if (mode !== "site") return;
+
+  const current = await getActiveWebOrigin();
+  if (!current) {
+    button.disabled = true;
+    button.textContent = "Autorizar sitio actual";
+    status.textContent = "Abre una web http/https para autorizarla.";
+    return;
+  }
+
+  button.disabled = false;
+  const allowed = (state.settings.inlineAllowedOrigins || []).includes(current.origin);
+  button.textContent = allowed ? "Quitar sitio" : "Autorizar sitio actual";
+  status.textContent = allowed ? `${current.origin} autorizado` : current.origin;
+  status.classList.toggle("ok", allowed);
+}
+
+async function injectInlinePickerIntoCurrentTab() {
+  const mode = state.settings.inlinePickerMode || "off";
+  if (mode === "off") return;
+
+  const current = await getActiveWebOrigin();
+  if (!current?.tabId) return;
+
+  let allowed = false;
+  if (mode === "all") {
+    allowed = await chrome.permissions.contains({ origins: inlineAllOrigins() });
+  } else if (mode === "site") {
+    if (!(state.settings.inlineAllowedOrigins || []).includes(current.origin)) return;
+    allowed = await chrome.permissions.contains({ origins: [originPattern(current.origin)] });
+  }
+  if (!allowed) return;
+
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: current.tabId, allFrames: true },
+      files: ["content.js"]
+    });
+  } catch {
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: current.tabId },
+        files: ["content.js"]
+      });
+    } catch {}
+  }
 }
 
 async function handleAdd(event) {

@@ -162,6 +162,22 @@
           </select>
         </label>
 
+        <div class="inline-picker-settings">
+          <label>
+            Selector junto a campos OTP/TOTP
+            <select id="inlinePickerMode">
+              <option value="off">Desactivado</option>
+              <option value="site">Solo sitios autorizados</option>
+              <option value="all">Todos los sitios web</option>
+            </select>
+          </label>
+          <p class="settings-help">Muestra un pequeño botón de TOTP Vault junto a campos de verificación detectados. No vincula ninguna cuenta a una URL.</p>
+          <div id="inlineSiteControls" class="inline-site-controls hidden">
+            <button id="inlineSiteToggle" class="btn secondary" type="button">Autorizar sitio actual</button>
+            <span id="inlineSiteStatus" class="inline-site-status"></span>
+          </div>
+        </div>
+
         <div class="settings-grid">
           <button id="exportBtn" class="btn secondary" type="button">Exportar cifrado</button>
           <button id="importBtn" class="btn secondary" type="button">Importar cifrado</button>
