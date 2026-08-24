@@ -67,11 +67,20 @@ También puedes seleccionar un icono manualmente o subir un PNG/JPG/WebP persona
 Chrome no permite inyectar código en algunas páginas internas, iframes especialmente restringidos o campos encapsulados en Shadow DOM cerrado. En esos casos siempre puedes utilizar **Copiar**.
 
 ## Historial reciente
-### Novedades de v2.8.2
 
-- El icono del botón inline OTP ahora usa un escudo oscuro en estado inactivo para resaltar mejor sobre el fondo gris claro.
+### Novedades de v2.8.4
+
+- Corregido `Duplicate script ID 'totp-vault-inline-picker'` al registrar el selector inline.
+- El registro del content script se serializa y, si ya existe, se actualiza en lugar de registrarlo de nuevo.
+- Se evita la condición de carrera entre el arranque del service worker, `onInstalled`, `onStartup` y los cambios de ajustes.
+- El selector inline ignora `input type="text"` para reducir falsos positivos; los campos sin `type` explícito también se consideran `text` y se ignoran.
+- Se mantienen tipos compatibles como `password`, `tel` y `number`.
+
+### v2.8.2
+
+- El icono del botón inline OTP usa un escudo oscuro en estado inactivo para resaltar mejor sobre el fondo gris claro.
 - Al pasar el ratón o abrir el selector, recupera el contraste claro sobre fondo oscuro.
-- El botón inline junto a los campos OTP ahora se ve más suave cuando está inactivo.
+- El botón inline junto a los campos OTP se ve más suave cuando está inactivo.
 - En reposo usa un gris claro más transparente; al pasar el ratón o abrir el selector recupera un aspecto más sólido.
 - Selector opcional junto a campos OTP/TOTP detectados en las webs.
 - Al pulsar el icono de TOTP Vault aparece un selector flotante con búsqueda, iconos, códigos y contador.

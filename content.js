@@ -104,6 +104,12 @@
   function editableInput(el) {
     if (!(el instanceof HTMLInputElement) || !isVisible(el)) return false;
     const type = (el.type || "text").toLowerCase();
+
+    // v2.8.3: prueba de detección más estricta.
+    // Ignoramos por completo los input type="text" (incluido type omitido,
+    // que el navegador normaliza como "text") para reducir falsos positivos.
+    if (type === "text") return false;
+
     return !["hidden", "checkbox", "radio", "file", "submit", "button", "reset", "range", "color"].includes(type);
   }
 

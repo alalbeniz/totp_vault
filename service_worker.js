@@ -4,6 +4,8 @@ const SESSION_KEY = "vaultSession";
 const INLINE_RECENT_KEY = "inlineRecent";
 const INLINE_SCRIPT_ID = "totp-vault-inline-picker";
 
+let inlineRegistrationTask = Promise.resolve();
+
 const DEFAULT_SETTINGS = {
   autoLockMinutes: 5,
   inlinePickerMode: "off",
@@ -83,11 +85,17 @@ function validOrigin(origin) {
   }
 }
 
-async function refreshInlinePickerRegistration() {
-  try {
-    await chrome.scripting.unregisterContentScripts({ ids: [INLINE_SCRIPT_ID] });
-  } catch {}
+function refreshInlinePickerRegistration() {
+  // Several service-worker lifecycle events can fire almost at the same time
+  // (initial evaluation, onInstalled/onStartup and settings refresh). Serialize
+  // registration changes so two calls can never register the same script ID.
+  inlineRegistrationTask = inlineRegistrationTask
+    .catch(() => {})
+    .then(syncInlinePickerRegistration);
+  return inlineRegistrationTask;
+}
 
+async function syncInlinePickerRegistration() {
   const settings = await getSettings();
   const mode = settings.inlinePickerMode || "off";
   let matches = [];
@@ -106,16 +114,48 @@ async function refreshInlinePickerRegistration() {
   }
 
   matches = [...new Set(matches)];
-  if (!matches.length) return;
 
-  await chrome.scripting.registerContentScripts([{
+  let registered = [];
+  try {
+    registered = await chrome.scripting.getRegisteredContentScripts({ ids: [INLINE_SCRIPT_ID] });
+  } catch {}
+  const exists = registered.some((script) => script.id === INLINE_SCRIPT_ID);
+
+  if (!matches.length) {
+    if (exists) {
+      try {
+        await chrome.scripting.unregisterContentScripts({ ids: [INLINE_SCRIPT_ID] });
+      } catch (error) {
+        console.warn("TOTP Vault: no se pudo retirar el selector inline", error);
+      }
+    }
+    return;
+  }
+
+  const definition = {
     id: INLINE_SCRIPT_ID,
     matches,
     js: ["content.js"],
     runAt: "document_idle",
     allFrames: true,
     persistAcrossSessions: true
-  }]);
+  };
+
+  if (exists) {
+    await chrome.scripting.updateContentScripts([definition]);
+  } else {
+    try {
+      await chrome.scripting.registerContentScripts([definition]);
+    } catch (error) {
+      // A previous worker instance can finish registration between the lookup
+      // and register call. In that rare race, update the existing definition.
+      if (/Duplicate script ID/i.test(String(error?.message || error))) {
+        await chrome.scripting.updateContentScripts([definition]);
+      } else {
+        throw error;
+      }
+    }
+  }
 }
 
 async function getUnlockedEntries() {

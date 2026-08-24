@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TOTP Vault",
-  "version": "2.8.2",
-  "description": "Bóveda TOTP local cifrada con selector inline OTP y escudo oscuro en estado inactivo para mejor contraste.",
+  "version": "2.8.4",
+  "description": "Bóveda TOTP local cifrada con selector inline OTP, detección estricta y registro de content script sin carreras.",
   "permissions": [
     "storage",
     "activeTab",
