@@ -6,12 +6,12 @@ Extensión Chrome Manifest V3 para almacenar y utilizar múltiples códigos TOTP
 
 ### Bóveda
 
-![TOTP Vault - Bóveda](docs/screenshots/vault.png)
+![TOTP Vault - Bóveda](https://github.com/alalbeniz/totp_vault/raw/main/docs/screenshots/vault.png)
 
 ### Desbloqueo con contraseña maestra
 
 <p align="center">
-  <img src="docs/screenshots/unlock.png" alt="TOTP Vault - Desbloqueo" width="420">
+  <img src="https://github.com/alalbeniz/totp_vault/raw/main/docs/screenshots/unlock.png" alt="TOTP Vault - Desbloqueo" width="420">
 </p>
 
 ## Características
