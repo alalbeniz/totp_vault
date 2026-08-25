@@ -1,0 +1,78 @@
+/* v2.9.0: acabado plano, sin sombras ni degradados */
+*, *::before, *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  background-image: none !important;
+}
+
+button,
+input,
+select,
+textarea,
+.panel,
+.totp-card,
+.card-menu,
+.icon-btn,
+.btn,
+.search-wrap,
+.password-wrap,
+.timer-wrap,
+.card-badge,
+.icon-preview {
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.code.code-hidden {
+  color: transparent !important;
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+}
+
+.code.code-hidden::after {
+  content: attr(data-mask);
+  color: #eaffff;
+  font: 700 18px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .055em;
+  white-space: nowrap;
+}
+
+.code-visibility-btn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #c8dfe2;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.code-visibility-btn:hover,
+.code-visibility-btn:focus-visible {
+  background: #415c6b;
+  color: #eaffff;
+  outline: 1px solid #688391;
+}
+
+.code-visibility-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.code-visibility-global svg {
+  fill: none !important;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
