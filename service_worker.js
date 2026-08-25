@@ -9,7 +9,9 @@ let inlineRegistrationTask = Promise.resolve();
 const DEFAULT_SETTINGS = {
   autoLockMinutes: 5,
   inlinePickerMode: "off",
-  inlineAllowedOrigins: []
+  inlineAllowedOrigins: [],
+  showCodes: true,
+  codeVisibilityOverrides: {}
 };
 
 const SERVICE_ICON_KEYS = new Set([
@@ -73,6 +75,10 @@ async function getSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   const settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
   if (!Array.isArray(settings.inlineAllowedOrigins)) settings.inlineAllowedOrigins = [];
+  if (typeof settings.showCodes !== "boolean") settings.showCodes = true;
+  if (!settings.codeVisibilityOverrides || typeof settings.codeVisibilityOverrides !== "object" || Array.isArray(settings.codeVisibilityOverrides)) {
+    settings.codeVisibilityOverrides = {};
+  }
   return settings;
 }
 
@@ -164,9 +170,13 @@ async function getUnlockedEntries() {
     chrome.storage.session.get(SESSION_KEY)
   ]);
 
-  if (!meta || !session?.keyB64) return { locked: true, entries: [], settings: { ...DEFAULT_SETTINGS, ...(rawSettings || {}) } };
-
   const settings = { ...DEFAULT_SETTINGS, ...(rawSettings || {}) };
+  if (typeof settings.showCodes !== "boolean") settings.showCodes = true;
+  if (!settings.codeVisibilityOverrides || typeof settings.codeVisibilityOverrides !== "object" || Array.isArray(settings.codeVisibilityOverrides)) {
+    settings.codeVisibilityOverrides = {};
+  }
+  if (!meta || !session?.keyB64) return { locked: true, entries: [], settings };
+
   const minutes = Number(settings.autoLockMinutes);
   if (minutes !== 0) {
     const timeoutMs = Math.max(1, Number.isFinite(minutes) ? minutes : 5) * 60_000;
@@ -195,6 +205,16 @@ async function touchSession() {
   });
 }
 
+function isCodeVisibleForSettings(settings, entryId) {
+  const overrides = settings?.codeVisibilityOverrides || {};
+  if (typeof overrides[entryId] === "boolean") return overrides[entryId];
+  return settings?.showCodes !== false;
+}
+
+function maskedCodeForDigits(digits) {
+  return Number(digits) === 8 ? "•••• ••••" : "••• •••";
+}
+
 async function listInlineEntries() {
   const vault = await getUnlockedEntries();
   if (vault.locked) return { ok: true, locked: true, entries: [] };
@@ -207,21 +227,25 @@ async function listInlineEntries() {
   for (const entry of entries) {
     try {
       const current = await getCurrentCode(entry);
+      const codeVisible = isCodeVisibleForSettings(vault.settings, entry.id);
       result.push({
         id: entry.id,
         name: entry.name || "TOTP",
         issuer: entry.issuer || "",
-        code: current.code,
+        code: codeVisible ? current.code : maskedCodeForDigits(entry.digits || 6),
+        codeVisible,
         remaining: current.remaining,
         period: entry.period || 30,
         icon: publicIcon(entry)
       });
     } catch {
+      const codeVisible = isCodeVisibleForSettings(vault.settings, entry.id);
       result.push({
         id: entry.id,
         name: entry.name || "TOTP",
         issuer: entry.issuer || "",
-        code: "------",
+        code: codeVisible ? "------" : maskedCodeForDigits(entry.digits || 6),
+        codeVisible,
         remaining: 0,
         period: entry.period || 30,
         icon: publicIcon(entry)
