@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TOTP Vault</title>
+  <style>
+    html, body { margin: 0; width: 414px; height: 608px; overflow: hidden; background: #2e4957; }
+    iframe { display: block; width: 414px; height: 608px; border: 0; }
+  </style>
+</head>
+<body>
+  <iframe id="vaultFrame" src="popup.html" title="TOTP Vault"></iframe>
+  <script>
+    const frame = document.getElementById('vaultFrame');
+    frame.addEventListener('load', () => {
+      const doc = frame.contentDocument;
+      if (!doc) return;
+
+      const style = doc.createElement('link');
+      style.rel = 'stylesheet';
+      style.href = chrome.runtime.getURL('flat-overrides.css');
+      doc.head.appendChild(style);
+
+      const script = doc.createElement('script');
+      script.src = chrome.runtime.getURL('visibility.js');
+      doc.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
