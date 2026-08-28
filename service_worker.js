@@ -12,7 +12,8 @@ const DEFAULT_SETTINGS = {
   inlineAllowedOrigins: [],
   showCodes: true,
   codeVisibilityOverrides: {},
-  autoSubmitMode: "off"
+  autoSubmitMode: "off",
+  colorTheme: "1c485f"
 };
 
 const SERVICE_ICON_KEYS = new Set([
@@ -81,6 +82,7 @@ async function getSettings() {
     settings.codeVisibilityOverrides = {};
   }
   if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
+  if (!["1c485f","08709c","95cbc0","d4c299","777778","42b8af","cfdf9e","ecd799","fbb38a","e77292"].includes(settings.colorTheme)) settings.colorTheme = "1c485f";
   return settings;
 }
 
@@ -178,6 +180,7 @@ async function getUnlockedEntries() {
     settings.codeVisibilityOverrides = {};
   }
   if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
+  if (!["1c485f","08709c","95cbc0","d4c299","777778","42b8af","cfdf9e","ecd799","fbb38a","e77292"].includes(settings.colorTheme)) settings.colorTheme = "1c485f";
   if (!meta || !session?.keyB64) return { locked: true, entries: [], settings };
 
   const minutes = Number(settings.autoLockMinutes);
@@ -257,7 +260,7 @@ async function listInlineEntries() {
   }
 
   await touchSession();
-  return { ok: true, locked: false, entries: result, now: Date.now() };
+  return { ok: true, locked: false, entries: result, now: Date.now(), colorTheme: vault.settings.colorTheme || "1c485f" };
 }
 
 async function getInlineCode(entryId) {
@@ -283,7 +286,8 @@ async function getInlineCode(entryId) {
     code: current.code,
     remaining: current.remaining,
     period: entry.period || 30,
-    autoSubmitMode: vault.settings.autoSubmitMode || "off"
+    autoSubmitMode: vault.settings.autoSubmitMode || "off",
+    colorTheme: vault.settings.colorTheme || "1c485f"
   };
 }
 

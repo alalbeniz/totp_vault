@@ -154,6 +154,22 @@
           <button id="closeSettings" class="close-btn" type="button" aria-label="Cerrar">×</button>
         </div>
 
+        <div class="theme-settings">
+          <span class="theme-label">Tema de color</span>
+          <div id="themePicker" class="theme-picker" role="radiogroup" aria-label="Tema de color">
+            <button type="button" class="theme-swatch" data-theme="1c485f" aria-label="Tema #1C485F" title="#1C485F" style="--swatch:#1C485F"></button>
+            <button type="button" class="theme-swatch" data-theme="08709c" aria-label="Tema #08709C" title="#08709C" style="--swatch:#08709C"></button>
+            <button type="button" class="theme-swatch" data-theme="95cbc0" aria-label="Tema #95CBC0" title="#95CBC0" style="--swatch:#95CBC0"></button>
+            <button type="button" class="theme-swatch" data-theme="d4c299" aria-label="Tema #D4C299" title="#D4C299" style="--swatch:#D4C299"></button>
+            <button type="button" class="theme-swatch" data-theme="777778" aria-label="Tema #777778" title="#777778" style="--swatch:#777778"></button>
+            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Tema #42B8AF" title="#42B8AF" style="--swatch:#42B8AF"></button>
+            <button type="button" class="theme-swatch" data-theme="cfdf9e" aria-label="Tema #CFDF9E" title="#CFDF9E" style="--swatch:#CFDF9E"></button>
+            <button type="button" class="theme-swatch" data-theme="ecd799" aria-label="Tema #ECD799" title="#ECD799" style="--swatch:#ECD799"></button>
+            <button type="button" class="theme-swatch" data-theme="fbb38a" aria-label="Tema #FBB38A" title="#FBB38A" style="--swatch:#FBB38A"></button>
+            <button type="button" class="theme-swatch" data-theme="e77292" aria-label="Tema #E77292" title="#E77292" style="--swatch:#E77292"></button>
+          </div>
+        </div>
+
         <label>
           Bloqueo automático
           <select id="autoLockSelect">
@@ -180,6 +196,18 @@
             <button id="inlineSiteToggle" class="btn secondary" type="button">Autorizar sitio actual</button>
             <span id="inlineSiteStatus" class="inline-site-status"></span>
           </div>
+        </div>
+
+        <div class="auto-submit-settings">
+          <label>
+            Después de rellenar un TOTP
+            <select id="autoSubmitMode">
+              <option value="off">No enviar</option>
+              <option value="conservative">Enviar inequívoco</option>
+              <option value="maximum">Compatibilidad máxima</option>
+            </select>
+          </label>
+          <p class="settings-help">Inequívoco: solo usa un único submit claro del formulario. Compatibilidad máxima: si eso no funciona, busca el botón de verificar/continuar más probable cerca del OTP, incluyendo formularios SPA y botones personalizados.</p>
         </div>
 
         <div class="settings-grid">
@@ -247,7 +275,7 @@
           <button class="code code-copy" type="button" title="Copiar código"></button>
           <button class="code-visibility-btn" type="button" title="Ocultar código" aria-label="Ocultar código">
             <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg>
-            <svg class="eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 0 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg>
+            <svg class="eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/><path d="M9.36 5.23A10.4 10.4 0 0 1 12 4.9c6 0 9.5 7.1 9.5 7.1a17 17 0 0 1-2.16 3.15"/><path d="M6.23 6.23C3.65 7.98 2.5 12 2.5 12s3.5 7.1 9.5 7.1a9.8 9.8 0 0 0 4.14-.91"/></svg>
           </button>
           <div class="timer-wrap" title="Segundos restantes">
             <svg class="timer" width="34" height="34" viewBox="0 0 36 36" aria-hidden="true">
