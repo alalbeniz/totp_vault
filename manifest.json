@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "TOTP Vault",
-  "version": "2.9.0",
-  "description": "Bóveda TOTP local cifrada con controles de visibilidad de códigos y diseño completamente plano.",
+  "version": "2.9.10",
+  "description": "Bóveda TOTP local cifrada con autoenvío configurable y ajustes compactos al usar el selector por sitios autorizados.",
   "permissions": [
     "storage",
     "activeTab",
@@ -11,7 +11,7 @@
   ],
   "action": {
     "default_title": "TOTP Vault",
-    "default_popup": "popup-v290.html",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",
