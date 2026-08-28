@@ -1,0 +1,34 @@
+name: Apply v2.10.2 source patch
+
+on:
+  push:
+    branches:
+      - release-2.10.2-full
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply exact v2.10.2 patch
+        shell: bash
+        run: |
+          cat .tmp-v2102/patch.00 .tmp-v2102/patch.01 .tmp-v2102/patch.02 > /tmp/v2102.patch
+          patch -p1 < /tmp/v2102.patch
+          node --check popup.js
+          node --check content.js
+          node --check service_worker.js
+          python3 -m json.tool manifest.json >/dev/null
+          rm -rf .tmp-v2102
+          rm -f .github/workflows/apply-v2102.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'TOTP Vault v2.10.2 themes and description'
+          git push origin HEAD:release-2.10.2-full
