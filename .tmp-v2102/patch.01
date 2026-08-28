@@ -1,0 +1,441 @@
+nested-panel,
+ .totp-card,
+ .card-menu {
+-  background: #375261 !important;
++  background: var(--theme-panel) !important;
+   background-image: none !important;
+   backdrop-filter: none !important;
+ }
+@@ -1185,7 +1185,7 @@
+ .search-input:focus,
+ input,
+ select {
+-  background: #4a6675 !important;
++  background: var(--theme-field) !important;
+   background-image: none !important;
+ }
+ 
+@@ -1196,23 +1196,23 @@
+ .icon-preview,
+ .card-badge,
+ .menu-item:hover {
+-  background: #415c6b !important;
++  background: var(--theme-button) !important;
+   background-image: none !important;
+ }
+ 
+ .primary,
+ .btn.primary,
+ .icon-btn.primary {
+-  background: #87a1ab !important;
++  background: var(--theme-accent) !important;
+   background-image: none !important;
+-  color: #20333e !important;
++  color: var(--theme-accent-text) !important;
+ }
+ 
+ .primary:hover,
+ .btn.primary:hover,
+ .icon-btn.primary:hover {
+-  background: #a7bfc7 !important;
+-  color: #20333e !important;
++  background: var(--theme-accent-hover) !important;
++  color: var(--theme-accent-text) !important;
+ }
+ 
+ .totp-card:hover,
+@@ -1223,11 +1223,11 @@
+   background-image: none !important;
+ }
+ 
+-.totp-card:hover { background: #415c6b !important; }
++.totp-card:hover { background: var(--theme-button) !important; }
+ .icon-btn:hover,
+ .btn.secondary:hover,
+ .card-actions .btn.secondary:hover,
+-.password-wrap .reveal-btn:hover { background: #54707f !important; }
++.password-wrap .reveal-btn:hover { background: var(--theme-hover) !important; }
+ 
+ .card-badge.is-fallback,
+ .card-badge[data-kind="github"],
+@@ -1235,7 +1235,7 @@
+ .card-badge[data-kind="microsoft"],
+ .card-badge[data-kind="aws"],
+ .card-badge[data-kind="vpn"] {
+-  background: #688391 !important;
++  background: var(--theme-badge) !important;
+   background-image: none !important;
+ }
+ 
+@@ -1245,7 +1245,7 @@
+ .list.has-scroll:hover::-webkit-scrollbar-thumb,
+ .list.has-scroll.scroll-active::-webkit-scrollbar-thumb,
+ .list.has-scroll:focus-within::-webkit-scrollbar-thumb {
+-  background: #87a1ab !important;
++  background: var(--theme-accent) !important;
+   background-image: none !important;
+ }
+ 
+@@ -1278,15 +1278,15 @@
+   border: 0;
+   border-radius: 8px;
+   background: transparent;
+-  color: #c8dfe2;
++  color: var(--theme-muted-strong);
+   cursor: pointer;
+ }
+ 
+ .code-visibility-btn:hover,
+ .code-visibility-btn:focus-visible {
+   background: #4a6675;
+-  color: #eaffff;
+-  outline: 1px solid #87a1ab;
++  color: var(--theme-text);
++  outline: 1px solid var(--theme-accent);
+   outline-offset: 1px;
+ }
+ 
+@@ -1306,7 +1306,7 @@
+ }
+ 
+ .code.code-hidden {
+-  color: #c8dfe2;
++  color: var(--theme-muted-strong);
+   letter-spacing: .10em;
+ }
+ 
+@@ -1424,3 +1424,314 @@
+ #settingsMessage.hidden {
+   display: none !important;
+ }
++
++
++/* ===== v2.10.1 · temas exactos del usuario / shades & tints ColorHexa ===== */
++:root,
++:root[data-theme="1c485f"] {
++  --theme-base: #1C485F;
++  --theme-bg: #071218;
++  --theme-panel: #0C1E27;
++  --theme-button: #102A37;
++  --theme-field: #153647;
++  --theme-hover: #1A4257;
++  --theme-badge: #235A76;
++  --theme-accent: #1C485F;
++  --theme-accent-hover: #286686;
++  --theme-text: #EFF7FA;
++  --theme-muted-strong: #B8D9EA;
++  --theme-accent-text: #FFFFFF;
++}
++
++:root[data-theme="08709c"] {
++  --theme-base: #08709C;
++  --theme-bg: #01151D;
++  --theme-panel: #022331;
++  --theme-button: #033144;
++  --theme-field: #043F57;
++  --theme-hover: #054D6B;
++  --theme-badge: #076892;
++  --theme-accent: #08709C;
++  --theme-accent-hover: #0A93CD;
++  --theme-text: #ECF9FE;
++  --theme-muted-strong: #A8E2FB;
++  --theme-accent-text: #FFFFFF;
++}
++
++:root[data-theme="95cbc0"] {
++  --theme-base: #95CBC0;
++  --theme-bg: #0A1512;
++  --theme-panel: #11221F;
++  --theme-button: #17302B;
++  --theme-field: #1E3E37;
++  --theme-hover: #254B43;
++  --theme-badge: #32675C;
++  --theme-accent: #95CBC0;
++  --theme-accent-hover: #7ABEB0;
++  --theme-text: #F1F8F7;
++  --theme-muted-strong: #C1E1DA;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="d4c299"] {
++  --theme-base: #D4C299;
++  --theme-bg: #161209;
++  --theme-panel: #241E0F;
++  --theme-button: #322915;
++  --theme-field: #41351B;
++  --theme-hover: #4F4121;
++  --theme-badge: #6C592D;
++  --theme-accent: #D4C299;
++  --theme-accent-hover: #C8B17C;
++  --theme-text: #F9F6F1;
++  --theme-muted-strong: #E4D8BE;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="777778"] {
++  --theme-base: #777778;
++  --theme-bg: #0F0F0F;
++  --theme-panel: #19191A;
++  --theme-button: #242424;
++  --theme-field: #2E2E2E;
++  --theme-hover: #383838;
++  --theme-badge: #4C4C4D;
++  --theme-accent: #777778;
++  --theme-accent-hover: #919191;
++  --theme-text: #F5F5F5;
++  --theme-muted-strong: #D1D1D1;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="42b8af"] {
++  --theme-base: #42B8AF;
++  --theme-bg: #081715;
++  --theme-panel: #0D2624;
++  --theme-button: #133532;
++  --theme-field: #184440;
++  --theme-hover: #1E534F;
++  --theme-badge: #28716B;
++  --theme-accent: #42B8AF;
++  --theme-accent-hover: #65C8C0;
++  --theme-text: #F0FAF9;
++  --theme-muted-strong: #BBE7E3;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="cfdf9e"] {
++  --theme-base: #CFDF9E;
++  --theme-bg: #131708;
++  --theme-panel: #20260D;
++  --theme-button: #2D3612;
++  --theme-field: #3A4517;
++  --theme-hover: #46541C;
++  --theme-badge: #607326;
++  --theme-accent: #CFDF9E;
++  --theme-accent-hover: #C0D57F;
++  --theme-text: #F7FAF0;
++  --theme-muted-strong: #DDE8BA;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="ecd799"] {
++  --theme-base: #ECD799;
++  --theme-bg: #1A1405;
++  --theme-panel: #2B2208;
++  --theme-button: #3C300B;
++  --theme-field: #4D3D0E;
++  --theme-hover: #5F4B12;
++  --theme-badge: #816618;
++  --theme-accent: #ECD799;
++  --theme-accent-hover: #E6CA77;
++  --theme-text: #FCF8EE;
++  --theme-muted-strong: #F1E1B2;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="fbb38a"] {
++  --theme-base: #FBB38A;
++  --theme-bg: #1E0B01;
++  --theme-panel: #311302;
++  --theme-button: #451B02;
++  --theme-field: #592203;
++  --theme-hover: #6C2A04;
++  --theme-badge: #943905;
++  --theme-accent: #FBB38A;
++  --theme-accent-hover: #FA9963;
++  --theme-text: #FEF2EB;
++  --theme-muted-strong: #FCC5A6;
++  --theme-accent-text: #000000;
++}
++
++:root[data-theme="e77292"] {
++  --theme-base: #E77292;
++  --theme-bg: #1A040A;
++  --theme-panel: #2C0711;
++  --theme-button: #3D0A18;
++  --theme-field: #4E0D1F;
++  --theme-hover: #601026;
++  --theme-badge: #831634;
++  --theme-accent: #E77292;
++  --theme-accent-hover: #E14F77;
++  --theme-text: #FCEEF2;
++  --theme-muted-strong: #F2B1C2;
++  --theme-accent-text: #000000;
++}
++
++:root {
++  --bg: var(--theme-bg);
++  --card: var(--theme-panel);
++  --card2: var(--theme-button);
++  --text: var(--theme-text);
++  --muted: var(--theme-muted-strong);
++  --border: color-mix(in srgb, var(--theme-base) 38%, transparent);
++  --accent: var(--theme-accent);
++  --accent2: var(--theme-accent-hover);
++  --accent-soft: color-mix(in srgb, var(--theme-base) 18%, transparent);
++  --success: #5ee6b8;
++  --danger: #ff9a9a;
++}
++
++.theme-settings {
++  margin-bottom: 12px;
++}
++
++.theme-label {
++  display: block;
++  margin-bottom: 7px;
++  color: var(--theme-text);
++  font-size: 12px;
++  font-weight: 650;
++}
++
++.theme-picker {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 7px;
++  padding: 4px 2px 2px;
++}
++
++.theme-swatch {
++  position: relative;
++  width: 26px;
++  height: 26px;
++  flex: 0 0 26px;
++  padding: 0;
++  border: 2px solid transparent;
++  border-radius: 50%;
++  background: var(--swatch) !important;
++  cursor: pointer;
++  outline: none;
++}
++
++.theme-swatch:hover {
++  transform: scale(1.08);
++}
++
++.theme-swatch.selected {
++  border-color: var(--theme-text);
++}
++
++.theme-swatch.selected::after {
++  content: "";
++  position: absolute;
++  inset: -5px;
++  border: 1px solid var(--theme-muted-strong);
++  border-radius: 50%;
++}
++
++/* El tema activo colorea todas las superficies principales. */
++html,
++body,
++#vaultView:not(.hidden),
++.center-view {
++  background: var(--theme-bg) !important;
++}
++
++.auth-form,
++.panel,
++.nested-panel,
++.totp-card,
++.card-menu {
++  background: var(--theme-panel) !important;
++  border-color: color-mix(in srgb, var(--theme-base) 34%, transparent) !important;
++}
++
++.search-input,
++.search-input:focus,
++input,
++select {
++  background: var(--theme-field) !important;
++  color: var(--theme-text) !important;
++}
++
++.icon-btn,
++.btn.secondary,
++.card-actions .btn.secondary,
++.password-wrap .reveal-btn,
++.icon-preview,
++.card-badge,
++.menu-item:hover {
++  background: var(--theme-button) !important;
++}
++
++.primary,
++.btn.primary,
++.icon-btn.primary {
++  background: var(--theme-accent) !important;
++  color: var(--theme-accent-text) !important;
++}
++
++.primary:hover,
++.btn.primary:hover,
++.icon-btn.primary:hover {
++  background: var(--theme-accent-hover) !important;
++  color: var(--theme-accent-text) !important;
++}
++
++.totp-card:hover {
++  background: var(--theme-button) !important;
++}
++
++.icon-btn:hover,
++.btn.secondary:hover,
++.card-actions .btn.secondary:hover,
++.password-wrap .reveal-btn:hover {
++  background: var(--theme-hover) !important;
++}
++
++.card-badge.is-fallback,
++.card-badge[data-kind="github"],
++.card-badge[data-kind="google"],
++.card-badge[data-kind="microsoft"],
++.card-badge[data-kind="aws"],
++.card-badge[data-kind="vpn"] {
++  background: var(--theme-badge) !important;
++}
++
++.code {
++  color: var(--theme-accent-hover) !important;
++}
++
++.code.code-hidden,
++.code-visibility-btn {
++  color: var(--theme-muted-strong) !important;
++}
++
++.code-visibility-btn:hover,
++.code-visibility-btn:focus-visible {
++  background: var(--theme-field) !important;
++  color: var(--theme-text) !important;
++  outline-color: var(--theme-base) !important;
++}
++
++.timer-progress {
++  stroke: var(--theme-accent-hover) !important;
++}
++
++.inline-site-status.ok,
++.message.ok,
++.status.ok {
++  color: var(--theme-accent-hover) !important;
++}
+diff -ruN '--exclude=README.md' v2910/popup.html v2102full/popup.html
+--- v2910/popup.html	2026-08-28 18:00:58.616353795 +0000
++++ v2102full/popup.html	2026-08-28 17:58:05.688616908 +0000
+@@ -154,6 +154,22 @@
+           <button id="closeSettings" class="close-btn" type="button" aria-label="Cerrar">×</button>
+         </div>
+ 
++        <div class="theme-settings">
++          <span class="theme-label">Tema de color</span>
++          <div id="themePicker" class="theme-picker" role="radiogroup" aria-label="Tema de color">
++            <button type="button" class="theme-swatch" data-theme="1c485f" aria-label="Tema #1C485F" title="#1C485F" style="--swatch:#1C485F"></button>
++            <button type="button" class="theme-swatch" data-theme="08709c" aria-label="Tema #08709C" title="#08709C" style="--swatch:#08709C"></button>
++            <button type="button" class="theme-swatch" data-theme="95cbc0" aria-label="Tema #95CBC0" title="#95CBC0" style="--swatch:#95CBC0"></button>
++            <button type="button" class="theme-swatch" data-theme="d4c299" aria-label="Tema #D4C299" title="#D4C299" style="--swatch:#D4C299"></button>
++            <button type="button" class="theme-swatch" data-theme="777778" aria-label="Tema #777778" title="#777778" style="--swatch:#777778"></button>
++            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Tema #42B8AF" title="#42B8AF" style="--swatch:#42B8AF"></button>
++            <button type="button" class="theme-swatch" data-theme="cfdf9e" aria-label="Tema #CFDF9E" title="#CFDF9E" style="--swatch:#CFDF9E"></button>
++            <button type="button" class="theme-swatch" data-theme="ecd799" aria-label="Tema #ECD799" title="#ECD799" style="--swatch:#ECD799"></button>
++            <button type="button" class="theme-swatch" data-theme="fbb38a" aria-label="Tema #FBB38A" title="#FBB38A" style="--swatch:#FBB38A"></button>
++            <button type="button" class="theme-swatch" data-theme="e77292" aria-label="Tema #E77292" title="#E77292" style="--swatch:#E77292"></button>
