@@ -11,7 +11,8 @@ const DEFAULT_SETTINGS = {
   inlinePickerMode: "off",
   inlineAllowedOrigins: [],
   showCodes: true,
-  codeVisibilityOverrides: {}
+  codeVisibilityOverrides: {},
+  autoSubmitMode: "off"
 };
 
 const SERVICE_ICON_KEYS = new Set([
@@ -79,6 +80,7 @@ async function getSettings() {
   if (!settings.codeVisibilityOverrides || typeof settings.codeVisibilityOverrides !== "object" || Array.isArray(settings.codeVisibilityOverrides)) {
     settings.codeVisibilityOverrides = {};
   }
+  if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
   return settings;
 }
 
@@ -175,6 +177,7 @@ async function getUnlockedEntries() {
   if (!settings.codeVisibilityOverrides || typeof settings.codeVisibilityOverrides !== "object" || Array.isArray(settings.codeVisibilityOverrides)) {
     settings.codeVisibilityOverrides = {};
   }
+  if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
   if (!meta || !session?.keyB64) return { locked: true, entries: [], settings };
 
   const minutes = Number(settings.autoLockMinutes);
@@ -279,7 +282,8 @@ async function getInlineCode(entryId) {
     name: entry.name || "TOTP",
     code: current.code,
     remaining: current.remaining,
-    period: entry.period || 30
+    period: entry.period || 30,
+    autoSubmitMode: vault.settings.autoSubmitMode || "off"
   };
 }
 
