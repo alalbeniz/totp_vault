@@ -1,0 +1,130 @@
++          </div>
++        </div>
++
+         <label>
+           Bloqueo automático
+           <select id="autoLockSelect">
+diff -ruN '--exclude=README.md' v2910/popup.js v2102full/popup.js
+--- v2910/popup.js	2026-08-28 18:00:58.616601306 +0000
++++ v2102full/popup.js	2026-08-28 12:15:02.000000000 +0000
+@@ -8,7 +8,8 @@
+   inlineAllowedOrigins: [],
+   showCodes: true,
+   codeVisibilityOverrides: {},
+-  autoSubmitMode: "off"
++  autoSubmitMode: "off",
++  colorTheme: "1c485f"
+ };
+ 
+ const KDF_ITERATIONS = 310000;
+@@ -48,6 +49,35 @@
+ 
+ const $ = (selector) => document.querySelector(selector);
+ 
++const COLOR_THEMES = new Set([
++  "1c485f", "08709c", "95cbc0", "d4c299", "777778", "42b8af", "cfdf9e", "ecd799", "fbb38a", "e77292"
++]);
++
++function normalizeColorTheme(theme) {
++  return COLOR_THEMES.has(theme) ? theme : "1c485f";
++}
++
++function applyColorTheme(theme) {
++  const normalized = normalizeColorTheme(theme);
++  document.documentElement.dataset.theme = normalized;
++  document.body?.setAttribute("data-theme", normalized);
++
++  document.querySelectorAll(".theme-swatch").forEach((button) => {
++    const selected = button.dataset.theme === normalized;
++    button.classList.toggle("selected", selected);
++    button.setAttribute("aria-checked", String(selected));
++    button.setAttribute("role", "radio");
++  });
++}
++
++async function saveColorTheme(theme) {
++  state.settings.colorTheme = normalizeColorTheme(theme);
++  applyColorTheme(state.settings.colorTheme);
++  await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
++  await touchSession();
++  hideMessage("#settingsMessage");
++}
++
+ document.addEventListener("DOMContentLoaded", init);
+ 
+ async function init() {
+@@ -313,6 +343,9 @@
+   $("#lockBtn").addEventListener("click", lockVault);
+ 
+   $("#autoLockSelect").addEventListener("change", saveAutoLockSetting);
++  document.querySelectorAll(".theme-swatch").forEach((button) => {
++    button.addEventListener("click", () => saveColorTheme(button.dataset.theme));
++  });
+   $("#autoSubmitMode").addEventListener("change", saveAutoSubmitSetting);
+   $("#inlinePickerMode").addEventListener("change", saveInlinePickerMode);
+   $("#inlineSiteToggle").addEventListener("click", toggleInlineCurrentSite);
+@@ -356,6 +389,8 @@
+     state.settings.codeVisibilityOverrides = {};
+   }
+   if (!["off", "conservative", "maximum"].includes(state.settings.autoSubmitMode)) state.settings.autoSubmitMode = "off";
++  state.settings.colorTheme = normalizeColorTheme(state.settings.colorTheme);
++  applyColorTheme(state.settings.colorTheme);
+   $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
+   $("#autoSubmitMode").value = ["off", "conservative", "maximum"].includes(state.settings.autoSubmitMode) ? state.settings.autoSubmitMode : "off";
+   $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
+@@ -570,6 +605,7 @@
+   $("#settingsPanel").classList.toggle("hidden", !open);
+   $("#vaultView").classList.toggle("settings-open", open);
+   if (open) {
++    applyColorTheme(state.settings.colorTheme);
+     $("#addPanel").classList.add("hidden");
+     $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
+     $("#autoSubmitMode").value = ["off", "conservative", "maximum"].includes(state.settings.autoSubmitMode) ? state.settings.autoSubmitMode : "off";
+diff -ruN '--exclude=README.md' v2910/service_worker.js v2102full/service_worker.js
+--- v2910/service_worker.js	2026-08-28 18:00:58.616217344 +0000
++++ v2102full/service_worker.js	2026-08-28 12:15:02.000000000 +0000
+@@ -12,7 +12,8 @@
+   inlineAllowedOrigins: [],
+   showCodes: true,
+   codeVisibilityOverrides: {},
+-  autoSubmitMode: "off"
++  autoSubmitMode: "off",
++  colorTheme: "1c485f"
+ };
+ 
+ const SERVICE_ICON_KEYS = new Set([
+@@ -81,6 +82,7 @@
+     settings.codeVisibilityOverrides = {};
+   }
+   if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
++  if (!["1c485f","08709c","95cbc0","d4c299","777778","42b8af","cfdf9e","ecd799","fbb38a","e77292"].includes(settings.colorTheme)) settings.colorTheme = "1c485f";
+   return settings;
+ }
+ 
+@@ -178,6 +180,7 @@
+     settings.codeVisibilityOverrides = {};
+   }
+   if (!["off", "conservative", "maximum"].includes(settings.autoSubmitMode)) settings.autoSubmitMode = "off";
++  if (!["1c485f","08709c","95cbc0","d4c299","777778","42b8af","cfdf9e","ecd799","fbb38a","e77292"].includes(settings.colorTheme)) settings.colorTheme = "1c485f";
+   if (!meta || !session?.keyB64) return { locked: true, entries: [], settings };
+ 
+   const minutes = Number(settings.autoLockMinutes);
+@@ -257,7 +260,7 @@
+   }
+ 
+   await touchSession();
+-  return { ok: true, locked: false, entries: result, now: Date.now() };
++  return { ok: true, locked: false, entries: result, now: Date.now(), colorTheme: vault.settings.colorTheme || "1c485f" };
+ }
+ 
+ async function getInlineCode(entryId) {
+@@ -283,7 +286,8 @@
+     code: current.code,
+     remaining: current.remaining,
+     period: entry.period || 30,
+-    autoSubmitMode: vault.settings.autoSubmitMode || "off"
++    autoSubmitMode: vault.settings.autoSubmitMode || "off",
++    colorTheme: vault.settings.colorTheme || "1c485f"
+   };
+ }
+ 
