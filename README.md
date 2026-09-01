@@ -1,145 +1,118 @@
 # TOTP Vault
 
-TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almacenar, gestionar y utilizar códigos TOTP de forma local y cifrada.
+TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almacenar, gestionar y utilizar códigos TOTP de forma **local y cifrada**.
 
-La bóveda permanece en el navegador y está protegida mediante una contraseña maestra. Incluye autorrelleno, selector junto a campos OTP, autoenvío configurable, copias de seguridad cifradas y temas de color.
+La bóveda está protegida mediante una contraseña maestra e incluye autorrelleno, selector inline junto a campos OTP, autoenvío configurable, iconos de servicios, control de visibilidad, copias de seguridad cifradas y temas de color.
+
+## Capturas
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/vault.svg" alt="TOTP Vault - Bóveda" width="520">
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/unlock.svg" alt="TOTP Vault - Desbloqueo" width="360">
+  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/settings.svg" alt="TOTP Vault - Ajustes" width="430">
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/inline.svg" alt="TOTP Vault - Selector inline" width="620">
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/unlock.svg" alt="TOTP Vault - Desbloqueo" width="340">
 </p>
 
 ## Funciones principales
 
 - Gestión de múltiples cuentas TOTP con nombre o descripción.
-- Soporte para secretos Base32 y URI `otpauth://totp/...`.
-- Algoritmos SHA-1, SHA-256 y SHA-512.
+- Secretos Base32 y URI `otpauth://totp/...`.
+- SHA-1, SHA-256 y SHA-512.
 - Códigos de 6 u 8 dígitos.
-- Periodo configurable cuando viene definido en la URI.
-- Copiar el código con un clic.
-- Rellenar automáticamente campos OTP/TOTP de páginas web.
-- Selector opcional junto a campos OTP detectados.
+- Copiar y rellenar códigos con un clic.
 - Búsqueda de cuentas.
-- Mostrar u ocultar todos los códigos o únicamente cuentas concretas.
-- Iconos automáticos para servicios conocidos y soporte para iconos personalizados.
+- Mostrar u ocultar todos los códigos o cuentas concretas.
+- Iconos automáticos para servicios conocidos e iconos personalizados.
 - Bloqueo manual y bloqueo automático configurable.
-- Exportación e importación de copias de seguridad cifradas.
+- Importación y exportación de copias de seguridad cifradas.
 - Cambio de contraseña maestra.
+- Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
 
+## Novedades de v2.10.4
+
+- El selector inline bloqueado detecta automáticamente cuándo se desbloquea la bóveda desde el popup principal.
+- No es necesario cerrar y volver a abrir el selector: las cuentas aparecen al terminar el desbloqueo.
+- La comprobación solo permanece activa mientras el selector bloqueado está abierto y se detiene automáticamente.
+- Se mantiene la corrección de v2.10.3 que evita confundir campos de cantidad de tiendas (`qty`, `quantity`, `cantidad`, `units`, `unidades` y equivalentes) con un OTP.
+- Un campo `type="number"`, `inputmode="numeric"` o `pattern="[0-9]*"` no es suficiente por sí solo para considerarse OTP.
+
 ## Seguridad
 
-La bóveda se cifra localmente con **AES-256-GCM**.
-
-La clave de cifrado se deriva de la contraseña maestra mediante **PBKDF2-HMAC-SHA-256 con 310.000 iteraciones**.
+La bóveda se cifra localmente con **AES-256-GCM**. La clave se deriva de la contraseña maestra mediante **PBKDF2-HMAC-SHA-256 con 310.000 iteraciones**.
 
 La contraseña maestra nunca se almacena. La clave de sesión se mantiene únicamente en `chrome.storage.session` mientras la bóveda permanece desbloqueada.
 
-El acceso a `chrome.storage.local` y `chrome.storage.session` se restringe a contextos confiables de la extensión mediante `TRUSTED_CONTEXTS`.
+`chrome.storage.local` y `chrome.storage.session` se restringen a contextos confiables de la extensión mediante `TRUSTED_CONTEXTS`.
 
-El selector manual de campo OTP requiere una interacción real del usuario mediante `event.isTrusted`.
+El content script del selector inline no recibe las semillas TOTP ni la clave AES. Los códigos se solicitan al service worker cuando son necesarios.
 
-TOTP Vault no vincula obligatoriamente una cuenta a un dominio y no borra automáticamente el contenido del portapapeles.
+TOTP Vault no vincula obligatoriamente una cuenta a un dominio y no borra automáticamente el portapapeles.
 
-## Autorrelleno
+## Autorrelleno y detección OTP
 
-El botón **Rellenar** intenta localizar automáticamente el campo OTP de la pestaña activa.
+El botón **Rellenar** intenta localizar el campo OTP adecuado en la pestaña activa. Se tienen en cuenta señales como nombre, id, `autocomplete`, longitud, etiquetas y contexto relacionado con autenticación o verificación.
 
-La detección contempla, entre otros casos:
+Se soportan campos OTP únicos, grupos de 6/8 casillas, Shadow DOM abierto e iframes accesibles.
 
-- campos OTP únicos;
-- grupos de 6 u 8 casillas;
-- inputs `password`, `tel` y `number`;
-- etiquetas y contexto cercano relacionado con verificación o autenticación;
-- Shadow DOM abierto;
-- iframes accesibles.
+Para reducir falsos positivos, los controles claramente relacionados con cantidades, unidades, carrito o producto quedan excluidos aunque sean numéricos.
 
-Si no encuentra un campo adecuado, puede utilizarse el selector manual de un solo uso.
+Si no se detecta un campo adecuado, puede utilizarse el selector manual de un solo uso.
 
-## Selector junto a campos OTP
+## Selector inline
 
-TOTP Vault puede mostrar un pequeño botón junto a campos OTP/TOTP detectados en las páginas web.
+Puede mostrarse un pequeño botón de TOTP Vault junto a campos OTP/TOTP detectados.
 
-Hay tres modos disponibles:
+Modos disponibles:
 
-- **Desactivado**: no se inyecta el selector.
-- **Solo sitios autorizados**: se activa únicamente en los orígenes autorizados por el usuario.
-- **Todos los sitios web**: se solicita permiso para utilizarlo en cualquier sitio HTTP/HTTPS.
+- **Desactivado**.
+- **Solo sitios autorizados**.
+- **Todos los sitios web**.
 
-El selector permite buscar cuentas, muestra los códigos y su tiempo restante y ordena primero las cuentas utilizadas recientemente.
+El selector permite buscar cuentas, ver el tiempo restante y rellenar el código seleccionado. Las cuentas usadas recientemente aparecen primero.
 
-El content script no recibe semillas TOTP ni la clave AES. Los códigos se solicitan al service worker únicamente cuando son necesarios.
+Si la bóveda está bloqueada, el selector permite abrir TOTP Vault. Tras introducir la contraseña maestra, **el selector abierto se actualiza automáticamente** y muestra las cuentas sin necesidad de cerrarlo.
 
 ## Autoenvío
 
-Después de rellenar un TOTP pueden utilizarse tres modos:
+Después de rellenar un TOTP hay tres modos:
 
-- **No enviar**: únicamente se introduce el código.
-- **Enviar inequívoco**: envía el formulario solo cuando existe un único `submit` claramente identificable.
-- **Compatibilidad máxima**: además intenta localizar botones de verificar, continuar, siguiente, acceder o equivalentes, incluyendo formularios SPA y botones personalizados.
-
-El modo **Compatibilidad máxima** está pensado para páginas que utilizan botones `type="button"` en lugar de un `submit` tradicional.
-
-## Visibilidad de códigos
-
-Los códigos pueden mostrarse u ocultarse desde el icono de ojo de la cabecera.
-
-También puede definirse una excepción por cada cuenta mediante su propio control de visibilidad. Las preferencias se conservan localmente.
-
-Aunque un código esté oculto, las funciones **Copiar** y **Rellenar** continúan funcionando normalmente.
+- **No enviar**: solo introduce el código.
+- **Enviar inequívoco**: únicamente envía cuando hay un submit claro y único.
+- **Compatibilidad máxima**: además busca botones de verificar, continuar, siguiente, acceder y equivalentes, incluyendo SPAs y botones `type="button"`.
 
 ## Temas
-
-La extensión incluye diez temas seleccionables desde **Ajustes**.
 
 Los colores base disponibles son:
 
 `#1C485F` · `#08709C` · `#95CBC0` · `#D4C299` · `#777778` · `#42B8AF` · `#CFDF9E` · `#ECD799` · `#FBB38A` · `#E77292`
 
-La selección se guarda localmente y también se aplica al selector inline.
+La selección se almacena localmente y también se aplica al selector inline.
 
 ## Iconos de cuentas
 
-TOTP Vault incluye iconos locales para:
+Incluye iconos locales para Outlook/Microsoft 365, Microsoft, Google, GitHub, AWS, Azure, Cloudflare, Apple/iCloud, Meta, Dropbox y VPN.
 
-- Outlook / Microsoft 365
-- Microsoft
-- Google
-- GitHub
-- AWS
-- Azure
-- Cloudflare
-- Apple / iCloud
-- Meta
-- Dropbox
-- VPN
-
-El icono puede detectarse automáticamente a partir del nombre o del issuer, seleccionarse manualmente o sustituirse por una imagen personalizada PNG, JPG o WebP.
-
-Los iconos personalizados se reducen a WebP 96×96 y se almacenan dentro de la bóveda cifrada.
-
-## Copias de seguridad
-
-La exportación genera un archivo JSON que contiene la bóveda ya cifrada.
-
-Los secretos no se exportan en texto claro. Para restaurar una copia es necesaria la contraseña maestra con la que fue cifrada.
-
-Si se pierde la contraseña maestra y no se dispone de los secretos originales, no existe un mecanismo de recuperación.
+También admite iconos personalizados PNG/JPG/WebP, reducidos a WebP 96×96 y almacenados dentro de la bóveda cifrada.
 
 ## Permisos
 
-La extensión utiliza los siguientes permisos:
+- `storage`: bóveda cifrada y sesión temporal.
+- `activeTab`: acceso temporal a la pestaña activa.
+- `scripting`: autorrelleno puntual.
+- `clipboardWrite`: copiar códigos.
 
-- `storage`: almacenamiento de la bóveda cifrada y de la sesión temporal.
-- `activeTab`: acceso temporal a la pestaña activa para el autorrelleno.
-- `scripting`: inyección puntual del código necesario para detectar y rellenar OTP.
-- `clipboardWrite`: copiar códigos al portapapeles.
-
-Los permisos `http://*/*` y `https://*/*` son opcionales y solo se solicitan si se activa el selector inline para sitios autorizados o para todos los sitios.
+Los permisos `http://*/*` y `https://*/*` son opcionales y se solicitan al activar el selector inline para los sitios correspondientes.
 
 ## Instalación manual
 
@@ -149,16 +122,12 @@ Los permisos `http://*/*` y `https://*/*` son opcionales y solo se solicitan si 
 4. Pulsa **Cargar descomprimida**.
 5. Selecciona la carpeta del proyecto.
 
-## Compatibilidad y limitaciones
+## Limitaciones
 
-Chrome no permite inyectar código en determinadas páginas internas del navegador, iframes especialmente restringidos o Shadow DOM cerrado.
+Chrome impide inyectar código en determinadas páginas internas, iframes restringidos y Shadow DOM cerrado. En esos casos siempre puede utilizarse **Copiar**.
 
-En esos casos siempre puede utilizarse el botón **Copiar**.
-
-Una vez que un TOTP se introduce en una página web, esa página puede leer el valor del campo, igual que ocurre con cualquier código introducido manualmente.
+Una vez introducido un TOTP en una página web, esa página puede leer el valor del campo igual que si se hubiera escrito manualmente.
 
 ## Versión actual
 
-**v2.10.2**
-
-Esta versión incluye los temas configurables, el selector inline por sitios autorizados, los tres modos de autoenvío, controles de visibilidad de códigos, iconos de servicios y las mejoras de seguridad y cifrado descritas anteriormente.
+**v2.10.4**
