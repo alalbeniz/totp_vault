@@ -43,7 +43,7 @@ async function mockChrome() {
   Object.defineProperty(navigator, 'clipboard', { value: { writeText: async text => { window.__copied = text; } } });
   window.chrome = {
     storage: { local: area('local'), session: area('session'), onChanged: { addListener: fn => listeners.push(fn) } },
-    runtime: { getURL: file => new URL(file, location.href).href, sendMessage: async () => ({ ok: true }) },
+    runtime: { getURL: file => new URL('/' + file, location.origin).href, sendMessage: async () => ({ ok: true }) },
     tabs: { query: async () => [{ id: 1, url: 'https://example.test/login' }] },
     permissions: { request: async () => true, remove: async () => true, contains: async () => true },
     scripting: { executeScript: async ({ args }) => { window.__filled = args?.[0]; return [{ result: { ok: true, message: 'Código rellenado.' } }]; } }
@@ -197,7 +197,7 @@ async function mockChrome() {
     // Exercise the actual inline renderer and trusted clicks against a demo OTP form.
     const inline = await context.newPage();
     inline.on('pageerror', e => errors.push(e.message));
-    await inline.setViewportSize({ width: 760, height: 540 });
+    await inline.setViewportSize({ width: 760, height: 640 });
     await inline.goto(`http://127.0.0.1:${server.address().port}/tests/fixture.html`);
     await inline.evaluate(() => {
       const attach = Element.prototype.attachShadow;
@@ -212,6 +212,7 @@ async function mockChrome() {
     await inline.addScriptTag({ url: '/content.js' });
     await inline.locator('[data-totp-vault-inline] .b').click();
     await inline.locator('[data-totp-vault-inline] .r').first().waitFor();
+    await inline.waitForFunction(() => [...document.querySelector('[data-totp-vault-inline]').shadowRoot.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0));
     await inline.screenshot({ path: path.join(results, 'inline.png') });
     await inline.locator('[data-totp-vault-inline] .q').fill('Google');
     assert.equal(await inline.locator('[data-totp-vault-inline] .r').count(), 1);
