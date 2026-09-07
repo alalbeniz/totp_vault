@@ -4,23 +4,21 @@ TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almac
 
 La bóveda está protegida mediante una contraseña maestra e incluye autorrelleno, selector inline junto a campos OTP, autoenvío configurable, iconos de servicios, control de visibilidad, copias de seguridad cifradas y temas de color.
 
-## Capturas
+## Interfaz pastel (rama de prueba)
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/vault.svg" alt="TOTP Vault - Bóveda" width="520">
-</p>
+Esta rama rediseña el popup y el selector inline con superficies claras, códigos grandes, controles de 40–44 px y diez paletas pastel. Los identificadores de los temas guardados se conservan.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/settings.svg" alt="TOTP Vault - Ajustes" width="430">
-</p>
+El núcleo `popup-core.js`, el service worker, el formato de la bóveda y los permisos permanecen iguales. Los módulos de presentación conectan la visibilidad existente, el selector de temas, el ajuste de autoenvío existente y la navegación de los paneles.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/inline.svg" alt="TOTP Vault - Selector inline" width="620">
-</p>
+Las capturas del rediseño se generan con cuentas ficticias mediante `pnpm test` y se adjuntan como artefactos en GitHub Actions. Las capturas anteriores de `docs/screenshots/` corresponden a la interfaz de main.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/unlock.svg" alt="TOTP Vault - Desbloqueo" width="340">
-</p>
+Para probar esta rama:
+
+```sh
+git clone --branch codex/pastel-interface https://github.com/alalbeniz/totp_vault.git
+```
+
+Después, carga la carpeta en `chrome://extensions` con **Modo de desarrollador → Cargar descomprimida**. No hace falta compilar ni instalar dependencias para usar la extensión.
 
 ## Funciones principales
 
@@ -93,11 +91,20 @@ Después de rellenar un TOTP hay tres modos:
 
 ## Temas
 
-Los colores base disponibles son:
+| Tema | Color pastel | Identificador conservado |
+| --- | --- | --- |
+| Porcelana | `#B9CBD9` | `1c485f` |
+| Cielo | `#BADCF0` | `08709c` |
+| Menta | `#BEE1D4` | `95cbc0` |
+| Avena | `#E6D7BC` | `d4c299` |
+| Lavanda | `#D5CCEC` | `777778` |
+| Aguamarina | `#B9E1DF` | `42b8af` |
+| Salvia | `#D4DFBD` | `cfdf9e` |
+| Vainilla | `#F0E0AC` | `ecd799` |
+| Melocotón | `#F2CEB9` | `fbb38a` |
+| Rosa | `#ECC8D5` | `e77292` |
 
-`#1C485F` · `#08709C` · `#95CBC0` · `#D4C299` · `#777778` · `#42B8AF` · `#CFDF9E` · `#ECD799` · `#FBB38A` · `#E77292`
-
-La selección se almacena localmente y también se aplica al selector inline.
+La selección se almacena localmente y también se aplica al selector inline. El selector de temas admite flechas, Inicio y Fin. Escape cierra el menú de cuenta o el panel abierto.
 
 ## Iconos de cuentas
 
@@ -131,3 +138,17 @@ Una vez introducido un TOTP en una página web, esa página puede leer el valor 
 ## Versión actual
 
 **v2.10.4**
+
+## Verificación de la interfaz
+
+Con Node.js 22 y pnpm 10:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm exec playwright install --with-deps chromium-headless-shell
+pnpm test
+```
+
+Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban altas, edición, borrado, búsqueda, visibilidad, diez temas, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
+
+La integración real con los permisos del navegador y el autorrelleno en otras webs se comprueba cargando la extensión descomprimida.

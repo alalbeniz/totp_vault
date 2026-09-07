@@ -24,6 +24,7 @@
       });
     }
     new MutationObserver(updateList).observe(list, { childList: true });
+    new MutationObserver(updateList).observe(document.getElementById("vaultView"), { attributes: true, attributeFilter: ["class"] });
     updateList();
 
     function updatePanel() {
