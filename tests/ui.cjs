@@ -76,7 +76,7 @@ async function mockChrome() {
       await page.locator('#name').fill(name);
       await page.locator('#secret').fill(secret);
       await page.locator('#saveAddBtn').click();
-      await page.locator('#addPanel.hidden').waitFor();
+      await page.locator('#addPanel.hidden').waitFor({ state: 'attached' });
     };
     await page.locator('#toggleAdd').click();
     await shot('add');
@@ -115,7 +115,7 @@ async function mockChrome() {
     await page.locator('.edit-item').first().click();
     await page.locator('#name').fill('GitHub · editada');
     await page.locator('#saveAddBtn').click();
-    await page.locator('#addPanel.hidden').waitFor();
+    await page.locator('#addPanel.hidden').waitFor({ state: 'attached' });
     assert.equal(await page.locator('.card-title').first().innerText(), 'GitHub · editada');
     await page.locator('#settingsBtn').click();
     const themes = await page.locator('.theme-swatch').evaluateAll(els => els.map(el => el.dataset.theme));
@@ -148,7 +148,7 @@ async function mockChrome() {
     await page.locator('#newPassword').fill('pastel-new-password');
     await page.locator('#newPassword2').fill('pastel-new-password');
     await page.locator('#changePasswordForm button[type=submit]').click();
-    await page.locator('#changePasswordForm.hidden').waitFor();
+    await page.locator('#changePasswordForm.hidden').waitFor({ state: 'attached' });
     const downloadPromise = page.waitForEvent('download');
     await page.locator('#exportBtn').click();
     const download = await downloadPromise;
