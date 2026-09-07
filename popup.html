@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TOTP Vault</title>
   <link rel="stylesheet" href="popup.css">
+  <script src="popup-core.js" defer></script>
+  <script src="popup.js" defer></script>
+  <script src="visibility.js" defer></script>
+  <script src="popup-ui.js" defer></script>
 </head>
 <body>
   <main id="app">
@@ -16,8 +20,9 @@
 
     <section id="setupView" class="center-view hidden">
       <img class="brand-icon" src="icons/icon128.png" alt="">
-      <h1>Crear bóveda</h1>
-      <p class="lead">Tus secretos TOTP se cifrarán localmente con AES‑256‑GCM.</p>
+      <p class="eyebrow">TU LLAVERO DIGITAL</p>
+      <h1>Todo empieza con una llave.</h1>
+      <p class="lead">Crea una contraseña maestra para proteger tus cuentas en este navegador.</p>
 
       <form id="setupForm" class="auth-form">
         <label>
@@ -35,7 +40,7 @@
           </div>
         </label>
         <button class="btn primary full" type="submit">Crear bóveda</button>
-        <p id="setupError" class="message error hidden"></p>
+        <p id="setupError" role="status" aria-live="polite" class="message error hidden"></p>
       </form>
 
       <div class="auth-separator"><span>o</span></div>
@@ -45,8 +50,9 @@
 
     <section id="unlockView" class="center-view hidden">
       <img class="brand-icon" src="icons/icon128.png" alt="">
-      <h1>TOTP Vault</h1>
-      <p class="lead">Introduce tu contraseña maestra.</p>
+      <p class="eyebrow">TOTP VAULT · ACCESO SEGURO</p>
+      <h1>Tus códigos, a mano.</h1>
+      <p class="lead">Desbloquea tu bóveda para continuar donde lo dejaste.</p>
 
       <form id="unlockForm" class="auth-form">
         <label>
@@ -57,9 +63,9 @@
           </div>
         </label>
         <button class="btn primary full" type="submit">Desbloquear</button>
-        <p id="unlockError" class="message error hidden"></p>
+        <p id="unlockError" role="status" aria-live="polite" class="message error hidden"></p>
       </form>
-      <p class="security-note">La contraseña no se almacena. Sin ella no es posible recuperar los secretos.</p>
+      <p class="security-note">Solo tú tienes la llave. La contraseña no se almacena y es necesaria para recuperar tus cuentas.</p>
     </section>
 
     <section id="vaultView" class="hidden">
@@ -82,20 +88,25 @@
           <button id="lockBtn" class="icon-btn" type="button" title="Bloquear ahora" aria-label="Bloquear">
             <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-6 0V6a2 2 0 1 1 4 0v2Zm1 8.75A1.75 1.75 0 1 1 13.75 15 1.75 1.75 0 0 1 12 16.75Z"/></svg>
           </button>
-          <button id="toggleAdd" class="icon-btn primary" type="button" aria-label="Añadir TOTP" title="Añadir TOTP">
-            <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5a1 1 0 1 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z"/></svg>
-          </button>
+
         </div>
       </header>
 
+      <div class="collection-heading">
+        <div><p class="eyebrow">TU LLAVERO DIGITAL</p><h2>Mis códigos <span id="accountCount" class="account-count">0</span></h2></div>
+          <button id="toggleAdd" class="btn primary add-button" type="button" aria-label="Añadir TOTP" title="Añadir TOTP">
+            <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5a1 1 0 1 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z"/></svg><span>Añadir</span>
+          </button>
+      </div>
+
       <section class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m1.35-5.15A6.5 6.5 0 1 1 5 11.5a6.5 6.5 0 0 1 13 0Z"/></svg>
-        <input id="searchInput" class="search-input" type="text" placeholder="Buscar cuentas..." autocomplete="off">
+        <input id="searchInput" class="search-input" type="text" placeholder="Buscar una cuenta…" aria-label="Buscar cuentas" autocomplete="off">
       </section>
 
       <section id="addPanel" class="panel hidden">
         <div class="panel-title-row">
-          <h2 id="addPanelTitle">Añadir TOTP</h2>
+          <div><p class="eyebrow">UNA LLAVE MÁS</p><h2 id="addPanelTitle">Añadir TOTP</h2></div>
           <button id="closeAdd" class="close-btn" type="button" aria-label="Cerrar">×</button>
         </div>
         <form id="addForm">
@@ -144,32 +155,33 @@
             <button id="cancelAdd" class="btn secondary" type="button">Cancelar</button>
             <button id="saveAddBtn" class="btn primary" type="submit">Guardar</button>
           </div>
-          <p id="formError" class="message error hidden"></p>
+          <p id="formError" role="status" aria-live="polite" class="message error hidden"></p>
         </form>
       </section>
 
       <section id="settingsPanel" class="panel hidden">
         <div class="panel-title-row">
-          <h2>Ajustes y seguridad</h2>
+          <div><p class="eyebrow">A TU MANERA</p><h2>Ajustes y seguridad</h2></div>
           <button id="closeSettings" class="close-btn" type="button" aria-label="Cerrar">×</button>
         </div>
 
         <div class="theme-settings">
-          <span class="theme-label">Tema de color</span>
+          <div class="theme-heading"><span class="theme-label">El color de tu bóveda</span><span class="setting-caption">10 temas pastel</span></div>
           <div id="themePicker" class="theme-picker" role="radiogroup" aria-label="Tema de color">
-            <button type="button" class="theme-swatch" data-theme="1c485f" aria-label="Tema #1C485F" title="#1C485F" style="--swatch:#1C485F"></button>
-            <button type="button" class="theme-swatch" data-theme="08709c" aria-label="Tema #08709C" title="#08709C" style="--swatch:#08709C"></button>
-            <button type="button" class="theme-swatch" data-theme="95cbc0" aria-label="Tema #95CBC0" title="#95CBC0" style="--swatch:#95CBC0"></button>
-            <button type="button" class="theme-swatch" data-theme="d4c299" aria-label="Tema #D4C299" title="#D4C299" style="--swatch:#D4C299"></button>
-            <button type="button" class="theme-swatch" data-theme="777778" aria-label="Tema #777778" title="#777778" style="--swatch:#777778"></button>
-            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Tema #42B8AF" title="#42B8AF" style="--swatch:#42B8AF"></button>
-            <button type="button" class="theme-swatch" data-theme="cfdf9e" aria-label="Tema #CFDF9E" title="#CFDF9E" style="--swatch:#CFDF9E"></button>
-            <button type="button" class="theme-swatch" data-theme="ecd799" aria-label="Tema #ECD799" title="#ECD799" style="--swatch:#ECD799"></button>
-            <button type="button" class="theme-swatch" data-theme="fbb38a" aria-label="Tema #FBB38A" title="#FBB38A" style="--swatch:#FBB38A"></button>
-            <button type="button" class="theme-swatch" data-theme="e77292" aria-label="Tema #E77292" title="#E77292" style="--swatch:#E77292"></button>
+            <button type="button" class="theme-swatch" data-theme="1c485f" aria-label="Porcelana" title="Porcelana" style="--swatch:#b9cbd9;--swatch-ink:#355369"><span class="swatch-color" aria-hidden="true"></span><span>Porcelana</span></button>
+            <button type="button" class="theme-swatch" data-theme="08709c" aria-label="Cielo" title="Cielo" style="--swatch:#badcf0;--swatch-ink:#305d7b"><span class="swatch-color" aria-hidden="true"></span><span>Cielo</span></button>
+            <button type="button" class="theme-swatch" data-theme="95cbc0" aria-label="Menta" title="Menta" style="--swatch:#bee1d4;--swatch-ink:#326356"><span class="swatch-color" aria-hidden="true"></span><span>Menta</span></button>
+            <button type="button" class="theme-swatch" data-theme="d4c299" aria-label="Avena" title="Avena" style="--swatch:#e6d7bc;--swatch-ink:#695739"><span class="swatch-color" aria-hidden="true"></span><span>Avena</span></button>
+            <button type="button" class="theme-swatch" data-theme="777778" aria-label="Lavanda" title="Lavanda" style="--swatch:#d5ccec;--swatch-ink:#5f507d"><span class="swatch-color" aria-hidden="true"></span><span>Lavanda</span></button>
+            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Aguamarina" title="Aguamarina" style="--swatch:#b9e1df;--swatch-ink:#306463"><span class="swatch-color" aria-hidden="true"></span><span>Aguamarina</span></button>
+            <button type="button" class="theme-swatch" data-theme="cfdf9e" aria-label="Salvia" title="Salvia" style="--swatch:#d4dfbd;--swatch-ink:#52663c"><span class="swatch-color" aria-hidden="true"></span><span>Salvia</span></button>
+            <button type="button" class="theme-swatch" data-theme="ecd799" aria-label="Vainilla" title="Vainilla" style="--swatch:#f0e0ac;--swatch-ink:#6e5c2c"><span class="swatch-color" aria-hidden="true"></span><span>Vainilla</span></button>
+            <button type="button" class="theme-swatch" data-theme="fbb38a" aria-label="Melocotón" title="Melocotón" style="--swatch:#f2ceb9;--swatch-ink:#815441"><span class="swatch-color" aria-hidden="true"></span><span>Melocotón</span></button>
+            <button type="button" class="theme-swatch" data-theme="e77292" aria-label="Rosa" title="Rosa" style="--swatch:#ecc8d5;--swatch-ink:#7b4b5e"><span class="swatch-color" aria-hidden="true"></span><span>Rosa</span></button>
           </div>
         </div>
 
+        <h3 class="settings-section-title">Seguridad</h3>
         <label>
           Bloqueo automático
           <select id="autoLockSelect">
@@ -182,6 +194,7 @@
           </select>
         </label>
 
+        <h3 class="settings-section-title">Al iniciar sesión</h3>
         <div class="inline-picker-settings">
           <label>
             Selector junto a campos OTP/TOTP
@@ -210,6 +223,7 @@
           <p class="settings-help">Inequívoco: solo usa un único submit claro del formulario. Compatibilidad máxima: si eso no funciona, busca el botón de verificar/continuar más probable cerca del OTP, incluyendo formularios SPA y botones personalizados.</p>
         </div>
 
+        <h3 class="settings-section-title">Tu copia de seguridad</h3>
         <div class="settings-grid">
           <button id="exportBtn" class="btn secondary" type="button">Exportar cifrado</button>
           <button id="importBtn" class="btn secondary" type="button">Importar cifrado</button>
@@ -232,10 +246,10 @@
             <input id="newPassword2" type="password" minlength="8" autocomplete="new-password" required>
           </label>
           <button class="btn primary full" type="submit">Actualizar contraseña</button>
-          <p id="changePasswordError" class="message error hidden"></p>
+          <p id="changePasswordError" role="status" aria-live="polite" class="message error hidden"></p>
         </form>
 
-        <p id="settingsMessage" class="message hidden"></p>
+        <p id="settingsMessage" role="status" aria-live="polite" class="message hidden"></p>
       </section>
 
       <section id="emptyState" class="empty hidden">
@@ -244,10 +258,10 @@
         <span>Pulsa + para añadir el primero.</span>
       </section>
 
-      <section id="totpList" class="list"></section>
+      <section id="totpList" class="list" aria-label="Cuentas TOTP"></section>
 
       <footer>
-        <span class="footer-security"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7 0V6a2 2 0 1 1 4 0v2Z"/></svg>AES‑256‑GCM · datos locales</span>
+        <span class="footer-security"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7 0V6a2 2 0 1 1 4 0v2Z"/></svg>Cifrado local · Solo en tu navegador</span>
       </footer>
     </section>
   </main>
@@ -295,6 +309,5 @@
     </article>
   </template>
 
-  <script src="popup.js"></script>
 </body>
 </html>
