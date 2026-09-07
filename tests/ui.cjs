@@ -186,8 +186,40 @@ async function mockChrome() {
     await page.locator('.menu-btn').last().click();
     await page.locator('.delete-item').last().click();
     await page.waitForFunction(() => document.querySelectorAll('.totp-card').length === 2);
+    await page.locator('#settingsBtn').click();
+    await page.locator('#importFile').setInputFiles(backup);
+    await page.locator('#unlockView:not(.hidden)').waitFor();
+    await page.locator('#unlockPassword').fill('pastel-new-password');
+    await page.locator('#unlockForm button[type=submit]').click();
+    await page.locator('#vaultView:not(.hidden)').waitFor();
+    assert.equal(await page.locator('.totp-card').count(), 3);
+
+    // Exercise the actual inline renderer and trusted clicks against a demo OTP form.
+    const inline = await context.newPage();
+    inline.on('pageerror', e => errors.push(e.message));
+    await inline.setViewportSize({ width: 760, height: 540 });
+    await inline.goto(`http://127.0.0.1:${server.address().port}/tests/fixture.html`);
+    await inline.evaluate(() => {
+      const attach = Element.prototype.attachShadow;
+      Element.prototype.attachShadow = function(options) { return attach.call(this, { ...options, mode: 'open' }); };
+      chrome.runtime.sendMessage = async ({ type }) => type === 'totpVault:inline:code'
+        ? { ok: true, code: '123456', autoSubmitMode: 'off' }
+        : { ok: true, locked: false, colorTheme: '777778', entries: [
+          { id: 'demo', name: 'GitHub · personal', issuer: 'GitHub', code: '123456', remaining: 27, icon: { type: 'builtin', key: 'github' } },
+          { id: 'demo2', name: 'Google · trabajo', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
+        ] };
+    });
+    await inline.addScriptTag({ url: '/content.js' });
+    await inline.locator('[data-totp-vault-inline] .b').click();
+    await inline.locator('[data-totp-vault-inline] .r').first().waitFor();
+    await inline.screenshot({ path: path.join(results, 'inline.png') });
+    await inline.locator('[data-totp-vault-inline] .q').fill('Google');
+    assert.equal(await inline.locator('[data-totp-vault-inline] .r').count(), 1);
+    await inline.locator('[data-totp-vault-inline] .r').click();
+    assert.equal(await inline.locator('#otp').inputValue(), '123456');
+    await inline.close();
     assert.deepEqual(errors, []);
-    console.log('PASS: setup, encrypted storage, RFC TOTP, add/edit/delete, copy/fill callbacks, search, visibility, 10 themes, theme persistence, keyboard, settings, site authorization, password change, encrypted export, lock/unlock, restored session, 320px layout.');
+    console.log('PASS: setup, encrypted storage, RFC TOTP, add/edit/delete, copy/fill callbacks, search, visibility, 10 themes, theme persistence, keyboard, settings, site authorization, password change, encrypted export/import, inline rendering/search/fill, lock/unlock, restored session, 320px layout.');
     console.log('Chrome storage/permissions/scripting are test doubles; browser integration needs an unpacked-extension check.');
     await context.close();
   } finally { await browser.close(); server.close(); }
