@@ -59,9 +59,9 @@ input::placeholder { color: var(--muted); opacity: 1; }
 .search-icon { position: absolute; left: 14px; top: 14px; width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; }
 .list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; overflow-x: hidden; padding: 2px 4px 4px 2px; margin: -2px -4px -4px -2px; }
 .list, .panel, .center-view { scrollbar-width: thin; scrollbar-color: var(--vault-tint) transparent; overscroll-behavior: contain; }
-.totp-card { position: relative; flex-shrink: 0; background: var(--vault-paper); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 16px; }
+.totp-card { position: relative; flex-shrink: 0; background: var(--vault-paper); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 12px; }
 .totp-card:hover { border-color: color-mix(in srgb, var(--vault-ink) 32%, transparent); }
-.card-main { display: flex; flex-direction: column; gap: 12px; }
+.card-main { display: flex; flex-direction: column; gap: 8px; }
 .card-identity { display: flex; align-items: center; gap: 12px; min-width: 0; padding-right: 32px; }
 .card-badge, .icon-preview { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px; padding: 6px; background: var(--vault-field); overflow: hidden; }
 .card-badge img, .icon-preview img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
@@ -109,7 +109,7 @@ footer { flex-shrink: 0; text-align: center; color: var(--muted); font-size: 10p
 /* Panels take over the content area; the brand and its actions remain in place. */
 #vaultView:has(> .panel:not(.hidden)) > :is(.collection-heading, .search-wrap, .list, .empty, footer) { display: none; }
 .panel { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 4px 8px; margin: 0 -4px; }
-.panel-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 4px 0 24px; }
+.panel-title-row { position: sticky; top: 0; z-index: 3; background: var(--vault-canvas); padding: 8px 0 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 12px; }
 .panel-title-row .eyebrow { margin-bottom: 4px; }
 .close-btn { font-size: 28px; font-weight: 400; }
 label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
