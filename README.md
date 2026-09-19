@@ -4,21 +4,13 @@ TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almac
 
 La bóveda está protegida mediante una contraseña maestra e incluye autorrelleno, selector inline junto a campos OTP, autoenvío configurable, iconos de servicios, control de visibilidad, copias de seguridad cifradas y temas de color.
 
-## Interfaz pastel (rama de prueba)
+## Interfaz pastel
 
-Esta rama rediseña el popup y el selector inline con superficies claras, códigos grandes, controles de 40–44 px y diez paletas pastel. Los identificadores de los temas guardados se conservan.
+La interfaz principal usa superficies claras, códigos grandes, controles de 40–44 px y diez paletas pastel. Los identificadores históricos de los temas se conservan para mantener la compatibilidad con las preferencias ya guardadas.
 
-El núcleo `popup-core.js`, el service worker, el formato de la bóveda y los permisos permanecen iguales. Los módulos de presentación conectan la visibilidad existente, el selector de temas, el ajuste de autoenvío existente y la navegación de los paneles.
+El núcleo `popup-core.js`, el service worker, el formato de la bóveda y los permisos permanecen compatibles con v2.10.x. Los módulos de presentación gestionan la visibilidad, el selector de temas, el ajuste de autoenvío y la navegación de los paneles.
 
-Las capturas del rediseño se generan con cuentas ficticias mediante `pnpm test` y se adjuntan como artefactos en GitHub Actions. Las capturas anteriores de `docs/screenshots/` corresponden a la interfaz de main.
-
-Para probar esta rama:
-
-```sh
-git clone --branch codex/pastel-interface https://github.com/alalbeniz/totp_vault.git
-```
-
-Después, carga la carpeta en `chrome://extensions` con **Modo de desarrollador → Cargar descomprimida**. No hace falta compilar ni instalar dependencias para usar la extensión.
+Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm test` y GitHub Actions genera además un ZIP instalable de la extensión.
 
 ## Funciones principales
 
@@ -36,6 +28,17 @@ Después, carga la carpeta en `chrome://extensions` con **Modo de desarrollador 
 - Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
+
+## Novedades de v2.11.0
+
+- Rediseño completo del popup con una interfaz clara y diez paletas pastel.
+- Nueva presentación de cuentas, búsqueda, acciones, ajustes y pantallas de bloqueo/desbloqueo.
+- Selector de temas accesible por teclado y persistencia de las preferencias existentes.
+- Mejoras de presentación del selector TOTP inline manteniendo la lógica de detección y seguridad de v2.10.x.
+- Tamaño intrínseco del popup fijado a 420×600 para evitar el popup blanco/minimizado de Chrome.
+- Scrollbars con gutter reservado para que no se superpongan a tarjetas ni paneles.
+- Pruebas automatizadas de interfaz, cifrado, TOTP, importación/exportación, bloqueo y diseño estrecho.
+- Empaquetado automático de un ZIP instalable desde GitHub Actions.
 
 ## Novedades de v2.10.4
 
@@ -137,7 +140,7 @@ Una vez introducido un TOTP en una página web, esa página puede leer el valor 
 
 ## Versión actual
 
-**v2.10.4**
+**v2.11.0**
 
 ## Verificación de la interfaz
 
