@@ -18,8 +18,31 @@
   --font-code: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; width: 420px; max-width: 100vw; height: 600px; max-height: 100dvh; overflow: hidden; background: var(--vault-canvas); }
-body { color: var(--text); font: 14px/1.5 var(--font-ui); -webkit-font-smoothing: antialiased; }
+
+/*
+ * Chrome action popups are auto-sized from the document's intrinsic size.
+ * Do not constrain the root with vw/vh/dvh units: the viewport is derived
+ * from this box, so viewport-relative root sizing can collapse the popup.
+ */
+html {
+  margin: 0;
+  padding: 0;
+  width: 420px;
+  height: 600px;
+  overflow: hidden;
+  background: var(--vault-canvas);
+}
+body {
+  margin: 0;
+  padding: 0;
+  width: 420px;
+  height: 600px;
+  overflow: hidden;
+  background: var(--vault-canvas);
+  color: var(--text);
+  font: 14px/1.5 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
 main { height: 100%; }
 .hidden, [hidden] { display: none !important; }
 button, input, select { font: inherit; }
