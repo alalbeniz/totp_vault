@@ -4,23 +4,13 @@ TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almac
 
 La bóveda está protegida mediante una contraseña maestra e incluye autorrelleno, selector inline junto a campos OTP, autoenvío configurable, iconos de servicios, control de visibilidad, copias de seguridad cifradas y temas de color.
 
-## Capturas
+## Interfaz pastel
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/vault.svg" alt="TOTP Vault - Bóveda" width="520">
-</p>
+La interfaz principal usa superficies claras, códigos grandes, controles de 40–44 px y diez paletas pastel. Los identificadores históricos de los temas se conservan para mantener la compatibilidad con las preferencias ya guardadas.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/settings.svg" alt="TOTP Vault - Ajustes" width="430">
-</p>
+El núcleo `popup-core.js`, el service worker, el formato de la bóveda y los permisos permanecen compatibles con v2.10.x. Los módulos de presentación gestionan la visibilidad, el selector de temas, el ajuste de autoenvío y la navegación de los paneles.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/inline.svg" alt="TOTP Vault - Selector inline" width="620">
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/alalbeniz/totp_vault/main/docs/screenshots/unlock.svg" alt="TOTP Vault - Desbloqueo" width="340">
-</p>
+Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm test` y GitHub Actions genera además un ZIP instalable de la extensión.
 
 ## Funciones principales
 
@@ -38,6 +28,17 @@ La bóveda está protegida mediante una contraseña maestra e incluye autorrelle
 - Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
+
+## Novedades de v2.11.0
+
+- Rediseño completo del popup con una interfaz clara y diez paletas pastel.
+- Nueva presentación de cuentas, búsqueda, acciones, ajustes y pantallas de bloqueo/desbloqueo.
+- Selector de temas accesible por teclado y persistencia de las preferencias existentes.
+- Mejoras de presentación del selector TOTP inline manteniendo la lógica de detección y seguridad de v2.10.x.
+- Tamaño intrínseco del popup fijado a 420×600 para evitar el popup blanco/minimizado de Chrome.
+- Scrollbars con gutter reservado para que no se superpongan a tarjetas ni paneles.
+- Pruebas automatizadas de interfaz, cifrado, TOTP, importación/exportación, bloqueo y diseño estrecho.
+- Empaquetado automático de un ZIP instalable desde GitHub Actions.
 
 ## Novedades de v2.10.4
 
@@ -93,11 +94,20 @@ Después de rellenar un TOTP hay tres modos:
 
 ## Temas
 
-Los colores base disponibles son:
+| Tema | Color pastel | Identificador conservado |
+| --- | --- | --- |
+| Porcelana | `#B9CBD9` | `1c485f` |
+| Cielo | `#BADCF0` | `08709c` |
+| Menta | `#BEE1D4` | `95cbc0` |
+| Avena | `#E6D7BC` | `d4c299` |
+| Lavanda | `#D5CCEC` | `777778` |
+| Aguamarina | `#B9E1DF` | `42b8af` |
+| Salvia | `#D4DFBD` | `cfdf9e` |
+| Vainilla | `#F0E0AC` | `ecd799` |
+| Melocotón | `#F2CEB9` | `fbb38a` |
+| Rosa | `#ECC8D5` | `e77292` |
 
-`#1C485F` · `#08709C` · `#95CBC0` · `#D4C299` · `#777778` · `#42B8AF` · `#CFDF9E` · `#ECD799` · `#FBB38A` · `#E77292`
-
-La selección se almacena localmente y también se aplica al selector inline.
+La selección se almacena localmente y también se aplica al selector inline. El selector de temas admite flechas, Inicio y Fin. Escape cierra el menú de cuenta o el panel abierto.
 
 ## Iconos de cuentas
 
@@ -130,4 +140,18 @@ Una vez introducido un TOTP en una página web, esa página puede leer el valor 
 
 ## Versión actual
 
-**v2.10.4**
+**v2.11.0**
+
+## Verificación de la interfaz
+
+Con Node.js 22 y pnpm 10:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm exec playwright install --with-deps chromium-headless-shell
+pnpm test
+```
+
+Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban altas, edición, borrado, búsqueda, visibilidad, diez temas, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
+
+La integración real con los permisos del navegador y el autorrelleno en otras webs se comprueba cargando la extensión descomprimida.

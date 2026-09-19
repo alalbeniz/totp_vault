@@ -1,0 +1,44 @@
+name: Interface checks
+on:
+  push:
+    branches: [codex/pastel-interface]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium-headless-shell
+      - run: pnpm test
+      - name: Package extension
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          PACKAGE="totp-vault-v${VERSION}"
+          mkdir -p "dist/${PACKAGE}"
+          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css "dist/${PACKAGE}/"
+          cp popup*.html popup*.js popup*.css "dist/${PACKAGE}/"
+          cp -R icons "dist/${PACKAGE}/"
+          (cd dist && zip -r "${PACKAGE}.zip" "${PACKAGE}")
+          echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interface-screenshots
+          path: test-results/*.png
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ env.package_name }}
+          path: dist/${{ env.package_name }}.zip
+          retention-days: 7
