@@ -52,6 +52,15 @@ async function mockChrome() {
 
 (async () => {
   await fs.mkdir(results, { recursive: true });
+  // Chrome action popups derive their viewport from the document's intrinsic
+  // dimensions. Root viewport-relative sizing (vw/vh/dvh) can collapse the
+  // popup before Chrome has a stable viewport, even though normal-page tests pass.
+  const popupCss = await fs.readFile(path.join(root, 'popup-core.css'), 'utf8');
+  const rootSizing = popupCss.match(/html\s*\{[\s\S]*?\}\s*body\s*\{[\s\S]*?\}/)?.[0] || '';
+  assert.match(rootSizing, /width:\s*420px/);
+  assert.match(rootSizing, /height:\s*600px/);
+  assert.doesNotMatch(rootSizing, /\b(?:vw|vh|dvh|svh|lvh)\b/);
+
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true });
   try {
