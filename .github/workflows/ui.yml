@@ -22,12 +22,14 @@ jobs:
       - run: pnpm test
       - name: Package extension
         run: |
-          mkdir -p dist/totp-vault-pastel
-          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css dist/totp-vault-pastel/
-          cp popup*.html popup*.js popup*.css dist/totp-vault-pastel/
-          cp -R icons dist/totp-vault-pastel/
-          cd dist
-          zip -r totp-vault-pastel.zip totp-vault-pastel
+          VERSION=$(node -p "require('./manifest.json').version")
+          PACKAGE="totp-vault-v${VERSION}"
+          mkdir -p "dist/${PACKAGE}"
+          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css "dist/${PACKAGE}/"
+          cp popup*.html popup*.js popup*.css "dist/${PACKAGE}/"
+          cp -R icons "dist/${PACKAGE}/"
+          (cd dist && zip -r "${PACKAGE}.zip" "${PACKAGE}")
+          echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -37,6 +39,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: totp-vault-pastel
-          path: dist/totp-vault-pastel.zip
+          name: ${{ env.package_name }}
+          path: dist/${{ env.package_name }}.zip
           retention-days: 7
