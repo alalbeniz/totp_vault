@@ -8,9 +8,68 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const results = path.join(root, 'test-results');
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png' };
+const qrRows = `000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000
+000011111110010101010111001111100011111110000
+000010000010111010010111001011101010000010000
+000010111010101010111011111110111010111010000
+000010111010101101001101010011001010111010000
+000010111010001011101011100110011010111010000
+000010000010010001110010111010101010000010000
+000011111110101010101010101010101011111110000
+000000000000101000100001010110111000000000000
+000010000010110001010010111011101110011100000
+000010011001100110100000101101010111101100000
+000011011010010101100000111000011100010110000
+000011000100011111111000000000110100010010000
+000000001011100100100001100100011111011010000
+000000101001000001101101100100110000000110000
+000010000110011101011100110001010000110110000
+000000010000110011110110000010101010011010000
+000001001110111011011000010001011111011110000
+000001001001001010100010101100111111010100000
+000000111011010101010100110111010000001010000
+000010110101100101100011101010010100010100000
+000000110010010100011111001100111111110100000
+000010011101001100000001011101110100101010000
+000011011111101111011010101010110010000110000
+000001001100111010110001010110101010110100000
+000010011011011000011111010011010110000110000
+000011111101010001001100010001011000001000000
+000010101111101011100000111010011111110110000
+000010111000101001110000100000101010011100000
+000010010111100101101000101001101111100010000
+000000000000101010101111100110111000110100000
+000011111110000001011001011110001010101110000
+000010000010001100010111101110111000110110000
+000010111010010010111001010001111111101000000
+000010111010011110001110010100110110001010000
+000010111010010001111111001000101001010110000
+000010000010011111000011101010101110010010000
+000011111110100110011100001010001100111010000
+000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000`.trim().split('\n');
+function testQrSvg() {
+  const size = qrRows.length;
+  const cells = [];
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) if (qrRows[y][x] === '1') cells.push(`M${x} ${y}h1v1h-1z`);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="450" height="450"><rect width="100%" height="100%" fill="white"/><path d="${cells.join('')}" fill="black"/></svg>`;
+}
 const server = http.createServer(async (req, res) => {
   try {
-    const file = path.resolve(root, '.' + new URL(req.url, 'http://localhost').pathname);
+    const pathname = new URL(req.url, 'http://localhost').pathname;
+    if (pathname === '/__test_qr.svg') {
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.end(testQrSvg());
+      return;
+    }
+    const file = path.resolve(root, '.' + pathname);
     if (!file.startsWith(root + path.sep)) throw Error('Invalid path');
     res.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');
     res.end(await fs.readFile(file));
@@ -44,7 +103,10 @@ async function mockChrome() {
   window.chrome = {
     storage: { local: area('local'), session: area('session'), onChanged: { addListener: fn => listeners.push(fn) } },
     runtime: { getURL: file => new URL('/' + file, location.origin).href, sendMessage: async () => ({ ok: true }) },
-    tabs: { query: async () => [{ id: 1, url: 'https://example.test/login' }] },
+    tabs: {
+      query: async () => [{ id: 1, windowId: 1, url: 'https://example.test/login' }],
+      captureVisibleTab: async () => window.__testCaptureDataUrl || ''
+    },
     permissions: { request: async () => true, remove: async () => true, contains: async () => true },
     scripting: { executeScript: async ({ args }) => { window.__filled = args?.[0]; return [{ result: { ok: true, message: 'Código rellenado.' } }]; } }
   };
@@ -52,6 +114,22 @@ async function mockChrome() {
 
 (async () => {
   await fs.mkdir(results, { recursive: true });
+  const packageMeta = JSON.parse(await fs.readFile(path.join(root, 'package.json'), 'utf8'));
+  const bundledJsQrVersion = (await fs.readFile(path.join(root, 'vendor', 'jsQR-VERSION'), 'utf8')).trim();
+  assert.equal(bundledJsQrVersion, packageMeta.dependencies.jsqr);
+  assert.equal((await fs.stat(path.join(root, 'vendor', 'jsQR.js'))).size > 100000, true);
+
+  const manifest = JSON.parse(await fs.readFile(path.join(root, 'manifest.json'), 'utf8'));
+  for (const size of [16, 32, 48, 128]) {
+    const iconPath = `icons/icon${size}.png`;
+    assert.equal(manifest.icons[String(size)], iconPath);
+    assert.equal(manifest.action.default_icon[String(size)], iconPath);
+    const icon = await fs.readFile(path.join(root, iconPath));
+    assert.deepEqual([...icon.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+    assert.equal(icon.readUInt32BE(16), size);
+    assert.equal(icon.readUInt32BE(20), size);
+  }
+
   // Chrome action popups derive their viewport from the document's intrinsic
   // dimensions. Root viewport-relative sizing (vw/vh/dvh) can collapse the
   // popup before Chrome has a stable viewport, even though normal-page tests pass.
@@ -80,6 +158,57 @@ async function mockChrome() {
     await page.locator('#vaultView:not(.hidden)').waitFor();
     assert.equal(await page.locator('#emptyState').isVisible(), true);
     await shot('empty');
+
+    // QR import: local file, direct image URL, pasted image and current-page capture
+    // all use the same real jsQR decoder and end in the existing review form.
+    const assertQrReview = async () => {
+      await page.locator('#addPanel:not(.hidden)').waitFor();
+      assert.equal(await page.locator('#name').inputValue(), 'GitHub · qr-demo');
+      assert.match(await page.locator('#secret').inputValue(), /^otpauth:\/\/totp\/GitHub:qr-demo/);
+      assert.match(await page.locator('#formError').innerText(), /Revisa los datos/);
+      await page.locator('#cancelAdd').click();
+      await page.locator('#addPanel.hidden').waitFor({ state: 'attached' });
+    };
+
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrPanel:not(.hidden)').waitFor();
+    assert.equal(await page.locator('#qrPanel').evaluate(el => el.scrollHeight > el.clientHeight + 2), false);
+    await shot('qr-import');
+    await page.locator('#qrFileInput').setInputFiles({
+      name: 'qr.svg',
+      mimeType: 'image/svg+xml',
+      buffer: Buffer.from(testQrSvg())
+    });
+    await assertQrReview();
+
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrUrlInput').fill(`http://127.0.0.1:${server.address().port}/__test_qr.svg`);
+    await page.locator('#qrUrlBtn').click();
+    await assertQrReview();
+
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrPasteBtn').click();
+    await page.evaluate(async () => {
+      const blob = await fetch('/__test_qr.svg').then(r => r.blob());
+      const transfer = new DataTransfer();
+      transfer.items.add(new File([blob], 'qr.svg', { type: 'image/svg+xml' }));
+      const event = new Event('paste', { bubbles: true, cancelable: true });
+      Object.defineProperty(event, 'clipboardData', { value: transfer });
+      document.dispatchEvent(event);
+    });
+    await assertQrReview();
+
+    await page.evaluate(async () => {
+      const blob = await fetch('/__test_qr.svg').then(r => r.blob());
+      window.__testCaptureDataUrl = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+    });
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrPageBtn').click();
+    await assertQrReview();
     const add = async (name, secret) => {
       await page.locator('#toggleAdd').click();
       await page.locator('#name').fill(name);
@@ -129,6 +258,8 @@ async function mockChrome() {
     await page.locator('#settingsBtn').click();
     const themes = await page.locator('.theme-swatch').evaluateAll(els => els.map(el => el.dataset.theme));
     assert.equal(themes.length, 10);
+    assert.equal(await page.locator('.theme-swatch[aria-label="Grafito"]').count(), 1);
+    assert.equal(await page.locator('.theme-swatch[aria-label="Aguamarina"]').count(), 0);
     const backgrounds = new Set();
     for (const theme of themes) {
       await page.locator(`.theme-swatch[data-theme="${theme}"]`).click();
@@ -229,7 +360,7 @@ async function mockChrome() {
     assert.equal(await inline.locator('#otp').inputValue(), '123456');
     await inline.close();
     assert.deepEqual(errors, []);
-    console.log('PASS: setup, encrypted storage, RFC TOTP, add/edit/delete, copy/fill callbacks, search, visibility, 10 themes, theme persistence, keyboard, settings, site authorization, password change, encrypted export/import, inline rendering/search/fill, lock/unlock, restored session, 320px layout.');
+    console.log('PASS: setup, QR import from file/URL/paste/page, encrypted storage, RFC TOTP, add/edit/delete, copy/fill callbacks, search, visibility, 10 themes, theme persistence, keyboard, settings, site authorization, password change, encrypted export/import, inline rendering/search/fill, lock/unlock, restored session, 320px layout.');
     console.log('Chrome storage/permissions/scripting are test doubles; browser integration needs an unpacked-extension check.');
     await context.close();
   } finally { await browser.close(); server.close(); }

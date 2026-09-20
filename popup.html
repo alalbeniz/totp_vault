@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TOTP Vault</title>
   <link rel="stylesheet" href="popup.css">
+  <script src="vendor/jsQR.js" defer></script>
   <script src="popup-core.js" defer></script>
   <script src="popup.js" defer></script>
   <script src="visibility.js" defer></script>
   <script src="popup-ui.js" defer></script>
+  <script src="popup-qr.js" defer></script>
 </head>
 <body>
   <main id="app">
@@ -94,14 +96,60 @@
 
       <div class="collection-heading">
         <div><p class="eyebrow">TU LLAVERO DIGITAL</p><h2>Mis códigos <span id="accountCount" class="account-count">0</span></h2></div>
+        <div class="collection-actions">
+          <button id="qrImportBtn" class="btn secondary qr-import-trigger" type="button" aria-label="Importar desde QR" title="Importar desde QR">
+            <svg class="btn-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM15 14h2v2h-2zM19 14h1v3h-3v3h-3v-2h2v-2h3zM19 19h1v1h-1z"/></svg><span>QR</span>
+          </button>
           <button id="toggleAdd" class="btn primary add-button" type="button" aria-label="Añadir TOTP" title="Añadir TOTP">
             <svg class="top-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5a1 1 0 1 1 2 0v6h6a1 1 0 1 1 0 2h-6v6a1 1 0 1 1-2 0v-6H5a1 1 0 1 1 0-2h6z"/></svg><span>Añadir</span>
           </button>
+        </div>
       </div>
 
       <section class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35m1.35-5.15A6.5 6.5 0 1 1 5 11.5a6.5 6.5 0 0 1 13 0Z"/></svg>
         <input id="searchInput" class="search-input" type="text" placeholder="Buscar una cuenta…" aria-label="Buscar cuentas" autocomplete="off">
+      </section>
+
+      <section id="qrPanel" class="panel hidden" aria-label="Importar desde QR">
+        <div class="panel-title-row">
+          <div><p class="eyebrow">LECTURA LOCAL</p><h2>Importar desde QR</h2></div>
+          <button id="closeQr" class="close-btn" type="button" aria-label="Cerrar">×</button>
+        </div>
+
+        <p class="qr-intro">Lee un QR TOTP sin enviar la imagen fuera del navegador. Después podrás revisar los datos antes de guardarlos.</p>
+
+        <div class="qr-source-grid">
+          <button id="qrPageBtn" class="qr-source-card" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M7 8h3v3H7zM14 8h3v3h-3zM7 13h3v2H7zM14 13h1v1h-1zM17 13h1v2h-2v2h-2v-2h1v-1h2z"/></svg>
+            <span><strong>Esta página</strong><small>Busca un QR visible en la pestaña actual.</small></span>
+          </button>
+
+          <button id="qrFileBtn" class="qr-source-card" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h11l5 5v13H4z"/><path d="M15 3v6h5"/><path d="m7 17 3-3 2 2 2-2 3 3"/></svg>
+            <span><strong>Elegir imagen</strong><small>PNG, JPG, WebP, GIF o SVG.</small></span>
+          </button>
+
+          <button id="qrPasteBtn" class="qr-source-card" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h6M9 3h6v4H9z"/><path d="M6 5H4v16h16V5h-2"/><path d="M8 12h8M8 16h6"/></svg>
+            <span><strong>Pegar imagen</strong><small>Usa Ctrl+V o Cmd+V tras pulsar.</small></span>
+          </button>
+        </div>
+
+        <input id="qrFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,.png,.jpg,.jpeg,.webp,.gif,.svg" hidden>
+
+        <p id="qrPasteHint" class="qr-paste-hint hidden" tabindex="-1">Ahora pega la imagen con <strong>Ctrl+V</strong> o <strong>Cmd+V</strong>.</p>
+
+        <form id="qrUrlForm" class="qr-url-form">
+          <label for="qrUrlInput">URL de imagen o enlace otpauth://</label>
+          <div class="qr-url-row">
+            <input id="qrUrlInput" type="text" inputmode="url" placeholder="https://ejemplo.com/qr.png" autocomplete="off" spellcheck="false">
+            <button id="qrUrlBtn" class="btn secondary" type="submit">Leer</button>
+          </div>
+        </form>
+
+        <p id="qrMessage" role="status" aria-live="polite" class="message hidden"></p>
+        <p class="qr-security">Procesado localmente · URL: permiso solo para ese dominio.</p>
       </section>
 
       <section id="addPanel" class="panel hidden">
@@ -173,7 +221,7 @@
             <button type="button" class="theme-swatch" data-theme="95cbc0" aria-label="Menta" title="Menta" style="--swatch:#bee1d4;--swatch-ink:#326356"><span class="swatch-color" aria-hidden="true"></span><span>Menta</span></button>
             <button type="button" class="theme-swatch" data-theme="d4c299" aria-label="Avena" title="Avena" style="--swatch:#e6d7bc;--swatch-ink:#695739"><span class="swatch-color" aria-hidden="true"></span><span>Avena</span></button>
             <button type="button" class="theme-swatch" data-theme="777778" aria-label="Lavanda" title="Lavanda" style="--swatch:#d5ccec;--swatch-ink:#5f507d"><span class="swatch-color" aria-hidden="true"></span><span>Lavanda</span></button>
-            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Aguamarina" title="Aguamarina" style="--swatch:#b9e1df;--swatch-ink:#306463"><span class="swatch-color" aria-hidden="true"></span><span>Aguamarina</span></button>
+            <button type="button" class="theme-swatch" data-theme="42b8af" aria-label="Grafito" title="Grafito" style="--swatch:#50555a;--swatch-ink:#ffffff"><span class="swatch-color" aria-hidden="true"></span><span>Grafito</span></button>
             <button type="button" class="theme-swatch" data-theme="cfdf9e" aria-label="Salvia" title="Salvia" style="--swatch:#d4dfbd;--swatch-ink:#52663c"><span class="swatch-color" aria-hidden="true"></span><span>Salvia</span></button>
             <button type="button" class="theme-swatch" data-theme="ecd799" aria-label="Vainilla" title="Vainilla" style="--swatch:#f0e0ac;--swatch-ink:#6e5c2c"><span class="swatch-color" aria-hidden="true"></span><span>Vainilla</span></button>
             <button type="button" class="theme-swatch" data-theme="fbb38a" aria-label="Melocotón" title="Melocotón" style="--swatch:#f2ceb9;--swatch-ink:#79503e"><span class="swatch-color" aria-hidden="true"></span><span>Melocotón</span></button>

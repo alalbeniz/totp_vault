@@ -3,7 +3,7 @@ if(globalThis.__TOTP_VAULT_INLINE_PICKER__)return;globalThis.__TOTP_VAULT_INLINE
 const OTP=/(totp|\botp\b|2fa|mfa|one[\s_-]?time|verification|verify|authenticator|security[\s_-]?code|login[\s_-]?code|passcode|c[oó]digo|verificaci[oó]n|autenticaci[oó]n|clave[\s_-]?temporal)/i;
 const NO=/(^|[\s_-])(qty|quantity|cantidad|units?|unidades?|product[\s_-]?(qty|quantity)|cart[\s_-]?(qty|quantity))([\s_-]|$)/i;
 const ICONS=new Set(['outlook','microsoft','google','github','aws','azure','cloudflare','apple','meta','dropbox','vpn','generic']);
-const COLORS={"1c485f":"#b9cbd9","08709c":"#badcf0","95cbc0":"#bee1d4","d4c299":"#e6d7bc","777778":"#d5ccec","42b8af":"#b9e1df","cfdf9e":"#d4dfbd","ecd799":"#f0e0ac","fbb38a":"#f2ceb9","e77292":"#ecc8d5"};
+const COLORS={"1c485f":"#b9cbd9","08709c":"#badcf0","95cbc0":"#bee1d4","d4c299":"#e6d7bc","777778":"#d5ccec","42b8af":"#72777d","cfdf9e":"#d4dfbd","ecd799":"#f0e0ac","fbb38a":"#f2ceb9","e77292":"#ecc8d5"};
 let target=null,host=null,root=null,panel=null,list=null,search=null,entries=[],timer=null,watch=null,opened=0;
 const visible=e=>{if(!(e instanceof HTMLInputElement)||e.disabled||e.readOnly)return false;let r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.display!='none'&&s.visibility!='hidden'&&+s.opacity>0};
 const attrs=e=>[e.id,e.name,e.placeholder,e.autocomplete,e.getAttribute('aria-label'),e.getAttribute('inputmode'),e.getAttribute('pattern'),e.title].filter(Boolean).join(' ').toLowerCase();

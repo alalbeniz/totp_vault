@@ -1,7 +1,6 @@
 name: Interface checks
 on:
   push:
-    branches: [codex/pastel-interface]
   pull_request:
 permissions:
   contents: read
@@ -17,7 +16,8 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm vendor:sync
       - run: pnpm exec playwright install --with-deps chromium-headless-shell
       - run: pnpm test
       - name: Package extension
@@ -27,7 +27,7 @@ jobs:
           mkdir -p "dist/${PACKAGE}"
           cp manifest.json content.js service_worker.js visibility.js flat-overrides.css "dist/${PACKAGE}/"
           cp popup*.html popup*.js popup*.css "dist/${PACKAGE}/"
-          cp -R icons "dist/${PACKAGE}/"
+          cp -R icons vendor "dist/${PACKAGE}/"
           (cd dist && zip -r "${PACKAGE}.zip" "${PACKAGE}")
           echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4

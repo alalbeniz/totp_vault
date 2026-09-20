@@ -68,6 +68,9 @@ h2 { font-size: 24px; font-weight: 650; }
 .code-visibility-global svg, .eye-icon, .code-visibility-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .collection-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 8px; flex-shrink: 0; }
 .collection-heading .eyebrow { margin-bottom: 4px; }
+.collection-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.collection-actions .btn { padding-inline: 12px; }
+.qr-import-trigger .btn-svg { width: 18px; height: 18px; }
 .account-count { display: inline-grid; place-items: center; vertical-align: middle; min-width: 24px; height: 24px; padding: 0 6px; margin-left: 4px; border-radius: 8px; background: var(--vault-hover); color: var(--vault-ink); font-size: 12px; letter-spacing: 0; font-variant-numeric: tabular-nums; }
 .btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; min-height: 44px; border: 1px solid transparent; border-radius: var(--radius-control); padding: 10px 16px; font-size: 12px; font-weight: 650; line-height: 1.4; }
 .primary { background: var(--vault-ink); color: white; }
@@ -129,6 +132,21 @@ footer { flex-shrink: 0; text-align: center; color: var(--muted); font-size: 10p
 .empty { padding: 36px 20px; text-align: center; color: var(--muted); font-size: 12px; background: var(--vault-paper); border: 1px dashed var(--border); border-radius: var(--radius-card); }
 .empty strong { display: block; font-size: 16px; color: var(--text); margin-bottom: 4px; }
 .empty-lock { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; margin: 0 auto 16px; background: var(--vault-field); color: var(--vault-ink); font-size: 28px; }
+.qr-intro { margin-bottom: 16px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.qr-source-grid { display: grid; gap: 10px; }
+.qr-source-card { width: 100%; min-height: 72px; display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--vault-paper); color: var(--text); text-align: left; }
+.qr-source-card:hover { background: var(--vault-field); border-color: color-mix(in srgb, var(--vault-ink) 28%, transparent); }
+.qr-source-card svg { width: 28px; height: 28px; justify-self: center; fill: none; stroke: var(--vault-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.qr-source-card strong { display: block; margin-bottom: 2px; font-size: 13px; }
+.qr-source-card small { display: block; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.qr-paste-hint { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-control); background: var(--vault-field); color: var(--vault-ink); font-size: 11px; }
+.qr-url-form { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.qr-url-form label { margin-bottom: 0; }
+.qr-url-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: end; }
+.qr-url-row input { margin-top: 8px; min-width: 0; }
+.qr-url-row .btn { min-width: 64px; margin-top: 8px; }
+.qr-security { margin-top: 10px; color: var(--muted); font-size: 9px; line-height: 1.2; white-space: nowrap; }
+#qrPanel[aria-busy="true"] { cursor: progress; }
 /* Panels take over the content area; the brand and its actions remain in place. */
 #vaultView:has(> .panel:not(.hidden)) > :is(.collection-heading, .search-wrap, .list, .empty, footer) { display: none; }
 .panel { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 10px 8px 4px; margin: 0 -10px 0 -4px; }
@@ -188,6 +206,12 @@ label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 16px; 
   .card-live { gap: 4px; padding-left: 0; }
   .theme-picker { gap: 4px; }
   .theme-swatch { font-size: 8px; }
+  .collection-heading { gap: 8px; }
+  .collection-actions { gap: 4px; }
+  .collection-actions .btn { padding-inline: 10px; }
+  .qr-import-trigger span { display: none; }
+  .qr-url-row { grid-template-columns: 1fr; }
+  .qr-url-row .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .btn, .icon-btn { transition: transform 120ms ease-out; }

@@ -16,6 +16,7 @@ Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm 
 
 - Gestión de múltiples cuentas TOTP con nombre o descripción.
 - Secretos Base32 y URI `otpauth://totp/...`.
+- Importación de cuentas desde QR visible en la página, imagen local, portapapeles o URL de imagen.
 - SHA-1, SHA-256 y SHA-512.
 - Códigos de 6 u 8 dígitos.
 - Copiar y rellenar códigos con un clic.
@@ -28,6 +29,29 @@ Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm 
 - Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
+
+## Importación desde QR
+
+Desde **QR** en la pantalla principal se puede importar una cuenta TOTP desde cuatro orígenes:
+
+- QR visible en la pestaña actual.
+- Imagen local PNG, JPG, WebP, GIF o SVG.
+- Imagen pegada desde el portapapeles mediante Ctrl+V/Cmd+V.
+- URL directa de una imagen o enlace `otpauth://totp/...`.
+
+Las imágenes se decodifican localmente. Para URLs externas, la extensión solicita permiso únicamente al dominio indicado y realiza la descarga sin credenciales. La cuenta nunca se guarda de forma automática: el QR rellena el formulario existente para que el usuario revise los datos y pulse **Guardar**.
+
+El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` como fallback local. `jsQR` está fijado como dependencia de pnpm y se copia al paquete durante la preparación/CI; no se descarga código en tiempo de ejecución. Dependabot comprueba sus nuevas versiones y abre un PR, que debe superar las pruebas QR antes de integrarse.
+
+El formato de exportación masiva `otpauth-migration://` de Google Authenticator todavía no se importa.
+
+## Novedades de v2.12.0
+
+- Importación QR desde la página visible, archivo local, portapapeles y URL de imagen.
+- Decodificación completamente local con detector nativo y fallback a jsQR.
+- Solicitud de permisos por dominio únicamente cuando se importa desde una URL externa.
+- Revisión obligatoria de los datos detectados antes de guardarlos en la bóveda.
+- Pruebas automatizadas de los cuatro orígenes de importación.
 
 ## Novedades de v2.11.0
 
@@ -101,7 +125,7 @@ Después de rellenar un TOTP hay tres modos:
 | Menta | `#BEE1D4` | `95cbc0` |
 | Avena | `#E6D7BC` | `d4c299` |
 | Lavanda | `#D5CCEC` | `777778` |
-| Aguamarina | `#B9E1DF` | `42b8af` |
+| Grafito | `#72777D` | `42b8af` |
 | Salvia | `#D4DFBD` | `cfdf9e` |
 | Vainilla | `#F0E0AC` | `ecd799` |
 | Melocotón | `#F2CEB9` | `fbb38a` |
@@ -126,11 +150,12 @@ Los permisos `http://*/*` y `https://*/*` son opcionales y se solicitan al activ
 
 ## Instalación manual
 
-1. Descarga o clona el repositorio.
-2. Abre `chrome://extensions`.
-3. Activa **Modo de desarrollador**.
-4. Pulsa **Cargar descomprimida**.
-5. Selecciona la carpeta del proyecto.
+1. Descarga el ZIP generado por GitHub Actions, o clona el repositorio.
+2. Si clonas el repositorio, ejecuta `pnpm install --frozen-lockfile` para preparar la dependencia local de lectura QR.
+3. Abre `chrome://extensions`.
+4. Activa **Modo de desarrollador**.
+5. Pulsa **Cargar descomprimida**.
+6. Selecciona la carpeta del proyecto (o la carpeta extraída del ZIP generado).
 
 ## Limitaciones
 
@@ -140,7 +165,7 @@ Una vez introducido un TOTP en una página web, esa página puede leer el valor 
 
 ## Versión actual
 
-**v2.11.0**
+**v2.12.0**
 
 ## Verificación de la interfaz
 
@@ -152,6 +177,6 @@ pnpm exec playwright install --with-deps chromium-headless-shell
 pnpm test
 ```
 
-Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban altas, edición, borrado, búsqueda, visibilidad, diez temas, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
+Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban importación QR desde archivo/URL/portapapeles/página, altas, edición, borrado, búsqueda, visibilidad, diez temas, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
 
 La integración real con los permisos del navegador y el autorrelleno en otras webs se comprueba cargando la extensión descomprimida.

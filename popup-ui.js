@@ -6,7 +6,8 @@
     const count = document.getElementById("accountCount");
     const add = document.getElementById("addPanel");
     const settings = document.getElementById("settingsPanel");
-    const panels = [add, settings];
+    const qr = document.getElementById("qrPanel");
+    const panels = [add, settings, qr];
     let activePanel = null;
 
     function updateList() {
@@ -34,16 +35,28 @@
       activePanel = next;
       document.getElementById("toggleAdd").setAttribute("aria-expanded", String(next === add));
       document.getElementById("settingsBtn").setAttribute("aria-expanded", String(next === settings));
+      document.getElementById("qrImportBtn").setAttribute("aria-expanded", String(next === qr));
       if (next) {
         next.scrollTop = 0;
-        (next === add ? document.getElementById("name") : document.getElementById("closeSettings")).focus();
+        const target = next === add
+          ? document.getElementById("name")
+          : next === settings
+            ? document.getElementById("closeSettings")
+            : document.getElementById("qrPageBtn");
+        target?.focus();
       } else if (previous) {
-        document.getElementById(previous === add ? "toggleAdd" : "settingsBtn").focus();
+        const trigger = previous === add
+          ? document.getElementById("toggleAdd")
+          : previous === settings
+            ? document.getElementById("settingsBtn")
+            : document.getElementById("qrImportBtn");
+        trigger?.focus();
       }
     }
     panels.forEach((panel) => new MutationObserver(updatePanel).observe(panel, { attributes: true, attributeFilter: ["class"] }));
     document.getElementById("toggleAdd").setAttribute("aria-controls", "addPanel");
     document.getElementById("settingsBtn").setAttribute("aria-controls", "settingsPanel");
+    document.getElementById("qrImportBtn").setAttribute("aria-controls", "qrPanel");
 
     // Use existing close actions, including reset and session touch behavior.
     document.addEventListener("keydown", (event) => {
@@ -53,7 +66,8 @@
         closeCardMenus();
         openMenu.closest(".totp-card").querySelector(".menu-btn").focus();
       } else if (activePanel) {
-        document.getElementById(activePanel === add ? "closeAdd" : "closeSettings").click();
+        const closeId = activePanel === add ? "closeAdd" : activePanel === settings ? "closeSettings" : "closeQr";
+        document.getElementById(closeId)?.click();
       }
     });
 

@@ -1,6 +1,15 @@
 {
   "name": "totp-vault-ui-checks",
   "private": true,
-  "scripts": { "test": "node tests/ui.cjs" },
-  "devDependencies": { "playwright": "1.62.1" }
+  "scripts": {
+    "postinstall": "node scripts/sync-jsqr.cjs",
+    "vendor:sync": "node scripts/sync-jsqr.cjs",
+    "test": "node tests/ui.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "dependencies": {
+    "jsqr": "1.4.0"
+  }
 }
