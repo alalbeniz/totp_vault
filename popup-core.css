@@ -145,7 +145,7 @@ footer { flex-shrink: 0; text-align: center; color: var(--muted); font-size: 10p
 .qr-url-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; align-items: end; }
 .qr-url-row input { margin-top: 8px; min-width: 0; }
 .qr-url-row .btn { min-width: 64px; margin-top: 8px; }
-.qr-security { margin-top: 16px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.qr-security { margin-top: 10px; color: var(--muted); font-size: 9px; line-height: 1.2; white-space: nowrap; }
 #qrPanel[aria-busy="true"] { cursor: progress; }
 /* Panels take over the content area; the brand and its actions remain in place. */
 #vaultView:has(> .panel:not(.hidden)) > :is(.collection-heading, .search-wrap, .list, .empty, footer) { display: none; }
