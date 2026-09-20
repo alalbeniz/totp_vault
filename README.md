@@ -125,7 +125,7 @@ Después de rellenar un TOTP hay tres modos:
 | Menta | `#BEE1D4` | `95cbc0` |
 | Avena | `#E6D7BC` | `d4c299` |
 | Lavanda | `#D5CCEC` | `777778` |
-| Aguamarina | `#B9E1DF` | `42b8af` |
+| Grafito | `#72777D` | `42b8af` |
 | Salvia | `#D4DFBD` | `cfdf9e` |
 | Vainilla | `#F0E0AC` | `ecd799` |
 | Melocotón | `#F2CEB9` | `fbb38a` |
