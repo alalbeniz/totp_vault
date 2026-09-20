@@ -41,7 +41,7 @@ Desde **QR** en la pantalla principal se puede importar una cuenta TOTP desde cu
 
 Las imágenes se decodifican localmente. Para URLs externas, la extensión solicita permiso únicamente al dominio indicado y realiza la descarga sin credenciales. La cuenta nunca se guarda de forma automática: el QR rellena el formulario existente para que el usuario revise los datos y pulse **Guardar**.
 
-El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR 1.4.0` como fallback local. La copia incluida de jsQR se distribuye bajo Apache-2.0; su licencia está en `vendor/jsQR-LICENSE`.
+El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` como fallback local. `jsQR` está fijado como dependencia de pnpm y se copia al paquete durante la preparación/CI; no se descarga código en tiempo de ejecución. Dependabot comprueba sus nuevas versiones y abre un PR, que debe superar las pruebas QR antes de integrarse.
 
 El formato de exportación masiva `otpauth-migration://` de Google Authenticator todavía no se importa.
 
@@ -150,11 +150,12 @@ Los permisos `http://*/*` y `https://*/*` son opcionales y se solicitan al activ
 
 ## Instalación manual
 
-1. Descarga o clona el repositorio.
-2. Abre `chrome://extensions`.
-3. Activa **Modo de desarrollador**.
-4. Pulsa **Cargar descomprimida**.
-5. Selecciona la carpeta del proyecto.
+1. Descarga el ZIP generado por GitHub Actions, o clona el repositorio.
+2. Si clonas el repositorio, ejecuta `pnpm install --frozen-lockfile` para preparar la dependencia local de lectura QR.
+3. Abre `chrome://extensions`.
+4. Activa **Modo de desarrollador**.
+5. Pulsa **Cargar descomprimida**.
+6. Selecciona la carpeta del proyecto (o la carpeta extraída del ZIP generado).
 
 ## Limitaciones
 
