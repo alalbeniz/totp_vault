@@ -156,6 +156,7 @@ async function mockChrome() {
 
     await page.locator('#qrImportBtn').click();
     await page.locator('#qrPanel:not(.hidden)').waitFor();
+    assert.equal(await page.locator('#qrPanel').evaluate(el => el.scrollHeight > el.clientHeight + 2), false);
     await shot('qr-import');
     await page.locator('#qrFileInput').setInputFiles({
       name: 'qr.svg',
