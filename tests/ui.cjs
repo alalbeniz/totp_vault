@@ -119,6 +119,17 @@ async function mockChrome() {
   assert.equal(bundledJsQrVersion, packageMeta.dependencies.jsqr);
   assert.equal((await fs.stat(path.join(root, 'vendor', 'jsQR.js'))).size > 100000, true);
 
+  const manifest = JSON.parse(await fs.readFile(path.join(root, 'manifest.json'), 'utf8'));
+  for (const size of [16, 32, 48, 128]) {
+    const iconPath = `icons/icon${size}.png`;
+    assert.equal(manifest.icons[String(size)], iconPath);
+    assert.equal(manifest.action.default_icon[String(size)], iconPath);
+    const icon = await fs.readFile(path.join(root, iconPath));
+    assert.deepEqual([...icon.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
+    assert.equal(icon.readUInt32BE(16), size);
+    assert.equal(icon.readUInt32BE(20), size);
+  }
+
   // Chrome action popups derive their viewport from the document's intrinsic
   // dimensions. Root viewport-relative sizing (vw/vh/dvh) can collapse the
   // popup before Chrome has a stable viewport, even though normal-page tests pass.
