@@ -16,7 +16,8 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm vendor:sync
       - run: pnpm exec playwright install --with-deps chromium-headless-shell
       - run: pnpm test
       - name: Package extension
