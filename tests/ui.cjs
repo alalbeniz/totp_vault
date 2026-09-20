@@ -247,6 +247,8 @@ async function mockChrome() {
     await page.locator('#settingsBtn').click();
     const themes = await page.locator('.theme-swatch').evaluateAll(els => els.map(el => el.dataset.theme));
     assert.equal(themes.length, 10);
+    assert.equal(await page.locator('.theme-swatch[aria-label="Grafito"]').count(), 1);
+    assert.equal(await page.locator('.theme-swatch[aria-label="Aguamarina"]').count(), 0);
     const backgrounds = new Set();
     for (const theme of themes) {
       await page.locator(`.theme-swatch[data-theme="${theme}"]`).click();
