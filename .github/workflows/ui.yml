@@ -20,6 +20,7 @@ jobs:
       - run: pnpm vendor:sync
       - run: pnpm exec playwright install --with-deps chromium-headless-shell
       - run: pnpm test
+      - run: pnpm store:assets
       - name: Package extension
         run: |
           VERSION=$(node -p "require('./manifest.json').version")
@@ -51,6 +52,12 @@ jobs:
         with:
           name: ${{ env.package_name }}-cws
           path: dist/${{ env.package_name }}-cws.zip
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: chrome-web-store-assets
+          path: dist/store-assets/
           retention-days: 30
 
 
