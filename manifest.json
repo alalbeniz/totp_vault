@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TOTP Vault",
   "version": "2.12.0",
-  "description": "Bóveda TOTP segura y local para gestionar códigos de autenticación de dos factores, con cifrado, autorrelleno, importación QR, bloqueo automático y copias de seguridad cifradas.",
+  "description": "Bóveda TOTP local y cifrada con importación QR, autorrelleno, bloqueo automático y copias de seguridad.",
   "permissions": [
     "storage",
     "activeTab",
