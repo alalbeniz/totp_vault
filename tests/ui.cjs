@@ -133,6 +133,9 @@ async function mockChrome() {
   // Chrome action popups derive their viewport from the document's intrinsic
   // dimensions. Root viewport-relative sizing (vw/vh/dvh) can collapse the
   // popup before Chrome has a stable viewport, even though normal-page tests pass.
+  const inlineJs = await fs.readFile(path.join(root, 'content.js'), 'utf8');
+  assert.doesNotMatch(inlineJs, /\.innerHTML\s*=/);
+
   const popupCss = await fs.readFile(path.join(root, 'popup-core.css'), 'utf8');
   const rootSizing = popupCss.match(/html\s*\{[\s\S]*?\}\s*body\s*\{[\s\S]*?\}/)?.[0] || '';
   assert.match(rootSizing, /width:\s*420px/);
@@ -367,6 +370,18 @@ async function mockChrome() {
     await inline.locator('[data-totp-vault-inline] .r').click();
     assert.equal(await inline.locator('#otp').inputValue(), '123456');
     await inline.close();
+
+    // "Código postal" is not an OTP field even though it contains the word "código".
+    const postal = await context.newPage();
+    await postal.goto(`http://127.0.0.1:${server.address().port}/tests/fixture.html`);
+    await postal.evaluate(() => {
+      document.querySelector('main').innerHTML = '<label for="postal">Código postal</label><input id="postal" type="number" name="postal_code" value="28770">';
+    });
+    await postal.addScriptTag({ url: '/content.js' });
+    await postal.waitForTimeout(300);
+    assert.equal(await postal.locator('[data-totp-vault-inline]').count(), 0);
+    await postal.close();
+
     assert.deepEqual(errors, []);
     console.log('PASS: setup, QR import from file/URL/paste/page, encrypted storage, RFC TOTP, add/edit/delete, copy/fill callbacks, search, visibility, 10 themes, theme persistence, keyboard, settings, site authorization, password change, encrypted export/import, inline rendering/search/fill, lock/unlock, restored session, 320px layout.');
     console.log('Chrome storage/permissions/scripting are test doubles; browser integration needs an unpacked-extension check.');
