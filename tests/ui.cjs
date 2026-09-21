@@ -350,6 +350,14 @@ async function mockChrome() {
         ] };
     });
     await inline.addScriptTag({ url: '/content.js' });
+    const inlineButtonBox = await inline.locator('[data-totp-vault-inline] .b').boundingBox();
+    const inlineIconBox = await inline.locator('[data-totp-vault-inline] .b svg').boundingBox();
+    assert.equal(Math.round(inlineButtonBox.width), 28);
+    assert.equal(Math.round(inlineButtonBox.height), 28);
+    assert.equal(Math.round(inlineIconBox.width), 16);
+    assert.equal(Math.round(inlineIconBox.height), 16);
+    assert.ok(Math.abs((inlineButtonBox.x + inlineButtonBox.width / 2) - (inlineIconBox.x + inlineIconBox.width / 2)) < 0.6);
+    assert.ok(Math.abs((inlineButtonBox.y + inlineButtonBox.height / 2) - (inlineIconBox.y + inlineIconBox.height / 2)) < 0.6);
     await inline.locator('[data-totp-vault-inline] .b').click();
     await inline.locator('[data-totp-vault-inline] .r').first().waitFor();
     await inline.waitForFunction(() => [...document.querySelector('[data-totp-vault-inline]').shadowRoot.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0));
