@@ -4,7 +4,8 @@
   "scripts": {
     "postinstall": "node scripts/sync-jsqr.cjs",
     "vendor:sync": "node scripts/sync-jsqr.cjs",
-    "test": "node tests/ui.cjs"
+    "test": "node tests/ui.cjs",
+    "store:assets": "node scripts/build-store-assets.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"
