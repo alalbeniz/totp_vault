@@ -29,6 +29,31 @@ jobs:
           cp popup*.html popup*.js popup*.css "dist/${PACKAGE}/"
           cp -R icons vendor "dist/${PACKAGE}/"
           (cd dist && zip -r "${PACKAGE}.zip" "${PACKAGE}")
+
+          # Chrome Web Store package: manifest.json must be at ZIP root.
+          mkdir -p "dist/cws"
+          cp -R "dist/${PACKAGE}/." "dist/cws/"
+          (cd dist/cws && zip -r "../${PACKAGE}-cws.zip" .)
+          unzip -l "dist/${PACKAGE}-cws.zip" | grep -qE '[[:space:]]manifest\.json      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interface-screenshots
+          path: test-results/*.png
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ env.package_name }}
+          path: dist/${{ env.package_name }}.zip
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ env.package_name }}-cws
+          path: dist/${{ env.package_name }}-cws.zip
+          retention-days: 30
+
+
           echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
         if: always()
