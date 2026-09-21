@@ -148,6 +148,19 @@ También admite iconos personalizados PNG/JPG/WebP, reducidos a WebP 96×96 y al
 
 Los permisos `http://*/*` y `https://*/*` son opcionales y se solicitan al activar el selector inline para los sitios correspondientes.
 
+## Chrome Web Store
+
+El workflow genera dos paquetes de extensión:
+
+- `totp-vault-vX.Y.Z.zip`: paquete cómodo para pruebas manuales, con la extensión dentro de una carpeta versionada.
+- `totp-vault-vX.Y.Z-cws.zip`: paquete preparado para Chrome Web Store, con `manifest.json` directamente en la raíz del ZIP.
+
+También genera el artefacto `chrome-web-store-assets` con cinco capturas 1280×800, icono 128×128 y recursos promocionales 440×280 y 1400×560.
+
+Los textos de publicación, propósito único y justificaciones de permisos están en [`chrome-web-store/LISTING.md`](chrome-web-store/LISTING.md).
+
+La política de privacidad pública está en [`PRIVACY.md`](PRIVACY.md).
+
 ## Instalación manual
 
 1. Descarga el ZIP generado por GitHub Actions, o clona el repositorio.
