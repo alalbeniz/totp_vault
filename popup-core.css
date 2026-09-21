@@ -83,13 +83,14 @@ input, select { display: block; width: 100%; min-height: 44px; margin-top: 8px; 
 input::placeholder { color: var(--muted); opacity: 1; }
 .search-input { margin: 0; padding-left: 40px; background: var(--vault-field); border-color: transparent; }
 .search-icon { position: absolute; left: 14px; top: 14px; width: 16px; height: 16px; fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; }
-.list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; overflow-x: hidden; padding: 2px 10px 4px 2px; margin: -2px -10px -4px -2px; }
+.list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; overflow-x: hidden; padding: 2px 10px 4px 2px; margin: -2px -10px -4px -2px; }
 .list, .panel, .center-view { scrollbar-width: thin; scrollbar-color: var(--vault-tint) transparent; scrollbar-gutter: stable; overscroll-behavior: contain; }
-.totp-card { position: relative; flex-shrink: 0; background: var(--vault-paper); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 12px; }
+.totp-card { position: relative; flex-shrink: 0; background: var(--vault-paper); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 8px 9px; }
 .totp-card:hover { border-color: color-mix(in srgb, var(--vault-ink) 32%, transparent); }
-.card-main { display: flex; flex-direction: column; gap: 8px; }
-.card-identity { display: flex; align-items: center; gap: 12px; min-width: 0; padding-right: 32px; }
-.card-badge, .icon-preview { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px; padding: 6px; background: var(--vault-field); overflow: hidden; }
+.card-main { display: flex; flex-direction: column; gap: 3px; }
+.card-identity { display: flex; align-items: center; gap: 9px; min-width: 0; padding-right: 29px; }
+.card-badge { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; padding: 5px; background: var(--vault-field); overflow: hidden; }
+.icon-preview { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px; padding: 6px; background: var(--vault-field); overflow: hidden; }
 .card-badge img, .icon-preview img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
 .card-badge.is-custom { padding: 0; }
 .card-badge.is-custom img { object-fit: cover; }
@@ -97,26 +98,26 @@ input::placeholder { color: var(--muted); opacity: 1; }
 .card-title-wrap { min-width: 0; }
 .card-title { font-size: 14px; font-weight: 650; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-meta { color: var(--muted); font-size: 11px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-live { display: flex; align-items: center; gap: 8px; padding: 0 0 0 4px; }
-.code { color: var(--vault-ink); background: transparent; border: 0; border-radius: 6px; padding: 0; min-height: 44px; text-align: left; font: 600 28px/1.4 var(--font-code); font-variant-numeric: tabular-nums; letter-spacing: .02em; white-space: nowrap; }
+.card-live { display: flex; align-items: center; gap: 5px; padding: 0 0 0 1px; }
+.code { color: var(--vault-ink); background: transparent; border: 0; border-radius: 6px; padding: 0; min-height: 36px; text-align: left; font: 600 27px/1.16 var(--font-code); font-variant-numeric: tabular-nums; letter-spacing: .02em; white-space: nowrap; }
 .code:hover { color: var(--text); }
 .code-visibility-btn { margin-right: auto; }
 .code.code-hidden { font-size: 0; }
-.code.code-hidden::after { content: attr(data-mask); color: var(--muted); font: 600 28px/1.4 var(--font-code); letter-spacing: .02em; }
-.timer-wrap { position: relative; flex-shrink: 0; width: 36px; height: 36px; }
-.timer { transform: rotate(-90deg); width: 36px; height: 36px; }
+.code.code-hidden::after { content: attr(data-mask); color: var(--muted); font: 600 27px/1.16 var(--font-code); letter-spacing: .02em; }
+.timer-wrap { position: relative; flex-shrink: 0; width: 30px; height: 30px; }
+.timer { transform: rotate(-90deg); width: 30px; height: 30px; }
 .timer-bg, .timer-progress { fill: none; stroke-width: 2.5; }
 .timer-bg { stroke: var(--vault-field); }
 .timer-progress { stroke: var(--vault-ink); stroke-linecap: round; stroke-dasharray: 94.2478; }
 .seconds { position: absolute; inset: 0; display: grid; place-items: center; color: var(--vault-ink); font: 600 10px var(--font-code); font-variant-numeric: tabular-nums; }
-.card-actions { display: flex; gap: 8px; margin-top: 8px; }
-.card-actions .btn { flex: 1; min-height: 40px; padding: 8px 12px; }
+.card-actions { display: flex; gap: 6px; margin-top: 3px; }
+.card-actions .btn { flex: 1; min-height: 34px; padding: 5px 9px; }
 .card-actions .primary { background: var(--vault-tint); color: var(--vault-ink); }
 .card-actions .primary:hover { background: var(--vault-hover); }
 .btn-svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.menu-btn { position: absolute; top: 12px; right: 8px; }
+.menu-btn { position: absolute; top: 6px; right: 5px; }
 .menu-btn svg { width: 18px; fill: currentColor; }
-.card-menu { position: absolute; top: 48px; right: 12px; min-width: 148px; padding: 4px; border-radius: 16px; background: var(--vault-paper); border: 1px solid var(--border); box-shadow: 0 6px 20px #28323a14; z-index: 2; }
+.card-menu { position: absolute; top: 40px; right: 9px; min-width: 148px; padding: 4px; border-radius: 16px; background: var(--vault-paper); border: 1px solid var(--border); box-shadow: 0 6px 20px #28323a14; z-index: 2; }
 .menu-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 12px; background: transparent; color: var(--text); text-align: left; font-size: 12px; }
 .menu-item:hover { background: var(--vault-field); }
 .menu-item svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
