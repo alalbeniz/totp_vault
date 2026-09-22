@@ -4,7 +4,9 @@
 
 TOTP Vault es una extensión de Chrome para almacenar, generar, importar y rellenar códigos TOTP de autenticación de dos factores.
 
-[English version](PRIVACY_EN.md) Su diseño es local: no utiliza servidores propios, analítica, publicidad ni telemetría.
+[English version](PRIVACY_EN.md)
+
+Su diseño es local: no utiliza servidores propios, analítica, publicidad ni telemetría.
 
 **El desarrollador de TOTP Vault no recibe ni recopila datos de los usuarios.** Los datos necesarios para el funcionamiento de la extensión se procesan localmente en el navegador del usuario, salvo las solicitudes de red iniciadas expresamente por el propio usuario, como descargar una imagen QR desde una URL indicada por él.
 
