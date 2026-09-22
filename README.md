@@ -3,7 +3,7 @@
 **Chrome Web Store:** https://chromewebstore.google.com/detail/totp-vault/abiekbjdmcanmkjcimgfojklngfnpkok  
 **Extension ID:** `abiekbjdmcanmkjcimgfojklngfnpkok`  
 **Publicación de nuevas versiones:** [`chrome-web-store/RELEASE.md`](chrome-web-store/RELEASE.md)  
-**Apoya el proyecto:** https://buymeacoffee.com/alalbeniz
+**Apoya el proyecto (🍺 cerveza):** https://buymeacoffee.com/alalbeniz
 
 TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almacenar, gestionar y utilizar códigos TOTP de forma **local y cifrada**.
 
