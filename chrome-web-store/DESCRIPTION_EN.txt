@@ -1,0 +1,17 @@
+TOTP Vault is a TOTP authenticator for Chrome designed to let you use your 2FA codes without depending on an online account. Keep your accounts encrypted locally, import a QR code, and copy or fill codes directly where you need them.
+
+Main features:
+
+• Import accounts from a visible QR code, image, clipboard, URL, or otpauth:// link.
+• Generate 6- or 8-digit codes using SHA-1, SHA-256, or SHA-512.
+• Copy codes or fill them directly with one click.
+• Use an optional inline picker next to OTP/TOTP fields.
+• Protect your vault with a master password and automatic locking.
+• Import and export encrypted backups.
+• Use Spanish, English, or automatically follow Chrome's language.
+
+Privacy and security:
+
+Your TOTP secrets and generated codes are not sent to the developer. The vault is encrypted locally using AES-256-GCM, and your master password is not stored.
+
+TOTP Vault includes no first-party analytics, advertising, or telemetry.
