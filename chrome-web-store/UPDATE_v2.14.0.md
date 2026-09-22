@@ -8,7 +8,7 @@ Subir en **Package → Upload New Package**:
 
 ## Cambio principal
 
-Se añade en Ajustes un enlace opcional a:
+Se añade en Ajustes un enlace opcional de apoyo (configurado como 🍺 cerveza) a:
 
 https://buymeacoffee.com/alalbeniz
 
