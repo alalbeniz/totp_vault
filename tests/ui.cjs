@@ -103,6 +103,7 @@ async function mockChrome() {
   window.chrome = {
     storage: { local: area('local'), session: area('session'), onChanged: { addListener: fn => listeners.push(fn) } },
     runtime: { getURL: file => new URL('/' + file, location.origin).href, sendMessage: async () => ({ ok: true }) },
+    i18n: { getMessage: () => '', getUILanguage: () => 'es-ES' },
     tabs: {
       query: async () => [{ id: 1, windowId: 1, url: 'https://example.test/login' }],
       captureVisibleTab: async () => window.__testCaptureDataUrl || ''
@@ -120,6 +121,23 @@ async function mockChrome() {
   assert.equal((await fs.stat(path.join(root, 'vendor', 'jsQR.js'))).size > 100000, true);
 
   const manifest = JSON.parse(await fs.readFile(path.join(root, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.default_locale, 'es');
+  assert.equal(manifest.name, '__MSG_extensionName__');
+  assert.equal(manifest.description, '__MSG_extensionDescription__');
+  const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
+  const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
+  assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());
+  assert.equal(esLocale.extensionDescription.message.length <= 132, true);
+  assert.equal(enLocale.extensionDescription.message.length <= 132, true);
+  const localizedSources = await Promise.all(
+    ['popup-core.js','popup-ui.js','popup-qr.js','popup.js','visibility.js','content.js','service_worker.js']
+      .map(file => fs.readFile(path.join(root, file), 'utf8'))
+  );
+  const usedLocaleKeys = new Set();
+  for (const source of localizedSources) {
+    for (const match of source.matchAll(/\b(?:tvt|tr)\(\s*["']([^"']+)["']/g)) usedLocaleKeys.add(match[1]);
+  }
+  for (const key of usedLocaleKeys) assert.ok(esLocale[key] && enLocale[key], `Missing locale key: ${key}`);
   for (const size of [16, 32, 48, 128]) {
     const iconPath = `icons/icon${size}.png`;
     assert.equal(manifest.icons[String(size)], iconPath);
@@ -154,6 +172,13 @@ async function mockChrome() {
     const shot = name => page.screenshot({ path: path.join(results, name + '.png') });
     await page.goto(`http://127.0.0.1:${server.address().port}/popup.html`);
     await page.locator('#setupView:not(.hidden)').waitFor();
+    await page.evaluate(() => {
+      chrome.i18n.getUILanguage = () => 'en-US';
+      chrome.i18n.getMessage = key => ({ setupTitle: 'Everything starts with a key.' }[key] || '');
+      TotpI18n.localizeDocument();
+    });
+    assert.equal(await page.locator('#setupView h1').innerText(), 'Everything starts with a key.');
+    assert.equal(await page.locator('html').getAttribute('lang'), 'en');
     await shot('setup');
     await page.locator('#setupPassword').fill('pastel-test-password');
     await page.locator('#setupPassword2').fill('pastel-test-password');
