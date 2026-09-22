@@ -842,6 +842,15 @@ async function fillEntry(entry, node) {
       throw new Error(tvt("internalPageFillError", undefined, "Chrome no permite rellenar campos en páginas internas."));
     }
 
+    const fillMessages = {
+      editableOtpNotFound: tvt("editableOtpNotFound", undefined, "No hay campos OTP editables accesibles en este frame."),
+      filledSlots: tvt("filledSlots", ["__COUNT__"], "Rellenadas __COUNT__ casillas OTP."),
+      pickerBanner: tvt("pickerBanner", undefined, "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar"),
+      pickerInstruction: tvt("pickerInstruction", undefined, "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."),
+      fieldDetected: tvt("fieldDetected", undefined, "campo detectado"),
+      filledInField: tvt("filledInField", ["__FIELD__"], "Rellenado en: __FIELD__")
+    };
+
     let results;
     try {
       // Prueba el documento principal y todos los frames a los que activeTab
@@ -850,7 +859,7 @@ async function fillEntry(entry, node) {
       results = await chrome.scripting.executeScript({
         target: { tabId: tab.id, allFrames: true },
         func: fillDetectedTotp,
-        args: [code]
+        args: [code, fillMessages]
       });
     } catch {
       // Algunos sitios no permiten inyectar en todos sus frames. En ese caso
@@ -858,7 +867,7 @@ async function fillEntry(entry, node) {
       results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: fillDetectedTotp,
-        args: [code]
+        args: [code, fillMessages]
       });
     }
 
@@ -884,7 +893,7 @@ async function fillEntry(entry, node) {
   }
 }
 
-function fillDetectedTotp(code) {
+function fillDetectedTotp(code, messages = {}) {
   const OTP_RX = /(totp|\botp\b|2fa|mfa|one[\s_-]?time|verification|verify|authenticator|security[\s_-]?code|login[\s_-]?code|passcode|token|pin|c[oó]digo|verificaci[oó]n|autenticaci[oó]n|seguridad|clave[\s_-]?temporal)/i;
 
   function visible(el) {
@@ -1037,7 +1046,7 @@ function fillDetectedTotp(code) {
 
   const inputs = collectInputs().filter(isEditable);
   if (!inputs.length) {
-    return { ok: false, message: "No hay campos OTP editables accesibles en este frame." };
+    return { ok: false, message: messages.editableOtpNotFound || "No hay campos OTP editables accesibles en este frame." };
   }
 
   // 1) OTP dividido en una casilla por dígito.
@@ -1071,7 +1080,7 @@ function fillDetectedTotp(code) {
         setNativeValue(el, code[i]);
       });
       group[group.length - 1].focus();
-      return { ok: true, message: tvt("filledSlots", [String(group.length)], `Rellenadas ${group.length} casillas OTP.`) };
+      return { ok: true, message: (messages.filledSlots || "Rellenadas __COUNT__ casillas OTP.").replace("__COUNT__", String(group.length)) };
     }
   }
 
@@ -1105,7 +1114,7 @@ function fillDetectedTotp(code) {
 
     const banner = document.createElement("div");
     banner.id = PICKER_ID;
-    banner.textContent = "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar";
+    banner.textContent = messages.pickerBanner || "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar";
     Object.assign(banner.style, {
       position: "fixed",
       zIndex: "2147483647",
@@ -1184,7 +1193,7 @@ function fillDetectedTotp(code) {
     return {
       ok: true,
       pending: true,
-      message: "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."
+      message: messages.pickerInstruction || "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."
     };
   }
 
@@ -1197,9 +1206,9 @@ function fillDetectedTotp(code) {
     target.placeholder ||
     target.name ||
     target.id ||
-    tvt("fieldDetected", undefined, "campo detectado");
+    messages.fieldDetected || "campo detectado";
 
-  return { ok: true, message: tvt("filledInField", [fieldName], `Rellenado en: ${fieldName}`) };
+  return { ok: true, message: (messages.filledInField || "Rellenado en: __FIELD__").replace("__FIELD__", fieldName) };
 }
 
 async function exportEncryptedBackup() {
