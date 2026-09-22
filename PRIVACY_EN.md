@@ -57,6 +57,12 @@ The extension may write a TOTP code to the clipboard when the user explicitly cl
 
 A clipboard image is processed only when the user explicitly starts QR import and pastes an image.
 
+## External support link
+
+Settings includes an optional link to **Buy Me a Coffee** (`https://buymeacoffee.com/alalbeniz`) for users who want to support development.
+
+TOTP Vault does not embed the Buy Me a Coffee widget, SDK, or remote code and does not send TOTP secrets, codes, vault content, or browsing data to that service. Clicking the link opens the external Buy Me a Coffee page in a new tab, where data handling is governed by that service's own policies.
+
 ## Sharing and sale of data
 
 TOTP Vault does not sell user data and does not share vault data with advertisers, data brokers, or third parties for advertising, marketing, or profiling.
