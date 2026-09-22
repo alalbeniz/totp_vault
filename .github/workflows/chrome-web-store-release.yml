@@ -1,0 +1,167 @@
+name: Chrome Web Store release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (must match manifest.json)"
+        required: true
+        type: string
+      submit_for_review:
+        description: "Submit the uploaded version for review"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chrome-web-store-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EXTENSION_ID: abiekbjdmcanmkjcimgfojklngfnpkok
+      PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Validate release configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${PUBLISHER_ID}" ]]; then
+            echo "::error::Missing repository variable CWS_PUBLISHER_ID"
+            exit 1
+          fi
+
+          MANIFEST_VERSION="$(node -p "require('./manifest.json').version")"
+          if [[ "${MANIFEST_VERSION}" != "${{ inputs.version }}" ]]; then
+            echo "::error::manifest.json version is ${MANIFEST_VERSION}, but workflow input is ${{ inputs.version }}"
+            exit 1
+          fi
+
+          DESCRIPTION_LENGTH="$(node -e "const m=require('./manifest.json'); process.stdout.write(String([...m.description].length))")"
+          if (( DESCRIPTION_LENGTH > 132 )); then
+            echo "::error::manifest description has ${DESCRIPTION_LENGTH} characters; Chrome Web Store allows at most 132"
+            exit 1
+          fi
+
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm vendor:sync
+      - run: pnpm exec playwright install --with-deps chromium-headless-shell
+      - run: pnpm test
+
+      - name: Build Chrome Web Store package
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./manifest.json').version")"
+          PACKAGE="totp-vault-v${VERSION}"
+
+          rm -rf dist/cws
+          mkdir -p dist/cws
+
+          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css dist/cws/
+          cp popup*.html popup*.js popup*.css dist/cws/
+          cp -R icons vendor dist/cws/
+
+          (cd dist/cws && zip -qr "../${PACKAGE}-cws.zip" .)
+
+          test "$(unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -c '^manifest.json$')" -eq 1
+          echo "package=dist/${PACKAGE}-cws.zip" >> "$GITHUB_ENV"
+
+      - name: Authenticate to Google
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/chromewebstore
+
+      - name: Upload package to Chrome Web Store
+        id: upload
+        shell: bash
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+
+          BASE="https://chromewebstore.googleapis.com"
+          ITEM="publishers/${PUBLISHER_ID}/items/${EXTENSION_ID}"
+
+          RESPONSE="$(curl --fail-with-body --silent --show-error             -H "Authorization: Bearer ${ACCESS_TOKEN}"             -H "Content-Type: application/zip"             -X POST             --data-binary "@${package}"             "${BASE}/upload/v2/${ITEM}:upload")"
+
+          echo "${RESPONSE}" | jq .
+          STATE="$(echo "${RESPONSE}" | jq -r '.uploadState // empty')"
+
+          case "${STATE}" in
+            SUCCEEDED)
+              ;;
+            IN_PROGRESS|UPLOAD_IN_PROGRESS)
+              for attempt in {1..24}; do
+                sleep 5
+                STATUS="$(curl --fail-with-body --silent --show-error                   -H "Authorization: Bearer ${ACCESS_TOKEN}"                   "${BASE}/v2/${ITEM}:fetchStatus")"
+                echo "${STATUS}" | jq .
+                STATE="$(echo "${STATUS}" | jq -r '.lastAsyncUploadState // empty')"
+                if [[ "${STATE}" == "SUCCEEDED" ]]; then
+                  break
+                fi
+                if [[ "${STATE}" == "FAILED" ]]; then
+                  echo "::error::Chrome Web Store reported a failed upload"
+                  exit 1
+                fi
+              done
+              if [[ "${STATE}" != "SUCCEEDED" ]]; then
+                echo "::error::Upload did not reach SUCCEEDED state"
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::Unexpected upload state: ${STATE:-missing}"
+              exit 1
+              ;;
+          esac
+
+      - name: Submit for review
+        if: ${{ inputs.submit_for_review }}
+        shell: bash
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          BASE="https://chromewebstore.googleapis.com"
+          ITEM="publishers/${PUBLISHER_ID}/items/${EXTENSION_ID}"
+
+          RESPONSE="$(curl --fail-with-body --silent --show-error             -H "Authorization: Bearer ${ACCESS_TOKEN}"             -H "Content-Type: application/json"             -X POST             "${BASE}/v2/${ITEM}:publish")"
+
+          echo "${RESPONSE}" | jq .
+
+      - name: Final store status
+        shell: bash
+        env:
+          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error             -H "Authorization: Bearer ${ACCESS_TOKEN}"             "https://chromewebstore.googleapis.com/v2/publishers/${PUBLISHER_ID}/items/${EXTENSION_ID}:fetchStatus"             | jq .
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chrome-web-store-package-v${{ inputs.version }}
+          path: dist/totp-vault-v${{ inputs.version }}-cws.zip
+          if-no-files-found: ignore
+          retention-days: 30
