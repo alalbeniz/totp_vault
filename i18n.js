@@ -29,7 +29,7 @@
     ["Enviar inequívoco","submitUnambiguous"],["Compatibilidad máxima","maximumCompatibility"],
     ["Inequívoco: solo usa un único submit claro del formulario. Compatibilidad máxima: si eso no funciona, busca el botón de verificar/continuar más probable cerca del OTP, incluyendo formularios SPA y botones personalizados.","autoSubmitHelp"],
     ["Tu copia de seguridad","backupTitle"],["Exportar cifrado","exportEncrypted"],["Importar cifrado","importEncrypted"],
-    ["Cambiar contraseña maestra","changeMasterPassword"],["Contraseña actual","currentPassword"],["Nueva contraseña","newPassword"],
+    ["Cambiar contraseña maestra","changeMasterPassword"],["Apoya TOTP Vault","supportTitle"],["Si TOTP Vault te resulta útil, puedes apoyar su desarrollo.","supportText"],["Invítame a un café","supportButton"],["Contraseña actual","currentPassword"],["Nueva contraseña","newPassword"],
     ["Repetir nueva contraseña","repeatNewPassword"],["Actualizar contraseña","updatePassword"],["No hay TOTP guardados","noTotpSaved"],
     ["Pulsa + para añadir el primero.","addFirst"],["Cifrado local · Solo en tu navegador","localEncryptedOnly"],["Editar","edit"],
     ["Eliminar","delete"],["Rellenar","fill"],["Copiar","copy"]
