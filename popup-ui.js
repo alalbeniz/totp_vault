@@ -1,7 +1,8 @@
 /* Presentation helpers. Account, encryption, TOTP and autofill handlers live in popup-core.js. */
 (() => {
   const tr = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    await globalThis.TotpI18n?.ready;
     const list = document.getElementById("totpList");
     const empty = document.getElementById("emptyState");
     const count = document.getElementById("accountCount");
