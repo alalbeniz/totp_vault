@@ -21,7 +21,7 @@
 
   function maskForCard(card) {
     const meta = card.querySelector(".card-meta")?.textContent || "";
-    return /8\s*d[ií]gitos/i.test(meta) ? "•••• ••••" : "••• •••";
+    return /8\s*(?:d[ií]gitos|digits)/i.test(meta) ? "•••• ••••" : "••• •••";
   }
 
   function setEyeState(button, visible, global = false) {
