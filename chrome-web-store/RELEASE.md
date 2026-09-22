@@ -25,10 +25,12 @@ Crear en **Settings → Secrets and variables → Actions → Variables**:
 1. Crear o seleccionar un proyecto en Google Cloud.
 2. Habilitar **Chrome Web Store API**.
 3. Crear una service account.
-4. En Chrome Web Store Developer Dashboard, añadir el correo de esa service account
+4. Conceder a la service account el rol **Service Account Token Creator sobre sí misma**,
+   necesario para que GitHub genere el access token con el scope de Chrome Web Store.
+5. En Chrome Web Store Developer Dashboard, añadir el correo de esa service account
    en la sección de cuenta/publisher con acceso a la API.
-5. Crear una clave JSON para la service account.
-6. Guardar el JSON completo en GitHub como secreto de Actions:
+6. Crear una clave JSON para la service account.
+7. Guardar el JSON completo en GitHub como secreto de Actions:
    - `CWS_SERVICE_ACCOUNT_JSON`
 
 El JSON de la cuenta de servicio es secreto y nunca debe guardarse en el repositorio.
