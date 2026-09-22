@@ -4,6 +4,7 @@ const SESSION_KEY = "vaultSession";
 const tvt = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
 
 const DEFAULT_SETTINGS = {
+  language: "system",
   autoLockMinutes: 5,
   inlinePickerMode: "off",
   inlineAllowedOrigins: []
@@ -49,6 +50,7 @@ const $ = (selector) => document.querySelector(selector);
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  await globalThis.TotpI18n?.ready;
   await hardenStorageAccess();
   bindUi();
   setupListScrollbar();
@@ -309,6 +311,7 @@ function bindUi() {
   $("#closeSettings").addEventListener("click", () => showSettings(false));
   $("#lockBtn").addEventListener("click", lockVault);
 
+  $("#languageSelect").addEventListener("change", saveLanguageSetting);
   $("#autoLockSelect").addEventListener("change", saveAutoLockSetting);
   $("#inlinePickerMode").addEventListener("change", saveInlinePickerMode);
   $("#inlineSiteToggle").addEventListener("click", toggleInlineCurrentSite);
@@ -331,8 +334,11 @@ function bindUi() {
       input.type = showing ? "text" : "password";
       button.querySelector(".eye-open")?.classList.toggle("hidden", showing);
       button.querySelector(".eye-closed")?.classList.toggle("hidden", !showing);
-      button.setAttribute("aria-label", showing ? "Ocultar contenido" : "Mostrar contenido");
-      button.setAttribute("title", showing ? "Ocultar" : "Mostrar");
+      const revealLabel = showing
+        ? tvt("hideContent", undefined, "Ocultar contenido")
+        : tvt("showContent", undefined, "Mostrar contenido");
+      button.setAttribute("aria-label", revealLabel);
+      button.setAttribute("title", revealLabel);
     });
   }
 
@@ -347,6 +353,8 @@ async function loadSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   state.settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
   if (!Array.isArray(state.settings.inlineAllowedOrigins)) state.settings.inlineAllowedOrigins = [];
+  if (!["system", "es", "en"].includes(state.settings.language)) state.settings.language = "system";
+  $("#languageSelect").value = state.settings.language;
   $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
   $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
   await updateInlinePickerSettingsUi();
@@ -559,6 +567,7 @@ function showSettings(open) {
   $("#settingsPanel").classList.toggle("hidden", !open);
   if (open) {
     $("#addPanel").classList.add("hidden");
+    $("#languageSelect").value = state.settings.language || "system";
     $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
     $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
     updateInlinePickerSettingsUi();
@@ -569,6 +578,13 @@ function showSettings(open) {
     hideMessage("#changePasswordError");
   }
   touchSession();
+}
+
+async function saveLanguageSetting(event) {
+  const next = globalThis.TotpI18n?.normalizePreference?.(event.target.value) || "system";
+  state.settings.language = next;
+  await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
+  location.reload();
 }
 
 async function saveAutoLockSetting() {
