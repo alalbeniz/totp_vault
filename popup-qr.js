@@ -1,5 +1,6 @@
 /* QR import helpers. Images are decoded locally; only direct image URLs are fetched. */
 (() => {
+  const tr = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
   const MAX_QR_IMAGE_BYTES = 12 * 1024 * 1024;
   let pasteArmed = false;
   let busy = false;
@@ -50,10 +51,10 @@
   function parseQrPayload(value) {
     const raw = String(value || "").trim();
     if (/^otpauth-migration:\/\//i.test(raw)) {
-      throw new Error("Este QR es una exportación de Google Authenticator. Ese formato se añadirá en una versión posterior.");
+      throw new Error(tr("qrMigrationUnsupported", undefined, "Este QR es una exportación de Google Authenticator. Ese formato se añadirá en una versión posterior."));
     }
     if (!isTotpPayload(raw)) {
-      throw new Error("El QR encontrado no contiene una cuenta TOTP compatible.");
+      throw new Error(tr("qrNotTotp", undefined, "El QR encontrado no contiene una cuenta TOTP compatible."));
     }
     return { raw, parsed: parseInput(raw) };
   }
@@ -77,7 +78,7 @@
     updateIconPickerUi();
     showQrPanel(false);
     showAdd(true);
-    showMessage("#formError", `QR leído desde ${sourceLabel}. Revisa los datos y pulsa Guardar para añadirlo.`, "ok");
+    showMessage("#formError", tr("qrReadReview", [sourceLabel], `QR leído desde ${sourceLabel}. Revisa los datos y pulsa Guardar para añadirlo.`), "ok");
   }
 
   function dimensions(source) {
@@ -103,9 +104,9 @@
   }
 
   function decodeWithJsQr(source) {
-    if (typeof jsQR !== "function") throw new Error("El lector QR local no está disponible.");
+    if (typeof jsQR !== "function") throw new Error(tr("qrReaderUnavailable", undefined, "El lector QR local no está disponible."));
     const { width, height } = dimensions(source);
-    if (!width || !height) throw new Error("No se pudo leer el tamaño de la imagen.");
+    if (!width || !height) throw new Error(tr("imageSizeReadFailed", undefined, "No se pudo leer el tamaño de la imagen."));
 
     const maxSide = 4096;
     const scale = Math.min(1, maxSide / Math.max(width, height));
@@ -113,7 +114,7 @@
     canvas.width = Math.max(1, Math.round(width * scale));
     canvas.height = Math.max(1, Math.round(height * scale));
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) throw new Error("No se pudo analizar la imagen.");
+    if (!ctx) throw new Error(tr("imageAnalyzeFailed", undefined, "No se pudo analizar la imagen."));
 
     ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -130,15 +131,15 @@
     if (fallback) return fallback;
 
     if (nativeValues.length) {
-      throw new Error("Se encontró un QR, pero no contiene una cuenta TOTP compatible.");
+      throw new Error(tr("qrFoundNotTotp", undefined, "Se encontró un QR, pero no contiene una cuenta TOTP compatible."));
     }
-    throw new Error("No se encontró ningún código QR legible en la imagen.");
+    throw new Error(tr("qrNotFound", undefined, "No se encontró ningún código QR legible en la imagen."));
   }
 
   async function decodeImageBlob(blob) {
-    if (!blob) throw new Error("No se recibió ninguna imagen.");
-    if (blob.size > MAX_QR_IMAGE_BYTES) throw new Error("La imagen no puede superar 12 MB.");
-    if (blob.type && !blob.type.startsWith("image/")) throw new Error("El archivo no parece ser una imagen.");
+    if (!blob) throw new Error(tr("noImage", undefined, "No se recibió ninguna imagen."));
+    if (blob.size > MAX_QR_IMAGE_BYTES) throw new Error(tr("imageTooLarge", undefined, "La imagen no puede superar 12 MB."));
+    if (blob.type && !blob.type.startsWith("image/")) throw new Error(tr("notImage", undefined, "El archivo no parece ser una imagen."));
 
     if (typeof createImageBitmap === "function") {
       try {
@@ -159,7 +160,7 @@
       image.decoding = "async";
       await new Promise((resolve, reject) => {
         image.onload = resolve;
-        image.onerror = () => reject(new Error("No se pudo abrir la imagen."));
+        image.onerror = () => reject(new Error(tr("imageOpenFailed", undefined, "No se pudo abrir la imagen.")));
         image.src = objectUrl;
       });
       return await decodeImageSource(image);
@@ -180,7 +181,7 @@
     try {
       await task();
     } catch (error) {
-      qrMessage(error?.message || "No se pudo leer el QR.", "error");
+      qrMessage(error?.message || tr("qrReadFailed", undefined, "No se pudo leer el QR."), "error");
     } finally {
       setBusy(false);
     }
@@ -188,14 +189,14 @@
 
   async function scanCurrentPage() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab || !Number.isInteger(tab.windowId)) throw new Error("No se pudo identificar la pestaña activa.");
+    if (!tab || !Number.isInteger(tab.windowId)) throw new Error(tr("activeTabIdentifyFailed", undefined, "No se pudo identificar la pestaña activa."));
     const url = String(tab.url || "");
     if (!/^https?:/i.test(url) && !/^file:/i.test(url)) {
-      throw new Error("Chrome no permite capturar esta página.");
+      throw new Error(tr("capturePageDenied", undefined, "Chrome no permite capturar esta página."));
     }
     const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "png" });
     const response = await fetch(dataUrl);
-    await scanBlob(await response.blob(), "la página actual");
+    await scanBlob(await response.blob(), tr("sourceCurrentPage", undefined, "la página actual"));
   }
 
   function imagePermissionPattern(url) {
@@ -205,7 +206,7 @@
   async function fetchImageUrl(rawUrl) {
     const value = String(rawUrl || "").trim();
     if (isTotpPayload(value)) {
-      reviewPayload(value, "el enlace");
+      reviewPayload(value, tr("sourceLink", undefined, "el enlace"));
       return;
     }
 
@@ -213,29 +214,29 @@
     try {
       url = new URL(value);
     } catch {
-      throw new Error("Introduce una URL de imagen válida.");
+      throw new Error(tr("invalidImageUrl", undefined, "Introduce una URL de imagen válida."));
     }
 
     if (!["http:", "https:"].includes(url.protocol)) {
-      throw new Error("La URL debe usar http:// o https://.");
+      throw new Error(tr("httpUrlRequired", undefined, "La URL debe usar http:// o https://."));
     }
 
     const pattern = imagePermissionPattern(url);
     let granted = await chrome.permissions.contains({ origins: [pattern] });
     if (!granted) granted = await chrome.permissions.request({ origins: [pattern] });
-    if (!granted) throw new Error("Chrome no concedió permiso para leer esa imagen.");
+    if (!granted) throw new Error(tr("imageDomainPermissionDenied", undefined, "Chrome no concedió permiso para leer esa imagen."));
 
     const response = await fetch(url.href, {
       credentials: "omit",
       cache: "no-store",
       referrerPolicy: "no-referrer"
     });
-    if (!response.ok) throw new Error(`No se pudo descargar la imagen (HTTP ${response.status}).`);
+    if (!response.ok) throw new Error(tr("imageDownloadFailed", [String(response.status)], `No se pudo descargar la imagen (HTTP ${response.status}).`));
 
     const length = Number(response.headers.get("content-length") || 0);
     if (length > MAX_QR_IMAGE_BYTES) throw new Error("La imagen no puede superar 12 MB.");
     const blob = await response.blob();
-    await scanBlob(blob, "la URL");
+    await scanBlob(blob, tr("sourceUrl", undefined, "la URL"));
   }
 
   async function handlePaste(event) {
@@ -248,17 +249,17 @@
     const imageItem = items.find((item) => item.type?.startsWith("image/"));
     if (imageItem) {
       const file = imageItem.getAsFile();
-      await withTask(() => scanBlob(file, "el portapapeles"));
+      await withTask(() => scanBlob(file, tr("sourceClipboard", undefined, "el portapapeles")));
       return;
     }
 
     const text = event.clipboardData?.getData("text/plain")?.trim();
     if (text) {
-      await withTask(async () => reviewPayload(text, "el portapapeles"));
+      await withTask(async () => reviewPayload(text, tr("sourceClipboard", undefined, "el portapapeles")));
       return;
     }
 
-    qrMessage("El portapapeles no contiene una imagen ni un enlace TOTP.", "error");
+    qrMessage(tr("clipboardEmpty", undefined, "El portapapeles no contiene una imagen ni un enlace TOTP."), "error");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
@@ -276,7 +277,7 @@
     byId("qrFileBtn")?.addEventListener("click", () => byId("qrFileInput")?.click());
     byId("qrFileInput")?.addEventListener("change", (event) => {
       const file = event.target.files?.[0];
-      if (file) withTask(() => scanBlob(file, "la imagen"));
+      if (file) withTask(() => scanBlob(file, tr("sourceImage", undefined, "la imagen")));
     });
 
     byId("qrPasteBtn")?.addEventListener("click", () => {
@@ -293,7 +294,7 @@
     });
 
     document.addEventListener("paste", (event) => {
-      handlePaste(event).catch((error) => qrMessage(error?.message || "No se pudo leer el portapapeles.", "error"));
+      handlePaste(event).catch((error) => qrMessage(error?.message || tr("clipboardReadFailed", undefined, "No se pudo leer el portapapeles."), "error"));
     }, true);
   }, { once: true });
 })();
