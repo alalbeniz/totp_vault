@@ -1,5 +1,6 @@
 (()=>{
 if(globalThis.__TOTP_VAULT_INLINE_PICKER__)return;globalThis.__TOTP_VAULT_INLINE_PICKER__=true;
+const tr=(key,subs,fallback='')=>{try{return chrome.i18n?.getMessage?.(key,subs)||fallback}catch{return fallback}};
 const OTP=/(totp|\botp\b|2fa|mfa|one[\s_-]?time|verification|verify|authenticator|security[\s_-]?code|login[\s_-]?code|passcode|c[oó]digo|verificaci[oó]n|autenticaci[oó]n|clave[\s_-]?temporal)/i;
 const NO=/(^|[\s_-])(qty|quantity|cantidad|units?|unidades?|product[\s_-]?(qty|quantity)|cart[\s_-]?(qty|quantity))([\s_-]|$)/i;
 const POSTAL=/(c[oó]digo[\s_-]?postal|postal[\s_-]?code|zip[\s_-]?code|post[\s_-]?code|postcode)/i;
