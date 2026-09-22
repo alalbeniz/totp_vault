@@ -24,13 +24,12 @@ Crear en **Settings → Secrets and variables → Actions → Variables**:
 
 1. Crear o seleccionar un proyecto en Google Cloud.
 2. Habilitar **Chrome Web Store API**.
-3. Crear una service account.
-4. Conceder a la service account el rol **Service Account Token Creator sobre sí misma**,
-   necesario para que GitHub genere el access token con el scope de Chrome Web Store.
-5. En Chrome Web Store Developer Dashboard, añadir el correo de esa service account
+3. Crear una service account. En el paso de permisos IAM del proyecto no es necesario
+   asignarle ningún rol para este flujo.
+4. En Chrome Web Store Developer Dashboard, añadir el correo de esa service account
    en la sección de cuenta/publisher con acceso a la API.
-6. Crear una clave JSON para la service account.
-7. Guardar el JSON completo en GitHub como secreto de Actions:
+5. Crear una clave JSON para la service account.
+6. Guardar el JSON completo en GitHub como secreto de Actions:
    - `CWS_SERVICE_ACCOUNT_JSON`
 
 El JSON de la cuenta de servicio es secreto y nunca debe guardarse en el repositorio.
@@ -68,3 +67,8 @@ Store. El workflow de publicación no usa ese wrapper: envía directamente el ar
 URL pública:
 
 https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY.md
+
+
+> Nota: el rol `roles/iam.serviceAccountTokenCreator` solo es necesario si se usa
+> impersonación de service accounts. El workflow de este repositorio autentica con
+> una clave JSON mediante `credentials_json`, por lo que no requiere ese rol.
