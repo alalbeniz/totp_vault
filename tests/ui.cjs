@@ -202,7 +202,7 @@ async function mockChrome() {
     assert.equal(await page.locator('#languageSelect').inputValue(), 'system');
     assert.equal(await page.locator('#supportLink').getAttribute('href'), 'https://buymeacoffee.com/alalbeniz');
     assert.equal(await page.locator('#supportLink').getAttribute('target'), '_blank');
-    assert.match(await page.locator('#supportLink').innerText(), /Invítame a un café/);
+    assert.match(await page.locator('#supportLink').innerText(), /Invítame a una cerveza/);
     await page.locator('#languageSelect').selectOption('en');
     await page.locator('#vaultView:not(.hidden)').waitFor();
     await page.locator('#settingsPanel.hidden').waitFor({ state: 'attached' });
@@ -214,7 +214,7 @@ async function mockChrome() {
     assert.equal(await page.locator('#languageSelect').inputValue(), 'en');
     assert.equal(await page.locator('.language-setting').first().innerText().then(text => text.split('\n')[0].trim()), 'Language');
     assert.match(await page.locator('#supportTitle').innerText(), /Support TOTP Vault/);
-    assert.match(await page.locator('#supportLink').innerText(), /Buy me a coffee/);
+    assert.match(await page.locator('#supportLink').innerText(), /Buy me a beer/);
     await page.locator('#languageSelect').selectOption('system');
     await page.locator('#vaultView:not(.hidden)').waitFor();
     assert.match(await page.locator('.collection-heading h2').innerText(), /Mis códigos/);
