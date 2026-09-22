@@ -83,7 +83,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || sender.id !== chrome.runtime.id) return false;
 
   if (message.type === "totpVault:i18n:inline") {
-    languageReady
+    hydrateLanguagePreference()
       .then(() => sendResponse({
         ok: true,
         language: languagePreference,
