@@ -1,102 +1,121 @@
-# Chrome Web Store — ficha de publicación
+# Chrome Web Store — TOTP Vault v2.13.0
 
-Este documento contiene los textos y declaraciones preparados para publicar **TOTP Vault v2.13.0** en Chrome Web Store.
+Ficha optimizada siguiendo las recomendaciones de Google para una listing clara, concisa, localizada y centrada en las funciones principales.
 
 ## Identidad
 
-**Nombre:** TOTP Vault
+**Nombre:** TOTP Vault  
+**Categoría:** Productividad / Productivity  
+**Idiomas:** Español (`es`) e Inglés (`en`)  
+**Idioma por defecto:** Español
 
-**Categoría sugerida:** Productividad / Productivity
+## Resumen / Summary
 
-**Idiomas incluidos en el paquete:** Español (`es`) e Inglés (`en`)
+El resumen procede del `manifest.json` mediante `__MSG_extensionDescription__`.
 
-**Idioma por defecto del manifest:** Español
+### Español — 119 caracteres
 
-## Español
+> Códigos 2FA (TOTP), cifrados en tu navegador. Importa QR, copia o rellena códigos y mantén tus cuentas bajo tu control.
 
-### Descripción corta
+### English — 124 characters
 
-> Bóveda TOTP local y cifrada con importación QR, autorrelleno, bloqueo automático y copias de seguridad.
+> 2FA (TOTP) codes in a local encrypted vault. Import QR codes, copy or fill codes, and keep your accounts under your control.
 
-### Finalidad única
+## Descripción detallada — Español
 
-> TOTP Vault almacena de forma local y cifrada cuentas TOTP y permite generar, importar, copiar y rellenar códigos de autenticación de dos factores.
-
-### Descripción detallada
-
-TOTP Vault es una bóveda TOTP para Chrome diseñada para mantener tus códigos de autenticación de dos factores bajo tu control.
-
-Tus cuentas se almacenan localmente y cifradas con una contraseña maestra. La extensión no necesita una cuenta online ni un servidor propio para gestionar tus secretos TOTP.
+TOTP Vault es un autenticador TOTP para Chrome pensado para usar tus códigos 2FA sin depender de una cuenta online. Guarda tus cuentas cifradas localmente, importa un QR y copia o rellena el código directamente donde lo necesitas.
 
 Funciones principales:
 
-- Guarda múltiples cuentas TOTP en una bóveda local cifrada.
-- Importa cuentas desde QR visible en la página, archivo de imagen, portapapeles, URL u otpauth://.
-- Genera códigos de 6 u 8 dígitos con SHA-1, SHA-256 y SHA-512.
-- Copia o rellena un código en la pestaña activa con un clic.
-- Ofrece un selector opcional junto a campos OTP/TOTP.
-- Incluye bloqueo manual y bloqueo automático configurable.
-- Permite mostrar u ocultar códigos individualmente o de forma global.
-- Incluye búsqueda, iconos de servicios e iconos personalizados.
-- Exporta e importa copias de seguridad cifradas.
-- Incluye diez temas visuales.
-- Interfaz disponible en español e inglés.
-- Permite seguir el idioma de Chrome o elegir manualmente Español o English desde Ajustes.
+• Importa cuentas desde un QR visible, una imagen, el portapapeles, una URL o un enlace otpauth://.  
+• Genera códigos de 6 u 8 dígitos con SHA-1, SHA-256 y SHA-512.  
+• Copia códigos o rellénalos directamente con un clic.  
+• Usa un selector opcional junto a campos OTP/TOTP.  
+• Protege la bóveda con contraseña maestra y bloqueo automático.  
+• Exporta e importa copias de seguridad cifradas.  
+• Usa español, inglés o sigue automáticamente el idioma de Chrome.
 
 Privacidad y seguridad:
 
-- La bóveda se cifra localmente con AES-256-GCM.
-- La clave se deriva con PBKDF2-HMAC-SHA-256.
-- La contraseña maestra no se almacena.
-- No hay analítica, publicidad ni telemetría propia.
-- Los secretos TOTP y códigos generados no se envían al desarrollador.
-- El lector QR se ejecuta localmente; jsQR está incluido en el paquete.
-- Los permisos de sitio son opcionales y se solicitan cuando una función los necesita.
+Tus secretos y códigos TOTP no se envían al desarrollador. La bóveda se cifra localmente con AES-256-GCM y la contraseña maestra no se almacena.
 
-TOTP Vault utiliza Manifest V3 y está diseñado para solicitar únicamente los permisos necesarios para sus funciones visibles.
+TOTP Vault no incluye analítica, publicidad ni telemetría propia.
 
-## English
+## Detailed description — English
 
-### Short description
-
-> Local encrypted TOTP vault with QR import, autofill, automatic locking, and encrypted backups.
-
-### Single purpose
-
-> TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
-
-### Detailed description
-
-TOTP Vault is a TOTP vault for Chrome designed to keep your two-factor authentication codes under your control.
-
-Your accounts are stored locally and encrypted with a master password. The extension does not require an online account or a developer-operated server to manage your TOTP secrets.
+TOTP Vault is a TOTP authenticator for Chrome designed to let you use your 2FA codes without depending on an online account. Keep your accounts encrypted locally, import a QR code, and copy or fill codes directly where you need them.
 
 Main features:
 
-- Store multiple TOTP accounts in a local encrypted vault.
-- Import accounts from a QR visible on the current page, a local image, the clipboard, an image URL, or an otpauth:// link.
-- Generate 6- or 8-digit codes using SHA-1, SHA-256, or SHA-512.
-- Copy or fill a code into the active tab with one click.
-- Optional inline picker next to detected OTP/TOTP fields.
-- Configurable manual and automatic locking.
-- Show or hide codes globally or per account.
-- Search, built-in service icons, and custom icons.
-- Import and export encrypted backups.
-- Ten selectable visual themes.
-- User interface available in Spanish and English.
-- Follow Chrome's language automatically or manually select Spanish or English in Settings.
+• Import accounts from a visible QR code, image, clipboard, URL, or otpauth:// link.  
+• Generate 6- or 8-digit codes using SHA-1, SHA-256, or SHA-512.  
+• Copy codes or fill them directly with one click.  
+• Use an optional inline picker next to OTP/TOTP fields.  
+• Protect your vault with a master password and automatic locking.  
+• Import and export encrypted backups.  
+• Use Spanish, English, or automatically follow Chrome's language.
 
 Privacy and security:
 
-- The vault is encrypted locally with AES-256-GCM.
-- The encryption key is derived with PBKDF2-HMAC-SHA-256.
-- The master password is not stored.
-- No first-party analytics, advertising, or telemetry.
-- TOTP secrets and generated codes are not sent to the developer.
-- QR decoding runs locally; jsQR is bundled with the extension.
-- Site access is optional and requested only when a feature requires it.
+Your TOTP secrets and generated codes are not sent to the developer. The vault is encrypted locally using AES-256-GCM, and your master password is not stored.
 
-TOTP Vault uses Manifest V3 and is designed to request only the permissions required for its visible functionality.
+TOTP Vault includes no first-party analytics, advertising, or telemetry.
+
+## Finalidad única / Single purpose
+
+### ES
+
+> TOTP Vault almacena de forma local y cifrada cuentas TOTP y permite generar, importar, copiar y rellenar códigos de autenticación de dos factores.
+
+### EN
+
+> TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
+
+## Novedades v2.13.0
+
+### ES
+
+> Añadido soporte multiidioma en español e inglés. TOTP Vault puede seguir automáticamente el idioma de Chrome o usar un idioma elegido manualmente desde Ajustes. La localización cubre el popup, importación QR, selector inline, autorrelleno, accesibilidad y mensajes de error.
+
+### EN
+
+> Added multilingual support for Spanish and English. TOTP Vault can automatically follow Chrome's language or use a language selected manually in Settings. Localization covers the popup, QR import, inline picker, autofill, accessibility labels, and error messages.
+
+## Capturas de pantalla: localizadas vs globales
+
+Google distingue ambos campos y muestra los recursos en este orden: vídeo localizado, capturas localizadas, vídeo global y capturas globales.
+
+### Capturas localizadas — usar
+
+Subir las cinco imágenes de `dist/store-assets/localized/es/` seleccionando **Español** en el desplegable del Dashboard.
+
+Subir las cinco imágenes de `dist/store-assets/localized/en/` seleccionando **English**.
+
+Orden:
+
+1. Tus códigos 2FA, a mano / Your 2FA codes, at hand
+2. Importa un QR en segundos / Import a QR code in seconds
+3. Rellena sin copiar y pegar / Fill codes without copy and paste
+4. Tu bóveda, a tu manera / Your vault, your way
+5. Protegida por contraseña maestra / Protected by your master password
+
+### Capturas globales — dejar vacío
+
+No subir capturas al campo **Global screenshots** mientras existan juegos completos localizados para Español e Inglés.
+
+Motivo: Chrome Web Store coloca las capturas globales después de las localizadas. Con cinco capturas localizadas por idioma, añadir otras globales duplicaría la historia visual y haría la ficha más larga sin aportar información nueva.
+
+Si el Dashboard llegara a exigir una captura global de fallback, usar únicamente la primera captura española (`localized/es/01-vault.png`) porque Español es el `default_locale`.
+
+## Recursos globales
+
+Estos recursos no se localizan y se encuentran en `dist/store-assets/global/`:
+
+- `store-icon-128.png`
+- `promo-small-440x280.png`
+- `promo-marquee-1400x560.png`
+
+Las promos se han diseñado sin texto dependiente del idioma: solo marca TOTP Vault y elementos gráficos de código, para que funcionen igual en Español e Inglés.
 
 ## Justificación de permisos / Permission justifications
 
@@ -154,90 +173,52 @@ TOTP Vault uses Manifest V3 and is designed to request only the permissions requ
 
 **Respuesta / Answer:** No.
 
-**ES**
-
 > TOTP Vault no ejecuta código remoto. Las dependencias necesarias, incluido jsQR, están incluidas en el paquete publicado.
-
-**EN**
 
 > TOTP Vault does not execute remote code. Required dependencies, including jsQR, are bundled in the published extension package.
 
-## Datos de usuario — declaración recomendada
+## Uso de datos
 
 Marcar:
 
-- **Información de autenticación / Authentication information**.
-- **Contenido del sitio web / Website content**.
+- **Información de autenticación / Authentication information**
+- **Contenido del sitio web / Website content**
 
-No marcar, salvo que el formulario cambie o se añada una función nueva:
+No marcar con la funcionalidad actual:
 
-- Historial web / Web browsing activity.
-- Información sanitaria.
-- Información financiera.
-- Comunicaciones personales.
-- Ubicación.
-- Actividad del usuario.
-
-La extensión procesa los datos necesarios localmente para sus funciones visibles. El desarrollador no recibe secretos TOTP, códigos, imágenes QR, contenido de páginas ni datos de navegación.
+- Historial web / Web browsing activity
+- Información sanitaria
+- Información financiera
+- Comunicaciones personales
+- Ubicación
+- Actividad del usuario
 
 Certificaciones:
 
 - No se venden ni transfieren datos fuera de los casos permitidos.
-- No se usan datos para fines ajenos a la finalidad única declarada.
-- No se usan datos para determinar solvencia o conceder préstamos.
+- No se usan datos para fines ajenos a la finalidad única.
+- No se usan datos para determinar solvencia ni conceder préstamos.
 
-## Política de privacidad
+## URLs
 
-**URL:**
-
+**Política de privacidad ES:**  
 https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY.md
 
-## Página principal y soporte
+**Privacy policy EN:**  
+https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY_EN.md
 
-**Homepage:**
-
+**Homepage:**  
 https://github.com/alalbeniz/totp_vault
 
-**Support URL:**
-
+**Support:**  
 https://github.com/alalbeniz/totp_vault/issues
 
-## Novedades de v2.13.0
+## Pasos para actualizar Chrome Web Store
 
-### Español
-
-> Añadido soporte multiidioma en español e inglés. TOTP Vault puede seguir automáticamente el idioma de Chrome o usar un idioma elegido manualmente desde Ajustes. La localización cubre el popup, importación QR, selector inline, autorrelleno, accesibilidad y mensajes de error.
-
-### English
-
-> Added multilingual support for Spanish and English. TOTP Vault can automatically follow Chrome's language or use a language selected manually in Settings. Localization covers the popup, QR import, inline picker, autofill, accessibility labels, and error messages.
-
-## Recursos gráficos
-
-El paquete de assets contiene:
-
-- icono de Store: 128×128;
-- cinco capturas: 1280×800;
-- promo tile: 440×280;
-- marquee: 1400×560.
-
-Orden recomendado de capturas:
-
-1. Bóveda principal.
-2. Importación QR.
-3. Selector inline / autorrelleno.
-4. Ajustes y seguridad.
-5. Desbloqueo con contraseña maestra.
-
-Chrome Web Store permite capturas localizadas por idioma. Las capturas actuales pueden mantenerse como globales; si se añaden capturas inglesas, se deben subir seleccionando **English** en el desplegable de idioma de la ficha.
-
-## Pasos para actualizar la publicación
-
-1. En **Package**, usar **Upload New Package** y subir el ZIP CWS de v2.13.0.
-2. En **Store listing**, seleccionar **Español** y pegar la descripción detallada española.
-3. Seleccionar **English** en el selector de idioma y pegar la descripción detallada inglesa.
-4. Mantener o actualizar las capturas; opcionalmente añadir capturas específicas en inglés.
-5. Mantener categoría **Productividad / Productivity**.
-6. En **Privacy practices**, revisar permisos, datos de usuario y las tres certificaciones.
-7. Confirmar la URL de política de privacidad.
-8. Guardar y enviar la actualización a revisión.
+1. **Package → Upload New Package**: subir `totp-vault-v2.13.0-cws.zip`.
+2. **Store listing → Español**: pegar la descripción española y subir las 5 capturas de `localized/es/` en **Localized screenshots**.
+3. Dejar **Global screenshots** vacío.
+4. **Store listing → English**: pegar la descripción inglesa y subir las 5 capturas de `localized/en/` en **Localized screenshots**.
+5. Subir icono y promo tiles desde `global/`.
+6. Revisar Privacy practices, permisos, datos de usuario y política de privacidad.
+7. Guardar y enviar a revisión.
