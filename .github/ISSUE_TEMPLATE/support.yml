@@ -1,0 +1,45 @@
+name: "Question or support / Pregunta o asistencia"
+description: "Ask for help using TOTP Vault / Pide ayuda sobre el uso de TOTP Vault."
+title: "[Support]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe what you are trying to do and where you are stuck.
+
+        Explica qué intentas hacer y en qué punto tienes el problema.
+
+        **Never publish your TOTP secret, master password, backup file, QR code, or active authentication code.**
+        **Nunca publiques tu secreto TOTP, contraseña maestra, copia de seguridad, código QR ni un código de autenticación activo.**
+
+  - type: textarea
+    id: question
+    attributes:
+      label: "Question / Pregunta"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "What have you tried? / ¿Qué has probado?"
+      description: "Include relevant steps or settings, but no secrets."
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: "TOTP Vault version / Versión"
+      placeholder: "e.g. 2.13.0"
+
+  - type: input
+    id: chrome-version
+    attributes:
+      label: "Chrome version / Versión de Chrome"
+
+  - type: checkboxes
+    id: sensitive-data
+    attributes:
+      label: "Sensitive data / Datos sensibles"
+      options:
+        - label: "I have not included TOTP secrets, passwords, QR codes, backup contents or active authentication codes. / No he incluido secretos TOTP, contraseñas, códigos QR, contenido de copias de seguridad ni códigos de autenticación activos."
+          required: true

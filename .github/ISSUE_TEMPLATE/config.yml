@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Privacy policy / Política de privacidad"
+    url: "https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY.md"
+    about: "Read how TOTP Vault handles data / Consulta cómo trata los datos TOTP Vault."
