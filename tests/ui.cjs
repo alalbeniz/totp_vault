@@ -283,8 +283,8 @@ async function mockChrome() {
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('#toggleAdd').evaluate(el => el === document.activeElement), true);
     await add('GitHub · personal', 'otpauth://totp/GitHub:demo?secret=JBSWY3DPEHPK3PXP&issuer=GitHub');
-    await add('Google · trabajo', 'otpauth://totp/Google:demo?secret=JBSWY3DPEHPK3PXP&issuer=Google');
-    await add('VPN · oficina', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
+    await add('Google · Workspace', 'otpauth://totp/Google:demo?secret=JBSWY3DPEHPK3PXP&issuer=Google');
+    await add('VPN · Corp', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
     assert.equal(await page.locator('.totp-card').count(), 3);
     assert.equal(await page.locator('#accountCount').innerText(), '3');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
@@ -425,7 +425,7 @@ async function mockChrome() {
         ? { ok: true, code: '123456', autoSubmitMode: 'off' }
         : { ok: true, locked: false, colorTheme: '777778', entries: [
           { id: 'demo', name: 'GitHub · personal', issuer: 'GitHub', code: '123456', remaining: 27, icon: { type: 'builtin', key: 'github' } },
-          { id: 'demo2', name: 'Google · trabajo', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
+          { id: 'demo2', name: 'Google · Workspace', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
         ] };
     });
     await inline.addScriptTag({ url: '/content.js' });
