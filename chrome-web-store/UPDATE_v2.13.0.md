@@ -1,24 +1,54 @@
 # Actualización Chrome Web Store — TOTP Vault v2.13.0
 
-Usa `chrome-web-store/LISTING.md` como fuente de todos los textos ES/EN.
+Usa `chrome-web-store/LISTING.md` como fuente principal.
 
-## Archivos a subir
+## Paquete
 
-- Paquete de extensión: `totp-vault-v2.13.0-cws.zip`
-- Assets: icono 128×128, 5 capturas 1280×800, promo 440×280 y marquee 1400×560.
+Subir en **Package → Upload New Package**:
 
-## Cambio principal
+`totp-vault-v2.13.0-cws.zip`
 
-Soporte multiidioma Español/English, con opción Sistema/Spanish/English en Ajustes.
+## Store listing
 
-## Chrome Web Store
+### Español
 
-- Package → Upload New Package.
-- Store listing → completar Español y English.
-- Privacy practices → mantener las declaraciones indicadas en LISTING.md.
-- Privacy policy → https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY.md
-- Homepage → https://github.com/alalbeniz/totp_vault
-- Support → https://github.com/alalbeniz/totp_vault/issues
+Descripción detallada: usar la sección española de `LISTING.md`.
+
+**Localized screenshots:** subir, en este orden, las 5 imágenes de:
+
+`store-assets/localized/es/`
+
+### English
+
+Detailed description: use the English section in `LISTING.md`.
+
+**Localized screenshots:** upload, in order, the 5 images from:
+
+`store-assets/localized/en/`
+
+### Global screenshots
+
+**Dejar vacío.** Google muestra las capturas globales después de las localizadas. Como Español e Inglés tienen cinco capturas completas, añadir capturas globales duplicaría contenido.
+
+Si el Dashboard exigiera una captura global, usar solo `localized/es/01-vault.png` como fallback del idioma por defecto.
+
+## Recursos globales
+
+Subir desde `store-assets/global/`:
+
+- `store-icon-128.png`
+- `promo-small-440x280.png`
+- `promo-marquee-1400x560.png`
+
+Las promos son deliberadamente neutras respecto al idioma.
+
+## Resumen ES
+
+Códigos 2FA (TOTP), cifrados en tu navegador. Importa QR, copia o rellena códigos y mantén tus cuentas bajo tu control.
+
+## Summary EN
+
+2FA (TOTP) codes in a local encrypted vault. Import QR codes, copy or fill codes, and keep your accounts under your control.
 
 ## Release notes ES
 
@@ -27,3 +57,16 @@ Añadido soporte multiidioma en español e inglés. La extensión puede seguir e
 ## Release notes EN
 
 Added multilingual support for Spanish and English. The extension can follow Chrome's language or use a language selected manually in Settings. The inline picker, autofill, QR import, accessibility labels, and error messages are also localized.
+
+## Privacidad
+
+- Política ES: https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY.md
+- Privacy EN: https://github.com/alalbeniz/totp_vault/blob/main/PRIVACY_EN.md
+- Código remoto: **No**
+- Datos: **Authentication information** y **Website content**
+- Marcar las tres certificaciones de Limited Use indicadas en `LISTING.md`.
+
+## URLs
+
+- Homepage: https://github.com/alalbeniz/totp_vault
+- Support: https://github.com/alalbeniz/totp_vault/issues
