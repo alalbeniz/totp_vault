@@ -110,6 +110,7 @@
   const observer = new MutationObserver(() => apply());
 
   async function init() {
+    await globalThis.TotpI18n?.ready;
     const stored = await chrome.storage.local.get(STORAGE_SETTINGS);
     settings = normalize(stored[STORAGE_SETTINGS]);
     observer.observe(document.documentElement, { childList: true, subtree: true });
