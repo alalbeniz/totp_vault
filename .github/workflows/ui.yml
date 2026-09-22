@@ -35,32 +35,7 @@ jobs:
           mkdir -p "dist/cws"
           cp -R "dist/${PACKAGE}/." "dist/cws/"
           (cd dist/cws && zip -r "../${PACKAGE}-cws.zip" .)
-          unzip -l "dist/${PACKAGE}-cws.zip" | grep -qE '[[:space:]]manifest\.json
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: interface-screenshots
-          path: test-results/*.png
-          retention-days: 7
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: ${{ env.package_name }}
-          path: dist/${{ env.package_name }}.zip
-          retention-days: 7
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: ${{ env.package_name }}-cws
-          path: dist/${{ env.package_name }}-cws.zip
-          retention-days: 30
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: chrome-web-store-assets
-          path: dist/store-assets/
-          retention-days: 30
-
+          unzip -l "dist/${PACKAGE}-cws.zip" | grep -qE '[[:space:]]manifest\.json$'
           unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx 'i18n.js'
           unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/es/messages.json'
           unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/en/messages.json'
