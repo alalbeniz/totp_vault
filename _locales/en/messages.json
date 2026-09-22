@@ -739,5 +739,22 @@
   },
   "iconProcessError": {
     "message": "Could not process the icon."
+  },
+  "pickerBanner": {
+    "message": "TOTP Vault: click the code field to fill it · Esc to cancel"
+  },
+  "totpMeta": {
+    "message": "$DIGITS$ digits · $PERIOD$s",
+    "placeholders": {
+      "digits": {
+        "content": "$1"
+      },
+      "period": {
+        "content": "$2"
+      }
+    }
+  },
+  "qrPasteLead": {
+    "message": "Now paste the image with"
   }
 }
