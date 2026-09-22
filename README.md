@@ -33,6 +33,7 @@ Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm 
 - Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
+- Interfaz multiidioma en español e inglés, seleccionada automáticamente según el idioma de Chrome.
 
 ## Importación desde QR
 
@@ -48,6 +49,14 @@ Las imágenes se decodifican localmente. Para URLs externas, la extensión solic
 El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` como fallback local. `jsQR` está fijado como dependencia de pnpm y se copia al paquete durante la preparación/CI; no se descarga código en tiempo de ejecución. Dependabot comprueba sus nuevas versiones y abre un PR, que debe superar las pruebas QR antes de integrarse.
 
 El formato de exportación masiva `otpauth-migration://` de Google Authenticator todavía no se importa.
+
+## Novedades de v2.13.0
+
+- Soporte multiidioma nativo mediante `chrome.i18n`.
+- Español e inglés incluidos en `_locales/es` y `_locales/en`.
+- Idioma seleccionado automáticamente según la configuración de Chrome.
+- `manifest.json`, popup, importación QR, selector inline, estados, errores y mensajes del service worker localizados.
+- Pruebas que verifican paridad de claves entre idiomas y una carga real de interfaz en inglés.
 
 ## Novedades de v2.12.0
 
@@ -182,7 +191,7 @@ Una vez introducido un TOTP en una página web, esa página puede leer el valor 
 
 ## Versión actual
 
-**v2.12.0**
+**v2.13.0**
 
 ## Verificación de la interfaz
 
@@ -194,6 +203,6 @@ pnpm exec playwright install --with-deps chromium-headless-shell
 pnpm test
 ```
 
-Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban importación QR desde archivo/URL/portapapeles/página, altas, edición, borrado, búsqueda, visibilidad, diez temas, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
+Las pruebas ejecutan los scripts reales del popup y WebCrypto con cuentas ficticias. Las API de Chrome (almacenamiento, portapapeles, permisos e inyección) se simulan para aislar la prueba de los datos personales. Se comprueban importación QR desde archivo/URL/portapapeles/página, altas, edición, borrado, búsqueda, visibilidad, diez temas, localización español/inglés, persistencia, bloqueo, contraseña, exportación cifrada y el diseño a 420 y 320 px. Las capturas se guardan en `test-results/`.
 
 La integración real con los permisos del navegador y el autorrelleno en otras webs se comprueba cargando la extensión descomprimida.
