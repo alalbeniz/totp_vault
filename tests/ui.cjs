@@ -170,6 +170,14 @@ async function mockChrome() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('dialog', dialog => dialog.accept(dialog.type() === 'prompt' ? 'pastel-test-password' : undefined));
     const shot = name => page.screenshot({ path: path.join(results, name + '.png') });
+    const setLanguage = async language => {
+      await page.evaluate(async value => {
+        const data = await chrome.storage.local.get('settings');
+        await chrome.storage.local.set({ settings: { ...(data.settings || {}), language: value } });
+      }, language);
+      await page.reload();
+      await page.locator('#vaultView:not(.hidden), #unlockView:not(.hidden), #setupView:not(.hidden)').first().waitFor();
+    };
     await page.goto(`http://127.0.0.1:${server.address().port}/popup.html`);
     await page.locator('#setupView:not(.hidden)').waitFor();
     await page.evaluate(() => {
@@ -220,7 +228,7 @@ async function mockChrome() {
     await page.locator('#qrImportBtn').click();
     await page.locator('#qrPanel:not(.hidden)').waitFor();
     assert.equal(await page.locator('#qrPanel').evaluate(el => el.scrollHeight > el.clientHeight + 2), false);
-    await shot('qr-import');
+    await shot('qr-import-es');
     await page.locator('#qrFileInput').setInputFiles({
       name: 'qr.svg',
       mimeType: 'image/svg+xml',
@@ -256,6 +264,13 @@ async function mockChrome() {
     await page.locator('#qrImportBtn').click();
     await page.locator('#qrPageBtn').click();
     await assertQrReview();
+
+    await setLanguage('en');
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrPanel:not(.hidden)').waitFor();
+    await shot('qr-import-en');
+    await setLanguage('es');
+
     const add = async (name, secret) => {
       await page.locator('#toggleAdd').click();
       await page.locator('#name').fill(name);
@@ -268,12 +283,19 @@ async function mockChrome() {
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('#toggleAdd').evaluate(el => el === document.activeElement), true);
     await add('GitHub · personal', 'otpauth://totp/GitHub:demo?secret=JBSWY3DPEHPK3PXP&issuer=GitHub');
-    await add('Google · trabajo', 'otpauth://totp/Google:demo?secret=JBSWY3DPEHPK3PXP&issuer=Google');
-    await add('VPN · oficina', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
+    await add('Google · Workspace', 'otpauth://totp/Google:demo?secret=JBSWY3DPEHPK3PXP&issuer=Google');
+    await add('VPN · Corp', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
     assert.equal(await page.locator('.totp-card').count(), 3);
     assert.equal(await page.locator('#accountCount').innerText(), '3');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
-    await shot('vault');
+    await shot('vault-es');
+    await setLanguage('en');
+    await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
+    assert.equal((await page.locator('.fill-btn').first().innerText()).trim(), 'Fill');
+    assert.equal((await page.locator('.copy-btn').first().innerText()).trim(), 'Copy');
+    await shot('vault-en');
+    await setLanguage('es');
+    await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
     // Real cryptography: RFC 6238 SHA-1 vector, and stored vault contains no plaintext seed.
     assert.equal(await page.evaluate(() => generateTotp('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', 30, 8, 'SHA-1', 59)), '94287082');
     assert.equal(await page.evaluate(() => localStorage.getItem('__test_local').includes('JBSWY3DPEHPK3PXP')), false);
@@ -326,7 +348,14 @@ async function mockChrome() {
     await page.locator('#autoSubmitMode').selectOption('conservative');
     assert.equal(await page.evaluate(async () => (await chrome.storage.local.get('settings')).settings.autoSubmitMode), 'conservative');
     await page.locator('.theme-swatch[data-theme="1c485f"]').click();
-    await shot('settings');
+    await shot('settings-es');
+    await setLanguage('en');
+    await page.locator('#settingsBtn').click();
+    await page.locator('#settingsPanel:not(.hidden)').waitFor();
+    await shot('settings-en');
+    await setLanguage('es');
+    await page.locator('#settingsBtn').click();
+    await page.locator('#settingsPanel:not(.hidden)').waitFor();
     await page.locator('#inlinePickerMode').selectOption('site');
     await page.locator('#inlineSiteToggle').click();
     assert.match(await page.locator('#inlineSiteStatus').innerText(), /autorizado/);
@@ -345,7 +374,12 @@ async function mockChrome() {
     await page.locator('#closeSettings').click();
     await page.locator('#lockBtn').click();
     await page.locator('#unlockView:not(.hidden)').waitFor();
-    await shot('unlock');
+    await shot('unlock-es');
+    await setLanguage('en');
+    await page.locator('#unlockView:not(.hidden)').waitFor();
+    await shot('unlock-en');
+    await setLanguage('es');
+    await page.locator('#unlockView:not(.hidden)').waitFor();
     await page.locator('#unlockPassword').fill('wrong-password');
     await page.locator('#unlockForm button[type=submit]').click();
     await page.locator('#unlockError:not(.hidden)').waitFor();
@@ -393,7 +427,7 @@ async function mockChrome() {
         ? { ok: true, code: '123456', autoSubmitMode: 'off' }
         : { ok: true, locked: false, colorTheme: '777778', entries: [
           { id: 'demo', name: 'GitHub · personal', issuer: 'GitHub', code: '123456', remaining: 27, icon: { type: 'builtin', key: 'github' } },
-          { id: 'demo2', name: 'Google · trabajo', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
+          { id: 'demo2', name: 'Google · Workspace', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
         ] };
     });
     await inline.addScriptTag({ url: '/content.js' });
@@ -408,12 +442,55 @@ async function mockChrome() {
     await inline.locator('[data-totp-vault-inline] .b').click();
     await inline.locator('[data-totp-vault-inline] .r').first().waitFor();
     await inline.waitForFunction(() => [...document.querySelector('[data-totp-vault-inline]').shadowRoot.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0));
-    await inline.screenshot({ path: path.join(results, 'inline.png') });
+    await inline.screenshot({ path: path.join(results, 'inline-es.png') });
     await inline.locator('[data-totp-vault-inline] .q').fill('Google');
     assert.equal(await inline.locator('[data-totp-vault-inline] .r').count(), 1);
     await inline.locator('[data-totp-vault-inline] .r').click();
     assert.equal(await inline.locator('#otp').inputValue(), '123456');
     await inline.close();
+
+    const inlineEn = await context.newPage();
+    inlineEn.on('pageerror', e => errors.push(e.message));
+    await inlineEn.setViewportSize({ width: 760, height: 640 });
+    await inlineEn.goto(`http://127.0.0.1:${server.address().port}/tests/fixture.html`);
+    await inlineEn.evaluate(() => {
+      document.documentElement.lang = 'en';
+      document.title = 'Verification demo';
+      const main = document.querySelector('main');
+      main.querySelector('p').textContent = 'DEMO ACCOUNT';
+      main.querySelector('h1').textContent = 'Verify it is you';
+      main.querySelectorAll('p')[1].textContent = 'Enter the code from your authenticator.';
+      main.querySelector('label').textContent = 'Verification code';
+
+      const attach = Element.prototype.attachShadow;
+      Element.prototype.attachShadow = function(options) { return attach.call(this, { ...options, mode: 'open' }); };
+      const messages = {
+        chooseTotp: 'Choose TOTP',
+        searchAccount: 'Search an account…',
+        loading: 'Loading…',
+        inlineVaultOpenError: 'Could not read the vault.',
+        vaultLocked: 'The vault is locked.',
+        openTotpVault: 'Open TOTP Vault',
+        updatesAutomatically: 'It will update automatically after unlocking.',
+        unlockVaultHelp: 'Unlock TOTP Vault to choose an account.',
+        noMatches: 'No matches',
+        noTotpSaved: 'No TOTP accounts saved'
+      };
+      chrome.runtime.sendMessage = async ({ type }) => {
+        if (type === 'totpVault:i18n:inline') return { ok: true, language: 'en', messages };
+        if (type === 'totpVault:inline:code') return { ok: true, code: '123456', autoSubmitMode: 'off' };
+        return { ok: true, locked: false, colorTheme: '777778', entries: [
+          { id: 'demo', name: 'GitHub · personal', issuer: 'GitHub', code: '123456', remaining: 27, icon: { type: 'builtin', key: 'github' } },
+          { id: 'demo2', name: 'Google · work', issuer: 'Google', code: '654321', remaining: 27, icon: { type: 'builtin', key: 'google' } }
+        ] };
+      };
+    });
+    await inlineEn.addScriptTag({ url: '/content.js' });
+    await inlineEn.locator('[data-totp-vault-inline] .b').click();
+    await inlineEn.locator('[data-totp-vault-inline] .r').first().waitFor();
+    await inlineEn.waitForFunction(() => [...document.querySelector('[data-totp-vault-inline]').shadowRoot.querySelectorAll('img')].every(img => img.complete && img.naturalWidth > 0));
+    await inlineEn.screenshot({ path: path.join(results, 'inline-en.png') });
+    await inlineEn.close();
 
     // "Código postal" is not an OTP field even though it contains the word "código".
     const postal = await context.newPage();

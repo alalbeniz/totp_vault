@@ -3,7 +3,7 @@
     "message": "TOTP Vault"
   },
   "extensionDescription": {
-    "message": "Local encrypted TOTP vault with QR import, autofill, automatic locking, and encrypted backups."
+    "message": "2FA (TOTP) codes in a local encrypted vault. Import QR codes, copy or fill codes, and keep your accounts under your control."
   },
   "loadingOpeningVault": {
     "message": "Opening vault…"
