@@ -187,6 +187,25 @@ async function mockChrome() {
     assert.equal(await page.locator('#emptyState').isVisible(), true);
     await shot('empty');
 
+    // Manual language override: System follows Chrome; explicit English overrides it.
+    await page.locator('#settingsBtn').click();
+    await page.locator('#settingsPanel:not(.hidden)').waitFor();
+    assert.equal(await page.locator('#languageSelect').inputValue(), 'system');
+    await page.locator('#languageSelect').selectOption('en');
+    await page.locator('#vaultView:not(.hidden)').waitFor();
+    await page.locator('#settingsPanel.hidden').waitFor({ state: 'attached' });
+    assert.match(await page.locator('.collection-heading h2').innerText(), /My codes/);
+    assert.equal(await page.locator('html').getAttribute('lang'), 'en');
+
+    await page.locator('#settingsBtn').click();
+    await page.locator('#settingsPanel:not(.hidden)').waitFor();
+    assert.equal(await page.locator('#languageSelect').inputValue(), 'en');
+    assert.equal(await page.locator('.language-setting').first().innerText().then(text => text.split('\n')[0].trim()), 'Language');
+    await page.locator('#languageSelect').selectOption('system');
+    await page.locator('#vaultView:not(.hidden)').waitFor();
+    assert.match(await page.locator('.collection-heading h2').innerText(), /Mis códigos/);
+    assert.equal(await page.locator('html').getAttribute('lang'), 'es');
+
     // QR import: local file, direct image URL, pasted image and current-page capture
     // all use the same real jsQR decoder and end in the existing review form.
     const assertQrReview = async () => {
