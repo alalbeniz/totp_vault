@@ -1,8 +1,10 @@
 # Política de privacidad de TOTP Vault
 
-**Última actualización:** 21 de septiembre de 2026
+**Última actualización:** 22 de septiembre de 2026
 
-TOTP Vault es una extensión de Chrome para almacenar, generar, importar y rellenar códigos TOTP de autenticación de dos factores. Su diseño es local: no utiliza servidores propios, analítica, publicidad ni telemetría.
+TOTP Vault es una extensión de Chrome para almacenar, generar, importar y rellenar códigos TOTP de autenticación de dos factores.
+
+[English version](PRIVACY_EN.md) Su diseño es local: no utiliza servidores propios, analítica, publicidad ni telemetría.
 
 **El desarrollador de TOTP Vault no recibe ni recopila datos de los usuarios.** Los datos necesarios para el funcionamiento de la extensión se procesan localmente en el navegador del usuario, salvo las solicitudes de red iniciadas expresamente por el propio usuario, como descargar una imagen QR desde una URL indicada por él.
 
@@ -14,7 +16,7 @@ TOTP Vault puede procesar los siguientes datos cuando el usuario utiliza sus fun
 - Códigos TOTP generados temporalmente para mostrarlos, copiarlos o rellenarlos.
 - Contraseña maestra introducida por el usuario para desbloquear la bóveda.
 - Iconos personalizados que el usuario decida asociar a una cuenta.
-- Preferencias de la extensión, como tema visual, bloqueo automático, visibilidad y configuración del selector inline.
+- Preferencias de la extensión, como idioma, tema visual, bloqueo automático, visibilidad y configuración del selector inline.
 - Dominios o sitios autorizados por el usuario para funciones opcionales como el selector inline.
 - Contenido de la pestaña activa únicamente cuando el usuario solicita localizar o rellenar un campo OTP/TOTP o leer un QR visible.
 - Imágenes QR aportadas por el usuario desde archivo, portapapeles, pestaña visible o URL.
