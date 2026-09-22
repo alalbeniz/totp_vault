@@ -38,13 +38,13 @@ body {
   font-size: 28px; font-weight: 700;
 }
 .brand img { width: 58px; height: 58px; object-fit: contain; }
-.copy { position: absolute; left: 72px; top: 180px; width: 550px; }
-.copy h1 { margin: 0; font-size: 44px; line-height: 1.18; letter-spacing: -1.2px; }
+.copy { position: absolute; left: 72px; top: 180px; width: ${inline ? '390px' : '550px'}; }
+.copy h1 { margin: 0; font-size: ${inline ? '40px' : '44px'}; line-height: 1.18; letter-spacing: -1.2px; }
 .copy p { margin: 20px 0 0; font-size: 25px; line-height: 1.45; color: #657480; }
 .shot {
-  position: absolute; right: 78px; top: 50%;
+  position: absolute; right: ${inline ? '40px' : '78px'}; top: 50%;
   transform: translateY(-50%);
-  max-width: ${inline ? '680px' : '500px'};
+  max-width: ${inline ? '620px' : '500px'};
   max-height: 690px;
   object-fit: contain;
   filter: drop-shadow(8px 12px 13px rgba(40,55,70,.16));
