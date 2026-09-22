@@ -3,6 +3,7 @@ const STORAGE_SETTINGS = "settings";
 const SESSION_KEY = "vaultSession";
 const INLINE_RECENT_KEY = "inlineRecent";
 const INLINE_SCRIPT_ID = "totp-vault-inline-picker";
+const tr = (key, subs, fallback = "") => { try { return chrome.i18n?.getMessage?.(key, subs) || fallback; } catch { return fallback; } };
 
 let inlineRegistrationTask = Promise.resolve();
 
@@ -40,14 +41,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "totpVault:inline:list") {
     listInlineEntries()
       .then(sendResponse)
-      .catch((error) => sendResponse({ ok: false, error: error.message || "No se pudo abrir la bóveda." }));
+      .catch((error) => sendResponse({ ok: false, error: error.message || tr("inlineVaultOpenError", undefined, "No se pudo abrir la bóveda.") }));
     return true;
   }
 
   if (message.type === "totpVault:inline:code") {
     getInlineCode(message.entryId)
       .then(sendResponse)
-      .catch((error) => sendResponse({ ok: false, error: error.message || "No se pudo generar el código." }));
+      .catch((error) => sendResponse({ ok: false, error: error.message || tr("inlineCodeError", undefined, "No se pudo generar el código.") }));
     return true;
   }
 
@@ -265,10 +266,10 @@ async function listInlineEntries() {
 
 async function getInlineCode(entryId) {
   const vault = await getUnlockedEntries();
-  if (vault.locked) return { ok: false, locked: true, error: "La bóveda está bloqueada." };
+  if (vault.locked) return { ok: false, locked: true, error: tr("vaultLocked", undefined, "La bóveda está bloqueada.") };
 
   const entry = vault.entries.find((item) => item.id === entryId);
-  if (!entry) return { ok: false, error: "La cuenta TOTP ya no existe." };
+  if (!entry) return { ok: false, error: tr("totpAccountMissing", undefined, "La cuenta TOTP ya no existe.") };
 
   const current = await getCurrentCode(entry);
   const recentData = await chrome.storage.local.get(INLINE_RECENT_KEY);
@@ -348,7 +349,7 @@ async function decryptVault(meta, keyBytes) {
     base64ToBytes(meta.ciphertext)
   );
   const parsed = JSON.parse(new TextDecoder().decode(plaintext));
-  if (!Array.isArray(parsed)) throw new Error("Formato de bóveda inválido.");
+  if (!Array.isArray(parsed)) throw new Error(tr("invalidVaultFormat", undefined, "Formato de bóveda inválido."));
   return parsed;
 }
 
@@ -394,7 +395,7 @@ function base32ToBytes(base32) {
   let bits = "";
   for (const char of String(base32 || "").toUpperCase().replace(/[\s=-]/g, "")) {
     const value = alphabet.indexOf(char);
-    if (value < 0) throw new Error("Secreto Base32 inválido.");
+    if (value < 0) throw new Error(tr("invalidBase32", undefined, "Secreto Base32 inválido."));
     bits += value.toString(2).padStart(5, "0");
   }
   const out = [];
