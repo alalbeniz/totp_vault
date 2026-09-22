@@ -1,0 +1,82 @@
+name: "Bug report / Informe de error"
+description: "Report a reproducible problem with TOTP Vault / Informa de un problema reproducible."
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve TOTP Vault.
+
+        Gracias por ayudar a mejorar TOTP Vault.
+
+        **Do not include TOTP secrets, master passwords, backup files, QR codes, or active authentication codes.**
+        **No incluyas secretos TOTP, contraseñas maestras, copias de seguridad, códigos QR ni códigos de autenticación activos.**
+
+  - type: input
+    id: extension-version
+    attributes:
+      label: "TOTP Vault version / Versión"
+      placeholder: "e.g. 2.13.0"
+    validations:
+      required: true
+
+  - type: input
+    id: chrome-version
+    attributes:
+      label: "Chrome version / Versión de Chrome"
+      placeholder: "e.g. 140.0.x"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: "Operating system / Sistema operativo"
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - ChromeOS
+        - Other / Otro
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to reproduce / Pasos para reproducir"
+      description: "Describe the shortest sequence that reproduces the problem."
+      placeholder: |
+        1. Open...
+        2. Click...
+        3. See...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behavior / Comportamiento esperado"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual behavior / Comportamiento actual"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Additional context / Información adicional"
+      description: "Screenshots or console errors are useful if they contain no secrets or personal data."
+
+  - type: checkboxes
+    id: sensitive-data
+    attributes:
+      label: "Sensitive data / Datos sensibles"
+      options:
+        - label: "I have removed TOTP secrets, passwords, QR codes, backup contents and active authentication codes. / He eliminado secretos TOTP, contraseñas, códigos QR, contenido de copias de seguridad y códigos de autenticación activos."
+          required: true
