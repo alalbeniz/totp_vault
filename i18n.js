@@ -1,4 +1,6 @@
 (() => {
+  const SUPPORTED = new Set(["es", "en"]);
+  const DEFAULT_LANGUAGE = "es";
   const textKeys = new Map([
     ["Abriendo bóveda…","loadingOpeningVault"],["TU LLAVERO DIGITAL","digitalKeyring"],
     ["Todo empieza con una llave.","setupTitle"],["Crea una contraseña maestra para proteger tus cuentas en este navegador.","setupLead"],
@@ -15,6 +17,7 @@
     ["Nombre o descripción","nameDescription"],["Secreto Base32 u otpauth://","secretLabel"],["Icono","icon"],["Automático","automatic"],
     ["Personalizado…","custom"],["Quitar","remove"],["PNG, JPG o WebP · se guarda cifrado y reducido a 96×96.","iconHelp"],
     ["Cancelar","cancel"],["Guardar","save"],["A TU MANERA","settingsEyebrow"],["Ajustes y seguridad","settingsTitle"],
+    ["Idioma","language"],["Sistema","languageSystem"],["Español","languageSpanish"],["English","languageEnglish"],
     ["El color de tu bóveda","vaultColor"],["10 temas pastel","pastelThemes"],["Porcelana","themePorcelain"],["Cielo","themeSky"],
     ["Menta","themeMint"],["Avena","themeOat"],["Lavanda","themeLavender"],["Grafito","themeGraphite"],["Salvia","themeSage"],
     ["Vainilla","themeVanilla"],["Melocotón","themePeach"],["Rosa","themeRose"],["Seguridad","security"],["Bloqueo automático","autoLock"],
@@ -42,7 +45,66 @@
     ["Más opciones","moreOptions"],["Copiar código","copyCode"],["Ocultar código","hideCode"],["Segundos restantes","secondsRemaining"]
   ]);
 
+  let preference = "system";
+  let forcedCatalog = null;
+
+  function normalizePreference(value) {
+    return SUPPORTED.has(value) ? value : "system";
+  }
+
+  function systemLanguage() {
+    try {
+      const lang = String(globalThis.chrome?.i18n?.getUILanguage?.() || DEFAULT_LANGUAGE).toLowerCase().split("-")[0];
+      return SUPPORTED.has(lang) ? lang : DEFAULT_LANGUAGE;
+    } catch {
+      return DEFAULT_LANGUAGE;
+    }
+  }
+
+  function resolvedLanguage() {
+    return preference === "system" ? systemLanguage() : preference;
+  }
+
+  function formatCatalogEntry(entry, substitutions) {
+    if (!entry?.message) return "";
+    let message = entry.message;
+    const values = Array.isArray(substitutions)
+      ? substitutions.map((value) => String(value))
+      : substitutions === undefined || substitutions === null
+        ? []
+        : [String(substitutions)];
+
+    for (const [name, placeholder] of Object.entries(entry.placeholders || {})) {
+      const rendered = String(placeholder?.content || "").replace(/\$(\d+)/g, (_, index) => values[Number(index) - 1] ?? "");
+      message = message.replace(new RegExp("\\$" + name + "\\$", "gi"), rendered);
+    }
+    return message.replace(/\$\$/g, "$");
+  }
+
+  async function loadCatalog(language) {
+    const url = globalThis.chrome?.runtime?.getURL?.(`_locales/${language}/messages.json`) || `_locales/${language}/messages.json`;
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Could not load locale ${language}`);
+    return response.json();
+  }
+
+  async function initialize() {
+    try {
+      const data = await globalThis.chrome?.storage?.local?.get?.("settings");
+      preference = normalizePreference(data?.settings?.language);
+      forcedCatalog = preference === "system" ? null : await loadCatalog(preference);
+    } catch {
+      preference = "system";
+      forcedCatalog = null;
+    }
+    return preference;
+  }
+
   function t(key, substitutions, fallback = "") {
+    if (preference !== "system" && forcedCatalog) {
+      const value = formatCatalogEntry(forcedCatalog[key], substitutions);
+      if (value) return value;
+    }
     try {
       const value = globalThis.chrome?.i18n?.getMessage?.(key, substitutions);
       if (value) return value;
@@ -73,17 +135,28 @@
       }
     }
 
-    const language = (() => {
-      try { return globalThis.chrome?.i18n?.getUILanguage?.() || "es"; } catch { return "es"; }
-    })();
-    document.documentElement.lang = String(language).toLowerCase().split("-")[0] || "es";
+    document.documentElement.lang = resolvedLanguage();
   }
 
-  globalThis.TotpI18n = { t, localizeDocument };
+  const ready = initialize();
+
+  globalThis.TotpI18n = {
+    t,
+    ready,
+    localizeDocument,
+    getPreference: () => preference,
+    resolvedLanguage,
+    normalizePreference
+  };
+
+  const apply = async () => {
+    await ready;
+    localizeDocument();
+  };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => localizeDocument(), { once: true });
+    document.addEventListener("DOMContentLoaded", apply, { once: true });
   } else {
-    localizeDocument();
+    apply();
   }
 })();
