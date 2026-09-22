@@ -1,0 +1,45 @@
+name: "Feature request / Propuesta de mejora"
+description: "Suggest an improvement for TOTP Vault / Propón una mejora para TOTP Vault."
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement.
+
+        Gracias por proponer una mejora.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem or need / Problema o necesidad"
+      description: "What would you like to improve or make easier?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "Proposed solution / Solución propuesta"
+      description: "Describe how you would expect the feature to work."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives considered / Alternativas consideradas"
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: "Additional context / Información adicional"
+      description: "Mockups or examples are welcome. Do not include TOTP secrets, passwords, QR codes, or backup contents."
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: "Privacy / Privacidad"
+      options:
+        - label: "This request does not contain authentication secrets or other sensitive data. / Esta propuesta no contiene secretos de autenticación ni otros datos sensibles."
+          required: true
