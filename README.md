@@ -33,7 +33,7 @@ Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm 
 - Selector inline opcional por sitio o para todos los sitios autorizados.
 - Autoenvío configurable después de rellenar un TOTP.
 - Diez temas de color seleccionables.
-- Interfaz multiidioma en español e inglés, seleccionada automáticamente según el idioma de Chrome.
+- Interfaz multiidioma en español e inglés, con selección automática según Chrome o elección manual desde Ajustes.
 
 ## Importación desde QR
 
@@ -54,7 +54,7 @@ El formato de exportación masiva `otpauth-migration://` de Google Authenticator
 
 - Soporte multiidioma nativo mediante `chrome.i18n`.
 - Español e inglés incluidos en `_locales/es` y `_locales/en`.
-- Idioma seleccionado automáticamente según la configuración de Chrome.
+- Selector de idioma en Ajustes: Sistema, Español o English; Sistema sigue la configuración de Chrome.
 - `manifest.json`, popup, importación QR, selector inline, estados, errores y mensajes del service worker localizados.
 - Pruebas que verifican paridad de claves entre idiomas y una carga real de interfaz en inglés.
 
