@@ -3,7 +3,7 @@
     "message": "TOTP Vault"
   },
   "extensionDescription": {
-    "message": "Bóveda TOTP local y cifrada con importación QR, autorrelleno, bloqueo automático y copias de seguridad."
+    "message": "Códigos 2FA (TOTP), cifrados en tu navegador. Importa QR, copia o rellena códigos y mantén tus cuentas bajo tu control."
   },
   "loadingOpeningVault": {
     "message": "Abriendo bóveda…"
