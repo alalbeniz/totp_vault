@@ -4,9 +4,56 @@ const SESSION_KEY = "vaultSession";
 const INLINE_RECENT_KEY = "inlineRecent";
 const INLINE_SCRIPT_ID = "totp-vault-inline-picker";
 
+let languagePreference = "system";
+let forcedLocaleCatalog = null;
+
+function normalizeLanguagePreference(value) {
+  return ["es", "en"].includes(value) ? value : "system";
+}
+
+function formatLocaleEntry(entry, substitutions) {
+  if (!entry?.message) return "";
+  let message = entry.message;
+  const values = Array.isArray(substitutions)
+    ? substitutions.map((value) => String(value))
+    : substitutions === undefined || substitutions === null
+      ? []
+      : [String(substitutions)];
+  for (const [name, placeholder] of Object.entries(entry.placeholders || {})) {
+    const rendered = String(placeholder?.content || "").replace(/\$(\d+)/g, (_, index) => values[Number(index) - 1] ?? "");
+    message = message.replace(new RegExp("\\$" + name + "\\$", "gi"), rendered);
+  }
+  return message.replace(/\$\$/g, "$");
+}
+
+const tr = (key, subs, fallback = "") => {
+  if (languagePreference !== "system" && forcedLocaleCatalog) {
+    const value = formatLocaleEntry(forcedLocaleCatalog[key], subs);
+    if (value) return value;
+  }
+  try { return chrome.i18n?.getMessage?.(key, subs) || fallback; } catch { return fallback; }
+};
+
+async function hydrateLanguagePreference() {
+  try {
+    const data = await chrome.storage.local.get(STORAGE_SETTINGS);
+    languagePreference = normalizeLanguagePreference(data?.[STORAGE_SETTINGS]?.language);
+    if (languagePreference === "system") {
+      forcedLocaleCatalog = null;
+      return;
+    }
+    const response = await fetch(chrome.runtime.getURL(`_locales/${languagePreference}/messages.json`), { cache: "no-store" });
+    forcedLocaleCatalog = response.ok ? await response.json() : null;
+  } catch {
+    languagePreference = "system";
+    forcedLocaleCatalog = null;
+  }
+}
+
 let inlineRegistrationTask = Promise.resolve();
 
 const DEFAULT_SETTINGS = {
+  language: "system",
   autoLockMinutes: 5,
   inlinePickerMode: "off",
   inlineAllowedOrigins: [],
@@ -21,14 +68,33 @@ const SERVICE_ICON_KEYS = new Set([
   "cloudflare", "apple", "meta", "dropbox", "vpn", "generic"
 ]);
 
+const languageReady = hydrateLanguagePreference();
 hardenStorageAccess();
 refreshInlinePickerRegistration();
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes[STORAGE_SETTINGS]) hydrateLanguagePreference();
+});
 
 chrome.runtime.onInstalled.addListener(() => refreshInlinePickerRegistration());
 chrome.runtime.onStartup.addListener(() => refreshInlinePickerRegistration());
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || sender.id !== chrome.runtime.id) return false;
+
+  if (message.type === "totpVault:i18n:inline") {
+    hydrateLanguagePreference()
+      .then(() => sendResponse({
+        ok: true,
+        language: languagePreference,
+        messages: Object.fromEntries([
+          "chooseTotp","searchAccount","loading","inlineVaultOpenError","vaultLocked",
+          "openTotpVault","updatesAutomatically","unlockVaultHelp","noMatches","noTotpSaved"
+        ].map((key) => [key, tr(key)]))
+      }))
+      .catch(() => sendResponse({ ok: false, messages: {} }));
+    return true;
+  }
 
   if (message.type === "totpVault:inline:refreshRegistration") {
     refreshInlinePickerRegistration()
@@ -40,14 +106,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "totpVault:inline:list") {
     listInlineEntries()
       .then(sendResponse)
-      .catch((error) => sendResponse({ ok: false, error: error.message || "No se pudo abrir la bóveda." }));
+      .catch((error) => sendResponse({ ok: false, error: error.message || tr("inlineVaultOpenError", undefined, "No se pudo abrir la bóveda.") }));
     return true;
   }
 
   if (message.type === "totpVault:inline:code") {
     getInlineCode(message.entryId)
       .then(sendResponse)
-      .catch((error) => sendResponse({ ok: false, error: error.message || "No se pudo generar el código." }));
+      .catch((error) => sendResponse({ ok: false, error: error.message || tr("inlineCodeError", undefined, "No se pudo generar el código.") }));
     return true;
   }
 
@@ -77,6 +143,7 @@ async function getSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   const settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
   if (!Array.isArray(settings.inlineAllowedOrigins)) settings.inlineAllowedOrigins = [];
+  settings.language = normalizeLanguagePreference(settings.language);
   if (typeof settings.showCodes !== "boolean") settings.showCodes = true;
   if (!settings.codeVisibilityOverrides || typeof settings.codeVisibilityOverrides !== "object" || Array.isArray(settings.codeVisibilityOverrides)) {
     settings.codeVisibilityOverrides = {};
@@ -265,10 +332,10 @@ async function listInlineEntries() {
 
 async function getInlineCode(entryId) {
   const vault = await getUnlockedEntries();
-  if (vault.locked) return { ok: false, locked: true, error: "La bóveda está bloqueada." };
+  if (vault.locked) return { ok: false, locked: true, error: tr("vaultLocked", undefined, "La bóveda está bloqueada.") };
 
   const entry = vault.entries.find((item) => item.id === entryId);
-  if (!entry) return { ok: false, error: "La cuenta TOTP ya no existe." };
+  if (!entry) return { ok: false, error: tr("totpAccountMissing", undefined, "La cuenta TOTP ya no existe.") };
 
   const current = await getCurrentCode(entry);
   const recentData = await chrome.storage.local.get(INLINE_RECENT_KEY);
@@ -348,7 +415,7 @@ async function decryptVault(meta, keyBytes) {
     base64ToBytes(meta.ciphertext)
   );
   const parsed = JSON.parse(new TextDecoder().decode(plaintext));
-  if (!Array.isArray(parsed)) throw new Error("Formato de bóveda inválido.");
+  if (!Array.isArray(parsed)) throw new Error(tr("invalidVaultFormat", undefined, "Formato de bóveda inválido."));
   return parsed;
 }
 
@@ -394,7 +461,7 @@ function base32ToBytes(base32) {
   let bits = "";
   for (const char of String(base32 || "").toUpperCase().replace(/[\s=-]/g, "")) {
     const value = alphabet.indexOf(char);
-    if (value < 0) throw new Error("Secreto Base32 inválido.");
+    if (value < 0) throw new Error(tr("invalidBase32", undefined, "Secreto Base32 inválido."));
     bits += value.toString(2).padStart(5, "0");
   }
   const out = [];

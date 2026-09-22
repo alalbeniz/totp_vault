@@ -6,6 +6,7 @@
   <title>TOTP Vault</title>
   <link rel="stylesheet" href="popup.css">
   <script src="vendor/jsQR.js" defer></script>
+  <script src="i18n.js" defer></script>
   <script src="popup-core.js" defer></script>
   <script src="popup.js" defer></script>
   <script src="visibility.js" defer></script>
@@ -212,6 +213,15 @@
           <div><p class="eyebrow">A TU MANERA</p><h2>Ajustes y seguridad</h2></div>
           <button id="closeSettings" class="close-btn" type="button" aria-label="Cerrar">×</button>
         </div>
+
+        <label class="language-setting">
+          Idioma
+          <select id="languageSelect">
+            <option value="system">Sistema</option>
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+        </label>
 
         <div class="theme-settings">
           <div class="theme-heading"><span class="theme-label">El color de tu bóveda</span><span class="setting-caption">10 temas pastel</span></div>

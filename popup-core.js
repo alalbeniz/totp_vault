@@ -1,8 +1,10 @@
 const STORAGE_VAULT = "vaultMeta";
 const STORAGE_SETTINGS = "settings";
 const SESSION_KEY = "vaultSession";
+const tvt = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
 
 const DEFAULT_SETTINGS = {
+  language: "system",
   autoLockMinutes: 5,
   inlinePickerMode: "off",
   inlineAllowedOrigins: []
@@ -23,7 +25,7 @@ const BUILTIN_ICONS = {
   meta: { label: "Meta", src: "icons/services/meta.svg" },
   dropbox: { label: "Dropbox", src: "icons/services/dropbox.svg" },
   vpn: { label: "VPN", src: "icons/services/vpn.svg" },
-  generic: { label: "Genérico", src: "icons/services/generic.svg" }
+  generic: { label: tvt("generic", undefined, "Genérico"), src: "icons/services/generic.svg" }
 };
 
 const MAX_CUSTOM_ICON_BYTES = 2 * 1024 * 1024;
@@ -48,6 +50,7 @@ const $ = (selector) => document.querySelector(selector);
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
+  await globalThis.TotpI18n?.ready;
   await hardenStorageAccess();
   bindUi();
   setupListScrollbar();
@@ -240,14 +243,14 @@ async function rasterizeCustomIcon(file) {
     img.decoding = "async";
     await new Promise((resolve, reject) => {
       img.onload = resolve;
-      img.onerror = () => reject(new Error("No se pudo leer la imagen."));
+      img.onerror = () => reject(new Error(tvt("imageReadError", undefined, "No se pudo leer la imagen.")));
       img.src = url;
     });
     const canvas = document.createElement("canvas");
     canvas.width = CUSTOM_ICON_SIZE;
     canvas.height = CUSTOM_ICON_SIZE;
     const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) throw new Error("No se pudo procesar el icono.");
+    if (!ctx) throw new Error(tvt("iconProcessError", undefined, "No se pudo procesar el icono."));
     const scale = Math.min(CUSTOM_ICON_SIZE / img.naturalWidth, CUSTOM_ICON_SIZE / img.naturalHeight);
     const w = Math.max(1, Math.round(img.naturalWidth * scale));
     const h = Math.max(1, Math.round(img.naturalHeight * scale));
@@ -294,7 +297,7 @@ function bindUi() {
       state.pendingIcon = { type: "auto" };
       event.target.value = "";
       updateIconPickerUi();
-      showMessage("#formError", err.message || "No se pudo procesar el icono.", "error");
+      showMessage("#formError", err.message || tvt("iconProcessError", undefined, "No se pudo procesar el icono."), "error");
     }
   });
   $("#name").addEventListener("input", updateIconPickerUi);
@@ -308,6 +311,7 @@ function bindUi() {
   $("#closeSettings").addEventListener("click", () => showSettings(false));
   $("#lockBtn").addEventListener("click", lockVault);
 
+  $("#languageSelect").addEventListener("change", saveLanguageSetting);
   $("#autoLockSelect").addEventListener("change", saveAutoLockSetting);
   $("#inlinePickerMode").addEventListener("change", saveInlinePickerMode);
   $("#inlineSiteToggle").addEventListener("click", toggleInlineCurrentSite);
@@ -330,8 +334,11 @@ function bindUi() {
       input.type = showing ? "text" : "password";
       button.querySelector(".eye-open")?.classList.toggle("hidden", showing);
       button.querySelector(".eye-closed")?.classList.toggle("hidden", !showing);
-      button.setAttribute("aria-label", showing ? "Ocultar contenido" : "Mostrar contenido");
-      button.setAttribute("title", showing ? "Ocultar" : "Mostrar");
+      const revealLabel = showing
+        ? tvt("hideContent", undefined, "Ocultar contenido")
+        : tvt("showContent", undefined, "Mostrar contenido");
+      button.setAttribute("aria-label", revealLabel);
+      button.setAttribute("title", revealLabel);
     });
   }
 
@@ -346,6 +353,8 @@ async function loadSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   state.settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
   if (!Array.isArray(state.settings.inlineAllowedOrigins)) state.settings.inlineAllowedOrigins = [];
+  if (!["system", "es", "en"].includes(state.settings.language)) state.settings.language = "system";
+  $("#languageSelect").value = state.settings.language;
   $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
   $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
   await updateInlinePickerSettingsUi();
@@ -422,7 +431,7 @@ async function handleSetup(event) {
     switchView("vaultView");
     render();
   } catch (err) {
-    showMessage("#setupError", err.message || "No se pudo crear la bóveda.", "error");
+    showMessage("#setupError", err.message || tvt("createVaultError", undefined, "No se pudo crear la bóveda."), "error");
   }
 }
 
@@ -434,7 +443,7 @@ async function handleUnlock(event) {
     const password = $("#unlockPassword").value;
     const data = await chrome.storage.local.get(STORAGE_VAULT);
     const meta = data[STORAGE_VAULT];
-    if (!meta) throw new Error("No existe ninguna bóveda.");
+    if (!meta) throw new Error(tvt("vaultMissing", undefined, "No existe ninguna bóveda."));
 
     const salt = base64ToBytes(meta.salt);
     const keyBytes = await deriveKeyBytes(password, salt, meta.iterations || KDF_ITERATIONS);
@@ -443,7 +452,7 @@ async function handleUnlock(event) {
     try {
       entries = await decryptVault(meta, keyBytes);
     } catch {
-      throw new Error("Contraseña maestra incorrecta.");
+      throw new Error(tvt("incorrectMasterPassword", undefined, "Contraseña maestra incorrecta."));
     }
 
     state.keyBytes = keyBytes;
@@ -454,7 +463,7 @@ async function handleUnlock(event) {
     switchView("vaultView");
     render();
   } catch (err) {
-    showMessage("#unlockError", err.message || "No se pudo desbloquear.", "error");
+    showMessage("#unlockError", err.message || tvt("unlockError", undefined, "No se pudo desbloquear."), "error");
   }
 }
 
@@ -510,17 +519,17 @@ function updateVaultStatus() {
   const min = Number(state.settings.autoLockMinutes);
   let label;
 
-  if (min === 0) label = "al cerrar navegador";
-  else if (min === 60) label = "1 h";
-  else label = `${min || 5} min`;
+  if (min === 0) label = tvt("browserClose", undefined, "al cerrar navegador");
+  else if (min === 60) label = tvt("hourShort", undefined, "1 h");
+  else label = tvt("minutesShort", [String(min || 5)], `${min || 5} min`);
 
-  el.textContent = `Desbloqueada · bloqueo ${label}`;
+  el.textContent = tvt("vaultUnlockedAutoLock", [label], `Desbloqueada · bloqueo ${label}`);
 }
 
 function resetAddForm() {
   state.editingId = null;
-  $("#addPanelTitle").textContent = "Añadir TOTP";
-  $("#saveAddBtn").textContent = "Guardar";
+  $("#addPanelTitle").textContent = tvt("addTotp", undefined, "Añadir TOTP");
+  $("#saveAddBtn").textContent = tvt("save", undefined, "Guardar");
   $("#addForm").reset();
   state.pendingIcon = { type: "auto" };
   $("#customIconFile").value = "";
@@ -533,8 +542,8 @@ function openEditEntry(id) {
   if (!entry) return;
   closeCardMenus();
   state.editingId = id;
-  $("#addPanelTitle").textContent = "Editar TOTP";
-  $("#saveAddBtn").textContent = "Actualizar";
+  $("#addPanelTitle").textContent = tvt("editTotp", undefined, "Editar TOTP");
+  $("#saveAddBtn").textContent = tvt("update", undefined, "Actualizar");
   $("#name").value = entry.name || "";
   $("#secret").value = entry.secret || "";
   state.pendingIcon = normalizeIconConfig(entry.icon);
@@ -558,6 +567,7 @@ function showSettings(open) {
   $("#settingsPanel").classList.toggle("hidden", !open);
   if (open) {
     $("#addPanel").classList.add("hidden");
+    $("#languageSelect").value = state.settings.language || "system";
     $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
     $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";
     updateInlinePickerSettingsUi();
@@ -570,11 +580,18 @@ function showSettings(open) {
   touchSession();
 }
 
+async function saveLanguageSetting(event) {
+  const next = globalThis.TotpI18n?.normalizePreference?.(event.target.value) || "system";
+  state.settings.language = next;
+  await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
+  location.reload();
+}
+
 async function saveAutoLockSetting() {
   state.settings.autoLockMinutes = Number($("#autoLockSelect").value);
   await chrome.storage.local.set({ [STORAGE_SETTINGS]: state.settings });
   await touchSession();
-  showMessage("#settingsMessage", "Bloqueo automático actualizado.", "ok");
+  showMessage("#settingsMessage", tvt("autoLockUpdated", undefined, "Bloqueo automático actualizado."), "ok");
 }
 
 function inlineAllOrigins() {
@@ -613,7 +630,7 @@ async function saveInlinePickerMode(event) {
   try {
     if (nextMode === "all") {
       const granted = await chrome.permissions.request({ origins: inlineAllOrigins() });
-      if (!granted) throw new Error("Chrome no concedió acceso a todos los sitios.");
+      if (!granted) throw new Error(tvt("allSitesPermissionDenied", undefined, "Chrome no concedió acceso a todos los sitios."));
     } else if (previousMode === "all" && nextMode !== "all") {
       // Al abandonar el modo global retiramos el permiso amplio. Los sitios
       // concretos se podrán autorizar individualmente en modo "site".
@@ -625,17 +642,17 @@ async function saveInlinePickerMode(event) {
     await injectInlinePickerIntoCurrentTab();
 
     if (nextMode === "off") {
-      showMessage("#settingsMessage", "Selector junto al campo desactivado.", "ok");
+      showMessage("#settingsMessage", tvt("inlineDisabled", undefined, "Selector junto al campo desactivado."), "ok");
     } else if (nextMode === "site") {
-      showMessage("#settingsMessage", "Autoriza los sitios donde quieras usar el selector.", "ok");
+      showMessage("#settingsMessage", tvt("authorizeSitesHelp", undefined, "Autoriza los sitios donde quieras usar el selector."), "ok");
     } else {
-      showMessage("#settingsMessage", "Selector habilitado en todos los sitios web.", "ok");
+      showMessage("#settingsMessage", tvt("inlineAllSites", undefined, "Selector habilitado en todos los sitios web."), "ok");
     }
   } catch (err) {
     state.settings.inlinePickerMode = previousMode;
     event.target.value = previousMode;
     await saveInlineSettings();
-    showMessage("#settingsMessage", err.message || "No se pudo actualizar el selector.", "error");
+    showMessage("#settingsMessage", err.message || tvt("inlineUpdateError", undefined, "No se pudo actualizar el selector."), "error");
   }
 }
 
@@ -643,7 +660,7 @@ async function toggleInlineCurrentSite() {
   hideMessage("#settingsMessage");
   const current = await getActiveWebOrigin();
   if (!current) {
-    showMessage("#settingsMessage", "La pestaña actual no es una página http/https compatible.", "error");
+    showMessage("#settingsMessage", tvt("incompatibleTab", undefined, "La pestaña actual no es una página http/https compatible."), "error");
     return;
   }
 
@@ -658,7 +675,7 @@ async function toggleInlineCurrentSite() {
       try { await chrome.permissions.remove({ origins: [pattern] }); } catch {}
     } else {
       const granted = await chrome.permissions.request({ origins: [pattern] });
-      if (!granted) throw new Error(`Chrome no concedió acceso a ${origin}.`);
+      if (!granted) throw new Error(tvt("originPermissionDenied", [origin], `Chrome no concedió acceso a ${origin}.`));
       allowed.add(origin);
     }
 
@@ -669,11 +686,11 @@ async function toggleInlineCurrentSite() {
     if (!alreadyAllowed) await injectInlinePickerIntoCurrentTab();
     showMessage(
       "#settingsMessage",
-      alreadyAllowed ? `Acceso retirado para ${origin}.` : `Selector habilitado en ${origin}.`,
+      alreadyAllowed ? tvt("originRemoved", [origin], `Acceso retirado para ${origin}.`) : tvt("originEnabled", [origin], `Selector habilitado en ${origin}.`),
       "ok"
     );
   } catch (err) {
-    showMessage("#settingsMessage", err.message || "No se pudo cambiar el permiso del sitio.", "error");
+    showMessage("#settingsMessage", err.message || tvt("sitePermissionError", undefined, "No se pudo cambiar el permiso del sitio."), "error");
   }
 }
 
@@ -691,15 +708,15 @@ async function updateInlinePickerSettingsUi() {
   const current = await getActiveWebOrigin();
   if (!current) {
     button.disabled = true;
-    button.textContent = "Autorizar sitio actual";
-    status.textContent = "Abre una web http/https para autorizarla.";
+    button.textContent = tvt("authorizeCurrentSite", undefined, "Autorizar sitio actual");
+    status.textContent = tvt("openHttpSite", undefined, "Abre una web http/https para autorizarla.");
     return;
   }
 
   button.disabled = false;
   const allowed = (state.settings.inlineAllowedOrigins || []).includes(current.origin);
-  button.textContent = allowed ? "Quitar sitio" : "Autorizar sitio actual";
-  status.textContent = allowed ? `${current.origin} autorizado` : current.origin;
+  button.textContent = allowed ? tvt("removeSite", undefined, "Quitar sitio") : tvt("authorizeCurrentSite", undefined, "Autorizar sitio actual");
+  status.textContent = allowed ? tvt("originAuthorized", [current.origin], `${current.origin} autorizado`) : current.origin;
   status.classList.toggle("ok", allowed);
 }
 
@@ -742,13 +759,13 @@ async function handleAdd(event) {
     ensureUnlocked();
     const rawName = $("#name").value.trim();
     const rawSecret = $("#secret").value.trim();
-    if (!rawName) throw new Error("Introduce un nombre o descripción.");
-    if (!rawSecret) throw new Error("Introduce el secreto TOTP.");
+    if (!rawName) throw new Error(tvt("enterName", undefined, "Introduce un nombre o descripción."));
+    if (!rawSecret) throw new Error(tvt("enterSecret", undefined, "Introduce el secreto TOTP."));
 
     const parsed = parseInput(rawSecret);
     await generateTotp(parsed.secret, parsed.period, parsed.digits, parsed.algorithm);
     if (state.pendingIcon?.type === "custom" && !state.pendingIcon.data) {
-      throw new Error("Elige una imagen para el icono personalizado.");
+      throw new Error(tvt("chooseCustomIcon", undefined, "Elige una imagen para el icono personalizado."));
     }
 
     const payload = {
@@ -773,7 +790,7 @@ async function handleAdd(event) {
     showAdd(false);
     render();
   } catch (err) {
-    showMessage("#formError", err.message || "No se pudo guardar el TOTP.", "error");
+    showMessage("#formError", err.message || tvt("saveTotpError", undefined, "No se pudo guardar el TOTP."), "error");
   }
 }
 
@@ -799,7 +816,7 @@ async function deleteEntry(id) {
   closeCardMenus();
   const entry = state.entries.find((e) => e.id === id);
   if (!entry) return;
-  if (!confirm(`¿Eliminar "${entry.name}"?`)) return;
+  if (!confirm(tvt("confirmDelete", [entry.name], `¿Eliminar "${entry.name}"?`))) return;
 
   state.entries = state.entries.filter((e) => e.id !== id);
   await persistVault();
@@ -824,9 +841,9 @@ async function copyEntry(entry, node) {
     const { code } = await getCurrentCode(entry);
     await navigator.clipboard.writeText(code);
     await touchSession();
-    showStatus(node, "Código copiado.", "ok");
+    showStatus(node, tvt("codeCopied", undefined, "Código copiado."), "ok");
   } catch (err) {
-    showStatus(node, err.message || "No se pudo copiar.", "error");
+    showStatus(node, err.message || tvt("copyFailed", undefined, "No se pudo copiar."), "error");
   }
 }
 
@@ -836,10 +853,19 @@ async function fillEntry(entry, node) {
     const { code } = await getCurrentCode(entry);
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    if (!tab?.id) throw new Error("No se pudo acceder a la pestaña activa.");
+    if (!tab?.id) throw new Error(tvt("activeTabError", undefined, "No se pudo acceder a la pestaña activa."));
     if (/^(chrome|edge|about|chrome-extension):/i.test(tab.url || "")) {
-      throw new Error("Chrome no permite rellenar campos en páginas internas.");
+      throw new Error(tvt("internalPageFillError", undefined, "Chrome no permite rellenar campos en páginas internas."));
     }
+
+    const fillMessages = {
+      editableOtpNotFound: tvt("editableOtpNotFound", undefined, "No hay campos OTP editables accesibles en este frame."),
+      filledSlots: tvt("filledSlots", ["__COUNT__"], "Rellenadas __COUNT__ casillas OTP."),
+      pickerBanner: tvt("pickerBanner", undefined, "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar"),
+      pickerInstruction: tvt("pickerInstruction", undefined, "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."),
+      fieldDetected: tvt("fieldDetected", undefined, "campo detectado"),
+      filledInField: tvt("filledInField", ["__FIELD__"], "Rellenado en: __FIELD__")
+    };
 
     let results;
     try {
@@ -849,7 +875,7 @@ async function fillEntry(entry, node) {
       results = await chrome.scripting.executeScript({
         target: { tabId: tab.id, allFrames: true },
         func: fillDetectedTotp,
-        args: [code]
+        args: [code, fillMessages]
       });
     } catch {
       // Algunos sitios no permiten inyectar en todos sus frames. En ese caso
@@ -857,14 +883,14 @@ async function fillEntry(entry, node) {
       results = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: fillDetectedTotp,
-        args: [code]
+        args: [code, fillMessages]
       });
     }
 
     const success = results?.find((item) => item?.result?.ok)?.result;
     if (success?.ok) {
       await touchSession();
-      showStatus(node, success.message || "Código rellenado.", "ok");
+      showStatus(node, success.message || tvt("codeFilled", undefined, "Código rellenado."), "ok");
       return;
     }
 
@@ -872,18 +898,18 @@ async function fillEntry(entry, node) {
       ?.map((item) => item?.result?.message)
       .find(Boolean);
 
-    throw new Error(detail || "No encontré un campo TOTP/OTP reconocible.");
+    throw new Error(detail || tvt("otpFieldNotFound", undefined, "No encontré un campo TOTP/OTP reconocible."));
   } catch (err) {
-    const msg = err?.message || "No se pudo rellenar.";
+    const msg = err?.message || tvt("fillFailed", undefined, "No se pudo rellenar.");
     if (/Cannot access|Missing host permission|permission/i.test(msg)) {
-      showStatus(node, "La web bloquea el acceso al formulario o está en un iframe de otro dominio.", "error");
+      showStatus(node, tvt("iframeBlocked", undefined, "La web bloquea el acceso al formulario o está en un iframe de otro dominio."), "error");
     } else {
       showStatus(node, msg, "error");
     }
   }
 }
 
-function fillDetectedTotp(code) {
+function fillDetectedTotp(code, messages = {}) {
   const OTP_RX = /(totp|\botp\b|2fa|mfa|one[\s_-]?time|verification|verify|authenticator|security[\s_-]?code|login[\s_-]?code|passcode|token|pin|c[oó]digo|verificaci[oó]n|autenticaci[oó]n|seguridad|clave[\s_-]?temporal)/i;
 
   function visible(el) {
@@ -1036,7 +1062,7 @@ function fillDetectedTotp(code) {
 
   const inputs = collectInputs().filter(isEditable);
   if (!inputs.length) {
-    return { ok: false, message: "No hay campos OTP editables accesibles en este frame." };
+    return { ok: false, message: messages.editableOtpNotFound || "No hay campos OTP editables accesibles en este frame." };
   }
 
   // 1) OTP dividido en una casilla por dígito.
@@ -1070,7 +1096,7 @@ function fillDetectedTotp(code) {
         setNativeValue(el, code[i]);
       });
       group[group.length - 1].focus();
-      return { ok: true, message: `Rellenadas ${group.length} casillas OTP.` };
+      return { ok: true, message: (messages.filledSlots || "Rellenadas __COUNT__ casillas OTP.").replace("__COUNT__", String(group.length)) };
     }
   }
 
@@ -1104,7 +1130,7 @@ function fillDetectedTotp(code) {
 
     const banner = document.createElement("div");
     banner.id = PICKER_ID;
-    banner.textContent = "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar";
+    banner.textContent = messages.pickerBanner || "TOTP Vault: haz clic en el campo del código para rellenarlo · Esc para cancelar";
     Object.assign(banner.style, {
       position: "fixed",
       zIndex: "2147483647",
@@ -1183,7 +1209,7 @@ function fillDetectedTotp(code) {
     return {
       ok: true,
       pending: true,
-      message: "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."
+      message: messages.pickerInstruction || "No lo detecté automáticamente. Haz clic ahora en el campo OTP de la web."
     };
   }
 
@@ -1196,9 +1222,9 @@ function fillDetectedTotp(code) {
     target.placeholder ||
     target.name ||
     target.id ||
-    "campo detectado";
+    messages.fieldDetected || "campo detectado";
 
-  return { ok: true, message: `Rellenado en: ${fieldName}` };
+  return { ok: true, message: (messages.filledInField || "Rellenado en: __FIELD__").replace("__FIELD__", fieldName) };
 }
 
 async function exportEncryptedBackup() {
@@ -1223,9 +1249,9 @@ async function exportEncryptedBackup() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 
     await touchSession();
-    showMessage("#settingsMessage", "Copia cifrada exportada.", "ok");
+    showMessage("#settingsMessage", tvt("backupExported", undefined, "Copia cifrada exportada."), "ok");
   } catch (err) {
-    showMessage("#settingsMessage", err.message || "No se pudo exportar.", "error");
+    showMessage("#settingsMessage", err.message || tvt("exportFailed", undefined, "No se pudo exportar."), "error");
   }
 }
 
@@ -1239,13 +1265,13 @@ async function importEncryptedBackup(file, fromSetup) {
     const backup = JSON.parse(text);
 
     if (backup?.format !== "totp-vault-backup" || !backup?.vaultMeta?.ciphertext) {
-      throw new Error("El archivo no es una copia válida de TOTP Vault.");
+      throw new Error(tvt("invalidBackup", undefined, "El archivo no es una copia válida de TOTP Vault."));
     }
     if (Number(backup.version) > VAULT_VERSION) {
-      throw new Error("La copia pertenece a una versión más nueva de la extensión.");
+      throw new Error(tvt("newerBackup", undefined, "La copia pertenece a una versión más nueva de la extensión."));
     }
 
-    if (!fromSetup && !confirm("La importación sustituirá la bóveda actual. ¿Continuar?")) {
+    if (!fromSetup && !confirm(tvt("importConfirm", undefined, "La importación sustituirá la bóveda actual. ¿Continuar?"))) {
       return;
     }
 
@@ -1263,9 +1289,9 @@ async function importEncryptedBackup(file, fromSetup) {
     else $("#importFile").value = "";
 
     switchView("unlockView");
-    showMessage("#unlockError", "Copia importada. Desbloquéala con la contraseña de esa copia.", "ok");
+    showMessage("#unlockError", tvt("importSuccess", undefined, "Copia importada. Desbloquéala con la contraseña de esa copia."), "ok");
   } catch (err) {
-    showMessage(targetMessage, err.message || "No se pudo importar.", "error");
+    showMessage(targetMessage, err.message || tvt("importFailed", undefined, "No se pudo importar."), "error");
   }
 }
 
@@ -1293,7 +1319,7 @@ async function handleChangePassword(event) {
     try {
       await decryptVault(meta, candidateOldKey);
     } catch {
-      throw new Error("La contraseña actual no es correcta.");
+      throw new Error(tvt("currentPasswordWrong", undefined, "La contraseña actual no es correcta."));
     }
 
     const newSalt = crypto.getRandomValues(new Uint8Array(16));
@@ -1306,15 +1332,15 @@ async function handleChangePassword(event) {
 
     $("#changePasswordForm").reset();
     $("#changePasswordForm").classList.add("hidden");
-    showMessage("#settingsMessage", "Contraseña maestra actualizada.", "ok");
+    showMessage("#settingsMessage", tvt("masterPasswordUpdated", undefined, "Contraseña maestra actualizada."), "ok");
   } catch (err) {
-    showMessage("#changePasswordError", err.message || "No se pudo cambiar la contraseña.", "error");
+    showMessage("#changePasswordError", err.message || tvt("passwordChangeFailed", undefined, "No se pudo cambiar la contraseña."), "error");
   }
 }
 
 function validateNewPassword(p1, p2) {
-  if (p1.length < 8) throw new Error("Usa una contraseña de al menos 8 caracteres.");
-  if (p1 !== p2) throw new Error("Las contraseñas no coinciden.");
+  if (p1.length < 8) throw new Error(tvt("passwordMin8", undefined, "Usa una contraseña de al menos 8 caracteres."));
+  if (p1 !== p2) throw new Error(tvt("passwordsMismatch", undefined, "Las contraseñas no coinciden."));
 }
 
 async function encryptVault(entries, keyBytes, saltBytes, iterations) {
@@ -1349,7 +1375,7 @@ async function decryptVault(meta, keyBytes) {
   );
 
   const parsed = JSON.parse(new TextDecoder().decode(plaintext));
-  if (!Array.isArray(parsed)) throw new Error("Formato de bóveda inválido.");
+  if (!Array.isArray(parsed)) throw new Error(tvt("invalidVaultFormat", undefined, "Formato de bóveda inválido."));
   return parsed;
 }
 
@@ -1406,7 +1432,7 @@ function parseInput(value) {
   if (/^otpauth:\/\/totp\//i.test(value)) {
     const url = new URL(value);
     const secret = normalizeBase32(url.searchParams.get("secret") || "");
-    if (!secret) throw new Error("El enlace otpauth:// no contiene un secreto válido.");
+    if (!secret) throw new Error(tvt("invalidOtpauthSecret", undefined, "El enlace otpauth:// no contiene un secreto válido."));
 
     const digits = clampInt(url.searchParams.get("digits"), 6, 6, 8);
     const period = clampInt(url.searchParams.get("period"), 30, 5, 300);
@@ -1434,7 +1460,7 @@ function normalizeBase32(value) {
     .replace(/=+$/g, "");
 
   if (!normalized || !/^[A-Z2-7]+$/.test(normalized)) {
-    throw new Error("El secreto debe estar en Base32 o ser un enlace otpauth:// válido.");
+    throw new Error(tvt("invalidSecretFormat", undefined, "El secreto debe estar en Base32 o ser un enlace otpauth:// válido."));
   }
   return normalized;
 }
@@ -1444,7 +1470,7 @@ function normalizeAlgorithm(value) {
   if (v === "SHA1") return "SHA-1";
   if (v === "SHA256") return "SHA-256";
   if (v === "SHA512") return "SHA-512";
-  throw new Error(`Algoritmo TOTP no compatible: ${value}`);
+  throw new Error(tvt("unsupportedAlgorithm", [value], `Algoritmo TOTP no compatible: ${value}`));
 }
 
 function clampInt(value, fallback, min, max) {
@@ -1469,11 +1495,11 @@ function render() {
 
   if (hasAnyEntries && visibleEntries.length === 0) {
     empty.classList.remove("hidden");
-    empty.querySelector("strong").textContent = "Sin coincidencias";
-    empty.querySelector("span").textContent = "Prueba con otro texto de búsqueda.";
+    empty.querySelector("strong").textContent = tvt("noMatches", undefined, "Sin coincidencias");
+    empty.querySelector("span").textContent = tvt("tryAnotherSearch", undefined, "Prueba con otro texto de búsqueda.");
   } else {
-    empty.querySelector("strong").textContent = "No hay TOTP guardados";
-    empty.querySelector("span").textContent = "Pulsa + para añadir el primero.";
+    empty.querySelector("strong").textContent = tvt("noTotpSaved", undefined, "No hay TOTP guardados");
+    empty.querySelector("span").textContent = tvt("addFirst", undefined, "Pulsa + para añadir el primero.");
   }
 
   for (const entry of visibleEntries) {
@@ -1481,7 +1507,7 @@ function render() {
     node.dataset.id = entry.id;
     node.querySelector(".card-title").textContent = entry.name;
     node.querySelector(".card-meta").textContent =
-      entry.issuer || `${entry.digits} dígitos · ${entry.period}s`;
+      entry.issuer || tvt("totpMeta", [String(entry.digits), String(entry.period)], `${entry.digits} dígitos · ${entry.period}s`);
     const badge = node.querySelector(".card-badge");
     renderIconInto(badge, entry);
 
@@ -1590,7 +1616,7 @@ function base32ToBytes(base32) {
 
   for (const char of clean) {
     const value = alphabet.indexOf(char);
-    if (value < 0) throw new Error("Secreto Base32 no válido.");
+    if (value < 0) throw new Error(tvt("invalidBase32", undefined, "Secreto Base32 no válido."));
     bits += value.toString(2).padStart(5, "0");
   }
 
@@ -1599,12 +1625,12 @@ function base32ToBytes(base32) {
     bytes.push(Number.parseInt(bits.slice(i, i + 8), 2));
   }
 
-  if (!bytes.length) throw new Error("Secreto Base32 demasiado corto.");
+  if (!bytes.length) throw new Error(tvt("base32TooShort", undefined, "Secreto Base32 demasiado corto."));
   return new Uint8Array(bytes);
 }
 
 function ensureUnlocked() {
-  if (!state.keyBytes) throw new Error("La bóveda está bloqueada.");
+  if (!state.keyBytes) throw new Error(tvt("vaultLocked", undefined, "La bóveda está bloqueada."));
 }
 
 function showStatus(node, message, type = "") {

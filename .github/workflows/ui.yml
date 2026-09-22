@@ -26,9 +26,9 @@ jobs:
           VERSION=$(node -p "require('./manifest.json').version")
           PACKAGE="totp-vault-v${VERSION}"
           mkdir -p "dist/${PACKAGE}"
-          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css "dist/${PACKAGE}/"
+          cp manifest.json content.js service_worker.js visibility.js flat-overrides.css i18n.js "dist/${PACKAGE}/"
           cp popup*.html popup*.js popup*.css "dist/${PACKAGE}/"
-          cp -R icons vendor "dist/${PACKAGE}/"
+          cp -R icons vendor _locales "dist/${PACKAGE}/"
           (cd dist && zip -r "${PACKAGE}.zip" "${PACKAGE}")
 
           # Chrome Web Store package: manifest.json must be at ZIP root.
@@ -36,6 +36,9 @@ jobs:
           cp -R "dist/${PACKAGE}/." "dist/cws/"
           (cd dist/cws && zip -r "../${PACKAGE}-cws.zip" .)
           unzip -l "dist/${PACKAGE}-cws.zip" | grep -qE '[[:space:]]manifest\.json$'
+          unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx 'i18n.js'
+          unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/es/messages.json'
+          unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/en/messages.json'
 
           echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4

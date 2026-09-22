@@ -1,6 +1,8 @@
 /* Presentation helpers. Account, encryption, TOTP and autofill handlers live in popup-core.js. */
 (() => {
-  document.addEventListener("DOMContentLoaded", () => {
+  const tr = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
+  document.addEventListener("DOMContentLoaded", async () => {
+    await globalThis.TotpI18n?.ready;
     const list = document.getElementById("totpList");
     const empty = document.getElementById("emptyState");
     const count = document.getElementById("accountCount");
@@ -13,15 +15,17 @@
     function updateList() {
       const total = state.entries.length;
       count.textContent = String(total);
-      count.setAttribute("aria-label", `${total} cuenta${total === 1 ? "" : "s"}`);
+      count.setAttribute("aria-label", total === 1
+        ? tr("accountCountOne", undefined, "1 cuenta")
+        : tr("accountCountMany", [String(total)], `${total} cuentas`));
       // The original renderer only shows this element for search misses.
       // Show its existing onboarding copy for a newly created, empty vault too.
       if (!total && !state.filterQuery) empty.classList.remove("hidden");
       list.querySelectorAll(".totp-card").forEach((card) => {
         const name = card.querySelector(".card-title").textContent;
         card.querySelector(".card-title").title = name;
-        card.querySelector(".menu-btn").setAttribute("aria-label", `Opciones de ${name}`);
-        card.querySelector(".code-copy").setAttribute("aria-label", `Copiar código de ${name}`);
+        card.querySelector(".menu-btn").setAttribute("aria-label", tr("optionsFor", [name], `Opciones de ${name}`));
+        card.querySelector(".code-copy").setAttribute("aria-label", tr("copyCodeFor", [name], `Copiar código de ${name}`));
       });
     }
     new MutationObserver(updateList).observe(list, { childList: true });
@@ -82,9 +86,9 @@
       try {
         const { settings = {} } = await chrome.storage.local.get("settings");
         await chrome.storage.local.set({ settings: { ...settings, autoSubmitMode: autoSubmit.value } });
-        showMessage("#settingsMessage", "Preferencia de envío actualizada.", "ok");
+        showMessage("#settingsMessage", tr("submissionPreferenceUpdated", undefined, "Preferencia de envío actualizada."), "ok");
       } catch {
-        showMessage("#settingsMessage", "No se pudo guardar la preferencia.", "error");
+        showMessage("#settingsMessage", tr("savePreferenceFailed", undefined, "No se pudo guardar la preferencia."), "error");
       }
     });
   }, { once: true });

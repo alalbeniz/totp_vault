@@ -1,4 +1,5 @@
 (() => {
+  const tr = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
   const STORAGE_SETTINGS = "settings";
   const DEFAULTS = { showCodes: true, codeVisibilityOverrides: {} };
   let settings = { ...DEFAULTS };
@@ -20,15 +21,16 @@
 
   function maskForCard(card) {
     const meta = card.querySelector(".card-meta")?.textContent || "";
-    return /8\s*d[ií]gitos/i.test(meta) ? "•••• ••••" : "••• •••";
+    return /8\s*(?:d[ií]gitos|digits)/i.test(meta) ? "•••• ••••" : "••• •••";
   }
 
   function setEyeState(button, visible, global = false) {
     if (!button) return;
     button.querySelector(".eye-open")?.classList.toggle("hidden", !visible);
     button.querySelector(".eye-closed")?.classList.toggle("hidden", visible);
-    const action = visible ? "Ocultar" : "Mostrar";
-    const label = global ? `${action} todos los códigos` : `${action} código`;
+    const label = global
+      ? (visible ? tr("hideAllCodes", undefined, "Ocultar todos los códigos") : tr("showAllCodes", undefined, "Mostrar todos los códigos"))
+      : (visible ? tr("hideCode", undefined, "Ocultar código") : tr("showCode", undefined, "Mostrar código"));
     button.title = label;
     button.setAttribute("aria-label", label);
   }
@@ -48,7 +50,7 @@
         if (code) {
           code.classList.toggle("code-hidden", !visible);
           code.dataset.mask = maskForCard(card);
-          code.setAttribute("aria-label", visible ? "Código TOTP visible" : "Código TOTP oculto");
+          code.setAttribute("aria-label", visible ? tr("codeVisible", undefined, "Código TOTP visible") : tr("codeHidden", undefined, "Código TOTP oculto"));
         }
         setEyeState(card.querySelector(".code-visibility-btn"), visible, false);
       }
@@ -108,6 +110,7 @@
   const observer = new MutationObserver(() => apply());
 
   async function init() {
+    await globalThis.TotpI18n?.ready;
     const stored = await chrome.storage.local.get(STORAGE_SETTINGS);
     settings = normalize(stored[STORAGE_SETTINGS]);
     observer.observe(document.documentElement, { childList: true, subtree: true });

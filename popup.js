@@ -1,4 +1,5 @@
 (() => {
+  const tr = (key, subs, fallback = "") => globalThis.TotpI18n?.t?.(key, subs, fallback) || fallback;
   const THEMES = new Set(["1c485f", "08709c", "95cbc0", "d4c299", "777778", "42b8af", "cfdf9e", "ecd799", "fbb38a", "e77292"]);
   const normalize = (value) => THEMES.has(value) ? value : "1c485f";
 
@@ -21,7 +22,7 @@
       await chrome.storage.local.set({ settings });
       apply(settings.colorTheme);
     } catch {
-      showMessage("#settingsMessage", "No se pudo guardar el tema. Inténtalo de nuevo.", "error");
+      showMessage("#settingsMessage", tr("themeSaveFailed", undefined, "No se pudo guardar el tema. Inténtalo de nuevo."), "error");
     }
   }
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "TOTP Vault",
-  "version": "2.12.0",
-  "description": "Bóveda TOTP local y cifrada con importación QR, autorrelleno, bloqueo automático y copias de seguridad.",
+  "name": "__MSG_extensionName__",
+  "version": "2.13.0",
+  "description": "__MSG_extensionDescription__",
   "permissions": [
     "storage",
     "activeTab",
@@ -42,5 +42,6 @@
         "https://*/*"
       ]
     }
-  ]
+  ],
+  "default_locale": "es"
 }
