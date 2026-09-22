@@ -135,6 +135,10 @@
       }
     }
 
+    for (const template of root.querySelectorAll?.("template") || []) {
+      localizeDocument(template.content);
+    }
+
     document.documentElement.lang = resolvedLanguage();
   }
 
