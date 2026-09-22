@@ -1491,7 +1491,7 @@ function render() {
     node.dataset.id = entry.id;
     node.querySelector(".card-title").textContent = entry.name;
     node.querySelector(".card-meta").textContent =
-      entry.issuer || `${entry.digits} dígitos · ${entry.period}s`;
+      entry.issuer || tvt("totpMeta", [String(entry.digits), String(entry.period)], `${entry.digits} dígitos · ${entry.period}s`);
     const badge = node.querySelector(".card-badge");
     renderIconInto(badge, entry);
 
