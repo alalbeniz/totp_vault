@@ -733,5 +733,11 @@
   },
   "totpAccountMissing": {
     "message": "The TOTP account no longer exists."
+  },
+  "imageReadError": {
+    "message": "Could not read the image."
+  },
+  "iconProcessError": {
+    "message": "Could not process the icon."
   }
 }
