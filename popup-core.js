@@ -511,11 +511,11 @@ function updateVaultStatus() {
   const min = Number(state.settings.autoLockMinutes);
   let label;
 
-  if (min === 0) label = "al cerrar navegador";
-  else if (min === 60) label = "1 h";
-  else label = `${min || 5} min`;
+  if (min === 0) label = tvt("browserClose", undefined, "al cerrar navegador");
+  else if (min === 60) label = tvt("hourShort", undefined, "1 h");
+  else label = tvt("minutesShort", [String(min || 5)], `${min || 5} min`);
 
-  el.textContent = `Desbloqueada · bloqueo ${label}`;
+  el.textContent = tvt("vaultUnlockedAutoLock", [label], `Desbloqueada · bloqueo ${label}`);
 }
 
 function resetAddForm() {
@@ -659,7 +659,7 @@ async function toggleInlineCurrentSite() {
       try { await chrome.permissions.remove({ origins: [pattern] }); } catch {}
     } else {
       const granted = await chrome.permissions.request({ origins: [pattern] });
-      if (!granted) throw new Error(`Chrome no concedió acceso a ${origin}.`);
+      if (!granted) throw new Error(tvt("originPermissionDenied", [origin], `Chrome no concedió acceso a ${origin}.`));
       allowed.add(origin);
     }
 
@@ -670,7 +670,7 @@ async function toggleInlineCurrentSite() {
     if (!alreadyAllowed) await injectInlinePickerIntoCurrentTab();
     showMessage(
       "#settingsMessage",
-      alreadyAllowed ? `Acceso retirado para ${origin}.` : `Selector habilitado en ${origin}.`,
+      alreadyAllowed ? tvt("originRemoved", [origin], `Acceso retirado para ${origin}.`) : tvt("originEnabled", [origin], `Selector habilitado en ${origin}.`),
       "ok"
     );
   } catch (err) {
@@ -700,7 +700,7 @@ async function updateInlinePickerSettingsUi() {
   button.disabled = false;
   const allowed = (state.settings.inlineAllowedOrigins || []).includes(current.origin);
   button.textContent = allowed ? tvt("removeSite", undefined, "Quitar sitio") : tvt("authorizeCurrentSite", undefined, "Autorizar sitio actual");
-  status.textContent = allowed ? `${current.origin} autorizado` : current.origin;
+  status.textContent = allowed ? tvt("originAuthorized", [current.origin], `${current.origin} autorizado`) : current.origin;
   status.classList.toggle("ok", allowed);
 }
 
@@ -800,7 +800,7 @@ async function deleteEntry(id) {
   closeCardMenus();
   const entry = state.entries.find((e) => e.id === id);
   if (!entry) return;
-  if (!confirm(`¿Eliminar "${entry.name}"?`)) return;
+  if (!confirm(tvt("confirmDelete", [entry.name], `¿Eliminar "${entry.name}"?`))) return;
 
   state.entries = state.entries.filter((e) => e.id !== id);
   await persistVault();
@@ -1071,7 +1071,7 @@ function fillDetectedTotp(code) {
         setNativeValue(el, code[i]);
       });
       group[group.length - 1].focus();
-      return { ok: true, message: `Rellenadas ${group.length} casillas OTP.` };
+      return { ok: true, message: tvt("filledSlots", [String(group.length)], `Rellenadas ${group.length} casillas OTP.`) };
     }
   }
 
@@ -1197,9 +1197,9 @@ function fillDetectedTotp(code) {
     target.placeholder ||
     target.name ||
     target.id ||
-    "campo detectado";
+    tvt("fieldDetected", undefined, "campo detectado");
 
-  return { ok: true, message: `Rellenado en: ${fieldName}` };
+  return { ok: true, message: tvt("filledInField", [fieldName], `Rellenado en: ${fieldName}`) };
 }
 
 async function exportEncryptedBackup() {
@@ -1445,7 +1445,7 @@ function normalizeAlgorithm(value) {
   if (v === "SHA1") return "SHA-1";
   if (v === "SHA256") return "SHA-256";
   if (v === "SHA512") return "SHA-512";
-  throw new Error(`Algoritmo TOTP no compatible: ${value}`);
+  throw new Error(tvt("unsupportedAlgorithm", [value], `Algoritmo TOTP no compatible: ${value}`));
 }
 
 function clampInt(value, fallback, min, max) {
