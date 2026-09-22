@@ -291,6 +291,8 @@ async function mockChrome() {
     await shot('vault-es');
     await setLanguage('en');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
+    assert.equal((await page.locator('.fill-btn').first().innerText()).trim(), 'Fill');
+    assert.equal((await page.locator('.copy-btn').first().innerText()).trim(), 'Copy');
     await shot('vault-en');
     await setLanguage('es');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
