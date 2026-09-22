@@ -756,5 +756,17 @@
   },
   "qrPasteLead": {
     "message": "Ahora pega la imagen con"
+  },
+  "language": {
+    "message": "Idioma"
+  },
+  "languageSystem": {
+    "message": "Sistema"
+  },
+  "languageSpanish": {
+    "message": "Español"
+  },
+  "languageEnglish": {
+    "message": "English"
   }
 }
