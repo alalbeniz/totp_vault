@@ -59,6 +59,12 @@ La extensión puede escribir un código TOTP en el portapapeles cuando el usuari
 
 Una imagen del portapapeles solo se procesa cuando el usuario activa expresamente la opción de importar desde QR y pega una imagen.
 
+## Enlace externo de apoyo
+
+La sección de Ajustes incluye un enlace opcional a **Buy Me a Coffee** (`https://buymeacoffee.com/alalbeniz`) para quien quiera apoyar el desarrollo.
+
+TOTP Vault no integra el widget, SDK ni código de Buy Me a Coffee y no envía a ese servicio secretos TOTP, códigos, contenido de la bóveda ni datos de navegación. Al pulsar el enlace, se abre la página externa de Buy Me a Coffee en una pestaña nueva y el tratamiento de datos en esa página se rige por las políticas del propio servicio.
+
 ## Compartición y venta de datos
 
 TOTP Vault no vende datos de usuarios.

@@ -768,5 +768,14 @@
   },
   "languageEnglish": {
     "message": "English"
+  },
+  "supportTitle": {
+    "message": "Apoya TOTP Vault"
+  },
+  "supportText": {
+    "message": "Si TOTP Vault te resulta útil, puedes apoyar su desarrollo."
+  },
+  "supportButton": {
+    "message": "Invítame a un café"
   }
 }

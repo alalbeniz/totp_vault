@@ -1,4 +1,4 @@
-# Chrome Web Store — TOTP Vault v2.13.0
+# Chrome Web Store — TOTP Vault v2.14.0
 
 Ficha optimizada siguiendo las recomendaciones de Google para una listing clara, concisa, localizada y centrada en las funciones principales.
 
@@ -70,6 +70,16 @@ TOTP Vault includes no first-party analytics, advertising, or telemetry.
 ### EN
 
 > TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
+
+## Novedades v2.14.0
+
+### ES
+
+> Añadido un enlace opcional en Ajustes para apoyar el desarrollo mediante Buy Me a Coffee. El enlace abre una página externa en una pestaña nueva; no se integra ningún widget, SDK, analítica ni código remoto y no se añaden permisos.
+
+### EN
+
+> Added an optional Settings link to support development through Buy Me a Coffee. The link opens an external page in a new tab; no widget, SDK, analytics, or remote code is embedded and no new permissions are added.
 
 ## Novedades v2.13.0
 

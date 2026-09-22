@@ -2,7 +2,8 @@
 
 **Chrome Web Store:** https://chromewebstore.google.com/detail/totp-vault/abiekbjdmcanmkjcimgfojklngfnpkok  
 **Extension ID:** `abiekbjdmcanmkjcimgfojklngfnpkok`  
-**Publicación de nuevas versiones:** [`chrome-web-store/RELEASE.md`](chrome-web-store/RELEASE.md)
+**Publicación de nuevas versiones:** [`chrome-web-store/RELEASE.md`](chrome-web-store/RELEASE.md)  
+**Apoya el proyecto:** https://buymeacoffee.com/alalbeniz
 
 TOTP Vault es una extensión para Chrome basada en Manifest V3 que permite almacenar, gestionar y utilizar códigos TOTP de forma **local y cifrada**.
 
@@ -49,6 +50,12 @@ Las imágenes se decodifican localmente. Para URLs externas, la extensión solic
 El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` como fallback local. `jsQR` está fijado como dependencia de pnpm y se copia al paquete durante la preparación/CI; no se descarga código en tiempo de ejecución. Dependabot comprueba sus nuevas versiones y abre un PR, que debe superar las pruebas QR antes de integrarse.
 
 El formato de exportación masiva `otpauth-migration://` de Google Authenticator todavía no se importa.
+
+## Novedades de v2.14.0
+
+- Enlace opcional **Buy Me a Coffee** en Ajustes para apoyar el desarrollo.
+- El enlace abre `https://buymeacoffee.com/alalbeniz` en una pestaña nueva.
+- No se añade ningún permiso, SDK, widget, analítica ni código remoto.
 
 ## Novedades de v2.13.0
 
