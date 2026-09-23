@@ -343,7 +343,7 @@ async function mockChrome() {
     assert.equal(await page.locator('#qrMigrationCount').innerText(), '2');
     assert.equal(await page.locator('.qr-migration-item').count(), 2);
     assert.equal(await page.locator('#qrMigrationImportBtn').isEnabled(), true);
-    assert.match(await page.locator('#qrMigrationSummary').innerText(), /1 entradas no compatibles/);
+    assert.match(await page.locator('#qrMigrationSummary').innerText(), /1 entrada no compatible/);
     await shot('qr-google-authenticator');
 
     await page.locator('#qrMigrationImportBtn').click();
