@@ -401,6 +401,7 @@ async function mockChrome() {
     });
     assert.equal(expiringState.expiring, true);
     assert.equal(expiringState.color, 'rgb(201, 97, 106)');
+    await page.waitForTimeout(240);
     await shot('vault-es');
     await setLanguage('en');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
