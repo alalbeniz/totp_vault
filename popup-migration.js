@@ -110,7 +110,7 @@
       version: 0,
       batchSize: 1,
       batchIndex: 0,
-      batchId: 0
+      batchId: "0"
     };
 
     while (cursor.offset < bytes.length) {
@@ -122,7 +122,7 @@
       else if (field === 2 && wire === 0) payload.version = Number(readVarint(bytes, cursor));
       else if (field === 3 && wire === 0) payload.batchSize = Math.max(1, Number(readVarint(bytes, cursor)) || 1);
       else if (field === 4 && wire === 0) payload.batchIndex = Math.max(0, Number(readVarint(bytes, cursor)) || 0);
-      else if (field === 5 && wire === 0) payload.batchId = Number(readVarint(bytes, cursor)) || 0;
+      else if (field === 5 && wire === 0) payload.batchId = readVarint(bytes, cursor).toString();
       else skipField(bytes, cursor, wire);
     }
 
