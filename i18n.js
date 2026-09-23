@@ -13,7 +13,7 @@
     ["Esta página","qrCurrentPage"],["Busca un QR visible en la pestaña actual.","qrCurrentPageHelp"],["Elegir imagen","chooseImage"],
     ["PNG, JPG, WebP, GIF o SVG.","qrFileHelp"],["Pegar imagen","pasteImage"],["Usa Ctrl+V o Cmd+V tras pulsar.","qrPasteHelp"],
     ["Ahora pega la imagen con","qrPasteLead"],["URL de imagen o enlace otpauth://","qrUrlLabel"],["Leer","read"],
-    ["Procesado localmente · URL: permiso solo para ese dominio.","qrSecurity"],["UNA LLAVE MÁS","addEyebrow"],["Añadir TOTP","addTotp"],
+    ["Procesado localmente · URL: permiso solo para ese dominio.","qrSecurity"],["Revisar importación","qrMigrationTitle"],["UNA LLAVE MÁS","addEyebrow"],["Añadir TOTP","addTotp"],
     ["Nombre o descripción","nameDescription"],["Secreto Base32 u otpauth://","secretLabel"],["Icono","icon"],["Automático","automatic"],
     ["Personalizado…","custom"],["Quitar","remove"],["PNG, JPG o WebP · se guarda cifrado y reducido a 96×96.","iconHelp"],
     ["Cancelar","cancel"],["Guardar","save"],["A TU MANERA","settingsEyebrow"],["Ajustes y seguridad","settingsTitle"],
