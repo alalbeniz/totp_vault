@@ -613,9 +613,6 @@
   "savePreferenceFailed": {
     "message": "No se pudo guardar la preferencia."
   },
-  "qrMigrationUnsupported": {
-    "message": "Este QR es una exportación de Google Authenticator. Ese formato se añadirá en una versión posterior."
-  },
   "qrNotTotp": {
     "message": "El QR encontrado no contiene una cuenta TOTP compatible."
   },
