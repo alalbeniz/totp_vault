@@ -149,11 +149,13 @@
       : tr("qrMigrationManyFound", [String(entries.length)], `${entries.length} cuentas TOTP detectadas.`);
 
     if (pendingMigrationUnsupported > 0) {
-      summary.textContent += " " + tr(
-        "qrMigrationUnsupportedSkipped",
-        [String(pendingMigrationUnsupported)],
-        `Se omitirán ${pendingMigrationUnsupported} entradas no compatibles.`
-      );
+      summary.textContent += " " + (pendingMigrationUnsupported === 1
+        ? tr("qrMigrationUnsupportedOne", undefined, "Se omitirá 1 entrada no compatible.")
+        : tr(
+            "qrMigrationUnsupportedMany",
+            [String(pendingMigrationUnsupported)],
+            `Se omitirán ${pendingMigrationUnsupported} entradas no compatibles.`
+          ));
     }
 
     if (migrationBatch?.batchSize > 1) {
@@ -287,6 +289,7 @@
       return;
     }
 
+    const skipped = duplicates + invalid + pendingMigrationUnsupported;
     state.entries.push(...additions);
     await persistVault();
     showQrPanel(false);
@@ -297,9 +300,10 @@
       const base = additions.length === 1
         ? tr("qrMigrationImportedOne", undefined, "1 cuenta importada desde Google Authenticator.")
         : tr("qrMigrationImportedMany", [String(additions.length)], `${additions.length} cuentas importadas desde Google Authenticator.`);
-      const skipped = duplicates + invalid + pendingMigrationUnsupported;
       status.textContent = skipped > 0
-        ? base + " " + tr("qrMigrationSkippedCount", [String(skipped)], `${skipped} omitidas.`)
+        ? base + " " + (skipped === 1
+            ? tr("qrMigrationSkippedOne", undefined, "1 omitida.")
+            : tr("qrMigrationSkippedMany", [String(skipped)], `${skipped} omitidas.`))
         : base;
       clearTimeout(status._migrationTimer);
       status._migrationTimer = setTimeout(() => updateVaultStatus(), 4200);
