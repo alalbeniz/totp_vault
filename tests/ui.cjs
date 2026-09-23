@@ -167,7 +167,7 @@ async function mockChrome() {
   assert.equal(manifest.default_locale, 'es');
   assert.equal(manifest.name, '__MSG_extensionName__');
   assert.equal(manifest.description, '__MSG_extensionDescription__');
-  assert.equal(manifest.version, '2.15.0');
+  assert.equal(manifest.version, '2.15.1');
   const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
   const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
   assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());
@@ -379,28 +379,55 @@ async function mockChrome() {
     await add('VPN · Corp', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
     assert.equal(await page.locator('.totp-card').count(), 3);
     assert.equal(await page.locator('#accountCount').innerText(), '3');
-    const compactCardHeight = (await page.locator('.totp-card').first().boundingBox()).height;
-    assert.ok(compactCardHeight <= 112, `Expected compact TOTP card, got ${compactCardHeight}px`);
+    const firstCard = page.locator('.totp-card').first();
+    const compactCardHeight = (await firstCard.boundingBox()).height;
+    assert.ok(compactCardHeight <= 96, `Expected compact TOTP card, got ${compactCardHeight}px`);
+    const layout = await firstCard.evaluate(card => {
+      const identity = card.querySelector('.card-identity').getBoundingClientRect();
+      const live = card.querySelector('.card-live').getBoundingClientRect();
+      const actions = card.querySelector('.card-actions').getBoundingClientRect();
+      return {
+        identityCenterY: identity.top + identity.height / 2,
+        liveCenterY: live.top + live.height / 2,
+        identityRight: identity.right,
+        liveLeft: live.left,
+        actionsTop: actions.top,
+        mainBottom: Math.max(identity.bottom, live.bottom)
+      };
+    });
+    assert.ok(Math.abs(layout.identityCenterY - layout.liveCenterY) <= 3, 'Identity and TOTP should share the main row');
+    assert.ok(layout.liveLeft >= layout.identityRight - 1, 'TOTP controls should sit to the right of the identity block');
+    assert.ok(layout.actionsTop >= layout.mainBottom, 'Actions should remain below the main row');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
 
-    const expiringState = await page.evaluate(async () => {
+    const countdownBoundary = await page.evaluate(async () => {
       const originalNow = Date.now;
-      Date.now = () => 26000;
-      try {
+      const read = async ms => {
+        Date.now = () => ms;
         await refreshCodes();
         await new Promise(resolve => setTimeout(resolve, 240));
         const timer = document.querySelector('.timer-wrap');
         return {
           expiring: timer.classList.contains('is-expiring'),
-          color: getComputedStyle(timer.querySelector('.seconds')).color
+          color: getComputedStyle(timer.querySelector('.seconds')).color,
+          seconds: timer.querySelector('.seconds').textContent
+        };
+      };
+      try {
+        return {
+          atFive: await read(25000),
+          atSix: await read(24000)
         };
       } finally {
         Date.now = originalNow;
         await refreshCodes();
       }
     });
-    assert.equal(expiringState.expiring, true);
-    assert.equal(expiringState.color, 'rgb(201, 97, 106)');
+    assert.equal(countdownBoundary.atFive.seconds, '5');
+    assert.equal(countdownBoundary.atFive.expiring, true);
+    assert.equal(countdownBoundary.atFive.color, 'rgb(201, 97, 106)');
+    assert.equal(countdownBoundary.atSix.seconds, '6');
+    assert.equal(countdownBoundary.atSix.expiring, false);
     await page.waitForTimeout(240);
     await shot('vault-es');
     await setLanguage('en');
