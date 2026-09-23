@@ -183,7 +183,6 @@
       : tr("qrMigrationImportMany", [String(entries.length)], `Importar ${entries.length} cuentas`);
     importBtn.disabled = !complete || entries.length === 0;
     review.classList.remove("hidden");
-    review.scrollIntoView({ block: "nearest" });
   }
 
   function reviewMigrationPayload(raw) {
