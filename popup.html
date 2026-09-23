@@ -11,6 +11,7 @@
   <script src="popup.js" defer></script>
   <script src="visibility.js" defer></script>
   <script src="popup-ui.js" defer></script>
+  <script src="popup-migration.js" defer></script>
   <script src="popup-qr.js" defer></script>
 </head>
 <body>
@@ -148,6 +149,20 @@
             <button id="qrUrlBtn" class="btn secondary" type="submit">Leer</button>
           </div>
         </form>
+
+        <section id="qrMigrationReview" class="qr-migration-review hidden" aria-labelledby="qrMigrationTitle">
+          <div class="qr-migration-heading">
+            <div>
+              <p class="eyebrow">GOOGLE AUTHENTICATOR</p>
+              <h3 id="qrMigrationTitle">Revisar importación</h3>
+            </div>
+            <span id="qrMigrationCount" class="qr-migration-count"></span>
+          </div>
+          <p id="qrMigrationSummary" class="qr-migration-summary"></p>
+          <div id="qrMigrationList" class="qr-migration-list"></div>
+          <p id="qrMigrationBatchInfo" class="qr-migration-batch hidden"></p>
+          <button id="qrMigrationImportBtn" class="btn primary full" type="button">Importar cuentas</button>
+        </section>
 
         <p id="qrMessage" role="status" aria-live="polite" class="message hidden"></p>
         <p class="qr-security">Procesado localmente · URL: permiso solo para ese dominio.</p>
