@@ -1,4 +1,4 @@
-# Chrome Web Store — TOTP Vault v2.15.1
+# Chrome Web Store — TOTP Vault v2.15.2
 
 Ficha optimizada siguiendo las recomendaciones de Google para una listing clara, concisa, localizada y centrada en las funciones principales.
 
@@ -70,6 +70,16 @@ TOTP Vault includes no first-party analytics, advertising, or telemetry.
 ### EN
 
 > TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
+
+## Novedades v2.15.2
+
+### ES
+
+> Ajustado el diseño de las tarjetas TOTP para mejorar la legibilidad: icono, nombre, código, reloj y botones son ligeramente mayores, manteniendo el aprovechamiento horizontal del nuevo layout.
+
+### EN
+
+> Refined TOTP card sizing for better readability: icons, names, codes, countdowns, and action buttons are slightly larger while keeping the efficient horizontal layout.
 
 ## Novedades v2.15.1
 
