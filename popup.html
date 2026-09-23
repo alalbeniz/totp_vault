@@ -121,6 +121,20 @@
 
         <p class="qr-intro">Lee un QR TOTP sin enviar la imagen fuera del navegador. Después podrás revisar los datos antes de guardarlos.</p>
 
+        <section id="qrMigrationReview" class="qr-migration-review hidden" aria-labelledby="qrMigrationTitle">
+          <div class="qr-migration-heading">
+            <div>
+              <p class="eyebrow">GOOGLE AUTHENTICATOR</p>
+              <h3 id="qrMigrationTitle">Revisar importación</h3>
+            </div>
+            <span id="qrMigrationCount" class="qr-migration-count"></span>
+          </div>
+          <p id="qrMigrationSummary" class="qr-migration-summary"></p>
+          <div id="qrMigrationList" class="qr-migration-list"></div>
+          <p id="qrMigrationBatchInfo" class="qr-migration-batch hidden"></p>
+          <button id="qrMigrationImportBtn" class="btn primary full" type="button">Importar cuentas</button>
+        </section>
+
         <div class="qr-source-grid">
           <button id="qrPageBtn" class="qr-source-card" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M7 8h3v3H7zM14 8h3v3h-3zM7 13h3v2H7zM14 13h1v1h-1zM17 13h1v2h-2v2h-2v-2h1v-1h2z"/></svg>
@@ -149,20 +163,6 @@
             <button id="qrUrlBtn" class="btn secondary" type="submit">Leer</button>
           </div>
         </form>
-
-        <section id="qrMigrationReview" class="qr-migration-review hidden" aria-labelledby="qrMigrationTitle">
-          <div class="qr-migration-heading">
-            <div>
-              <p class="eyebrow">GOOGLE AUTHENTICATOR</p>
-              <h3 id="qrMigrationTitle">Revisar importación</h3>
-            </div>
-            <span id="qrMigrationCount" class="qr-migration-count"></span>
-          </div>
-          <p id="qrMigrationSummary" class="qr-migration-summary"></p>
-          <div id="qrMigrationList" class="qr-migration-list"></div>
-          <p id="qrMigrationBatchInfo" class="qr-migration-batch hidden"></p>
-          <button id="qrMigrationImportBtn" class="btn primary full" type="button">Importar cuentas</button>
-        </section>
 
         <p id="qrMessage" role="status" aria-live="polite" class="message hidden"></p>
         <p class="qr-security">Procesado localmente · URL: permiso solo para ese dominio.</p>
