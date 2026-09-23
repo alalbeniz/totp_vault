@@ -792,14 +792,6 @@
       }
     }
   },
-  "qrMigrationUnsupportedSkipped": {
-    "message": "$COUNT$ unsupported entries will be skipped.",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
   "qrMigrationBatchComplete": {
     "message": "Batch complete: $COUNT$ QR codes received.",
     "placeholders": {
@@ -850,15 +842,29 @@
       }
     }
   },
-  "qrMigrationSkippedCount": {
-    "message": "$COUNT$ skipped.",
+  "digitsShort": {
+    "message": "digits"
+  },
+  "qrMigrationUnsupportedOne": {
+    "message": "1 unsupported entry will be skipped."
+  },
+  "qrMigrationUnsupportedMany": {
+    "message": "$COUNT$ unsupported entries will be skipped.",
     "placeholders": {
       "count": {
         "content": "$1"
       }
     }
   },
-  "digitsShort": {
-    "message": "digits"
+  "qrMigrationSkippedOne": {
+    "message": "1 skipped."
+  },
+  "qrMigrationSkippedMany": {
+    "message": "$COUNT$ skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   }
 }
