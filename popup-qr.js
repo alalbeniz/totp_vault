@@ -290,24 +290,29 @@
     }
 
     const skipped = duplicates + invalid + pendingMigrationUnsupported;
+    const base = additions.length === 1
+      ? tr("qrMigrationImportedOne", undefined, "1 cuenta importada desde Google Authenticator.")
+      : tr("qrMigrationImportedMany", [String(additions.length)], `${additions.length} cuentas importadas desde Google Authenticator.`);
+    const successMessage = skipped > 0
+      ? base + " " + (skipped === 1
+          ? tr("qrMigrationSkippedOne", undefined, "1 omitida.")
+          : tr("qrMigrationSkippedMany", [String(skipped)], `${skipped} omitidas.`))
+      : base;
+
     state.entries.push(...additions);
     await persistVault();
     showQrPanel(false);
     render();
 
-    const status = byId("vaultStatus");
-    if (status) {
-      const base = additions.length === 1
-        ? tr("qrMigrationImportedOne", undefined, "1 cuenta importada desde Google Authenticator.")
-        : tr("qrMigrationImportedMany", [String(additions.length)], `${additions.length} cuentas importadas desde Google Authenticator.`);
-      status.textContent = skipped > 0
-        ? base + " " + (skipped === 1
-            ? tr("qrMigrationSkippedOne", undefined, "1 omitida.")
-            : tr("qrMigrationSkippedMany", [String(skipped)], `${skipped} omitidas.`))
-        : base;
+    // showQrPanel touches the session asynchronously and refreshes vaultStatus.
+    // Queue the import result afterwards so it remains visible to the user.
+    setTimeout(() => {
+      const status = byId("vaultStatus");
+      if (!status) return;
+      status.textContent = successMessage;
       clearTimeout(status._migrationTimer);
       status._migrationTimer = setTimeout(() => updateVaultStatus(), 4200);
-    }
+    }, 0);
   }
 
   function dimensions(source) {
