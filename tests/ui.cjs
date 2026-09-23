@@ -167,7 +167,7 @@ async function mockChrome() {
   assert.equal(manifest.default_locale, 'es');
   assert.equal(manifest.name, '__MSG_extensionName__');
   assert.equal(manifest.description, '__MSG_extensionDescription__');
-  assert.equal(manifest.version, '2.15.1');
+  assert.equal(manifest.version, '2.15.2');
   const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
   const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
   assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());
@@ -381,7 +381,7 @@ async function mockChrome() {
     assert.equal(await page.locator('#accountCount').innerText(), '3');
     const firstCard = page.locator('.totp-card').first();
     const compactCardHeight = (await firstCard.boundingBox()).height;
-    assert.ok(compactCardHeight <= 96, `Expected compact TOTP card, got ${compactCardHeight}px`);
+    assert.ok(compactCardHeight >= 100 && compactCardHeight <= 114, `Expected balanced TOTP card height, got ${compactCardHeight}px`);
     const layout = await firstCard.evaluate(card => {
       const identity = card.querySelector('.card-identity').getBoundingClientRect();
       const live = card.querySelector('.card-live').getBoundingClientRect();
