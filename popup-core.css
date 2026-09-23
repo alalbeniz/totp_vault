@@ -88,7 +88,7 @@ input::placeholder { color: var(--muted); opacity: 1; }
 .list, .panel, .center-view { scrollbar-width: thin; scrollbar-color: var(--vault-tint) transparent; scrollbar-gutter: stable; overscroll-behavior: contain; }
 .totp-card { position: relative; flex-shrink: 0; background: var(--vault-paper); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 7px 8px; }
 .totp-card:hover { border-color: color-mix(in srgb, var(--vault-ink) 32%, transparent); }
-.card-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 38px; padding-right: 24px; }
+.card-main { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 38px; padding-right: 35px; }
 .card-identity { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .card-badge { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border-radius: 9px; padding: 4px; background: var(--vault-field); overflow: hidden; }
 .icon-preview { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px; padding: 6px; background: var(--vault-field); overflow: hidden; }
@@ -120,7 +120,7 @@ input::placeholder { color: var(--muted); opacity: 1; }
 .card-actions .primary { background: var(--vault-tint); color: var(--vault-ink); }
 .card-actions .primary:hover { background: var(--vault-hover); }
 .btn-svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.menu-btn { position: absolute; top: 6px; right: 5px; }
+.menu-btn { position: absolute; top: 6px; right: 5px; width: 30px; height: 30px; border-radius: 10px; }
 .menu-btn svg { width: 18px; fill: currentColor; }
 .card-menu { position: absolute; top: 40px; right: 9px; min-width: 148px; padding: 4px; border-radius: 16px; background: var(--vault-paper); border: 1px solid var(--border); box-shadow: 0 6px 20px #28323a14; z-index: 2; }
 .menu-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; border-radius: 12px; background: transparent; color: var(--text); text-align: left; font-size: 12px; }
