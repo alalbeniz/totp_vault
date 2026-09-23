@@ -613,9 +613,6 @@
   "savePreferenceFailed": {
     "message": "No se pudo guardar la preferencia."
   },
-  "qrMigrationUnsupported": {
-    "message": "Este QR es una exportación de Google Authenticator. Ese formato se añadirá en una versión posterior."
-  },
   "qrNotTotp": {
     "message": "El QR encontrado no contiene una cuenta TOTP compatible."
   },
@@ -777,5 +774,94 @@
   },
   "supportButton": {
     "message": "Invítame a una cerveza"
+  },
+  "qrMigrationTitle": {
+    "message": "Revisar importación"
+  },
+  "qrMigrationOneFound": {
+    "message": "1 cuenta TOTP detectada."
+  },
+  "qrMigrationManyFound": {
+    "message": "$COUNT$ cuentas TOTP detectadas.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchComplete": {
+    "message": "Lote completo: $COUNT$ QR recibidos.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchWaiting": {
+    "message": "Recibidos $CURRENT$ de $TOTAL$ QR. Escanea los restantes para continuar.",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "qrMigrationImportOne": {
+    "message": "Importar 1 cuenta"
+  },
+  "qrMigrationImportMany": {
+    "message": "Importar $COUNT$ cuentas",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationInvalid": {
+    "message": "No se pudo interpretar la exportación de Google Authenticator."
+  },
+  "qrMigrationNoTotp": {
+    "message": "La exportación no contiene cuentas TOTP compatibles."
+  },
+  "qrMigrationNothingNew": {
+    "message": "No hay cuentas TOTP nuevas que importar."
+  },
+  "qrMigrationImportedOne": {
+    "message": "1 cuenta importada desde Google Authenticator."
+  },
+  "qrMigrationImportedMany": {
+    "message": "$COUNT$ cuentas importadas desde Google Authenticator.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "digitsShort": {
+    "message": "dígitos"
+  },
+  "qrMigrationUnsupportedOne": {
+    "message": "Se omitirá 1 entrada no compatible."
+  },
+  "qrMigrationUnsupportedMany": {
+    "message": "Se omitirán $COUNT$ entradas no compatibles.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationSkippedOne": {
+    "message": "1 omitida."
+  },
+  "qrMigrationSkippedMany": {
+    "message": "$COUNT$ omitidas.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   }
 }

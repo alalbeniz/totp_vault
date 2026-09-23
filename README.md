@@ -22,6 +22,7 @@ Las comprobaciones de interfaz se ejecutan con cuentas ficticias mediante `pnpm 
 - Gestión de múltiples cuentas TOTP con nombre o descripción.
 - Secretos Base32 y URI `otpauth://totp/...`.
 - Importación de cuentas desde QR visible en la página, imagen local, portapapeles o URL de imagen.
+- Importación de exportaciones de Google Authenticator (`otpauth-migration://`), incluyendo lotes divididos en varios QR.
 - SHA-1, SHA-256 y SHA-512.
 - Códigos de 6 u 8 dígitos.
 - Copiar y rellenar códigos con un clic.
@@ -49,7 +50,16 @@ Las imágenes se decodifican localmente. Para URLs externas, la extensión solic
 
 El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` como fallback local. `jsQR` está fijado como dependencia de pnpm y se copia al paquete durante la preparación/CI; no se descarga código en tiempo de ejecución. Dependabot comprueba sus nuevas versiones y abre un PR, que debe superar las pruebas QR antes de integrarse.
 
-El formato de exportación masiva `otpauth-migration://` de Google Authenticator todavía no se importa.
+Las exportaciones `otpauth-migration://` de Google Authenticator se decodifican localmente. Las cuentas TOTP compatibles se muestran para revisión antes de importarlas; los lotes divididos en varios QR se acumulan hasta recibirlos todos. Las entradas HOTP o con parámetros no compatibles se omiten y se informa al usuario.
+
+## Novedades de v2.15.0
+
+- Importación directa de exportaciones de Google Authenticator, incluidas exportaciones con varias cuentas y lotes de varios QR.
+- Revisión previa de las cuentas detectadas sin mostrar los secretos TOTP.
+- Omisión segura de entradas HOTP o algoritmos no compatibles.
+- Botones de Ajustes con tipografía más legible.
+- Tarjetas TOTP más compactas para aprovechar mejor el espacio vertical.
+- El contador circular cambia a un rojo suave cuando quedan menos de 5 segundos.
 
 ## Novedades de v2.14.0
 

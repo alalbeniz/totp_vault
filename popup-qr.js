@@ -4,6 +4,9 @@
   const MAX_QR_IMAGE_BYTES = 12 * 1024 * 1024;
   let pasteArmed = false;
   let busy = false;
+  let migrationBatch = null;
+  let pendingMigrationEntries = [];
+  let pendingMigrationUnsupported = 0;
 
   const byId = (id) => document.getElementById(id);
 
@@ -20,12 +23,29 @@
     showMessage("#qrMessage", message, type);
   }
 
+  function resetMigrationReview() {
+    migrationBatch = null;
+    pendingMigrationEntries = [];
+    pendingMigrationUnsupported = 0;
+    const review = byId("qrMigrationReview");
+    if (review) review.classList.add("hidden");
+    if (byId("qrMigrationList")) byId("qrMigrationList").replaceChildren();
+    if (byId("qrMigrationSummary")) byId("qrMigrationSummary").textContent = "";
+    if (byId("qrMigrationBatchInfo")) {
+      byId("qrMigrationBatchInfo").textContent = "";
+      byId("qrMigrationBatchInfo").classList.add("hidden");
+    }
+    if (byId("qrMigrationCount")) byId("qrMigrationCount").textContent = "";
+    if (byId("qrMigrationImportBtn")) byId("qrMigrationImportBtn").disabled = false;
+  }
+
   function clearQrState() {
     pasteArmed = false;
     byId("qrPasteHint")?.classList.add("hidden");
     hideMessage("#qrMessage");
     const file = byId("qrFileInput");
     if (file) file.value = "";
+    resetMigrationReview();
   }
 
   function showQrPanel(open) {
@@ -48,11 +68,16 @@
     return /^otpauth:\/\/totp\//i.test(String(value || "").trim());
   }
 
+  function isMigrationPayload(value) {
+    return /^otpauth-migration:\/\//i.test(String(value || "").trim());
+  }
+
+  function isSupportedQrPayload(value) {
+    return isTotpPayload(value) || isMigrationPayload(value);
+  }
+
   function parseQrPayload(value) {
     const raw = String(value || "").trim();
-    if (/^otpauth-migration:\/\//i.test(raw)) {
-      throw new Error(tr("qrMigrationUnsupported", undefined, "Este QR es una exportación de Google Authenticator. Ese formato se añadirá en una versión posterior."));
-    }
     if (!isTotpPayload(raw)) {
       throw new Error(tr("qrNotTotp", undefined, "El QR encontrado no contiene una cuenta TOTP compatible."));
     }
@@ -66,11 +91,158 @@
       label = label.slice(issuer.length + 1).trim();
       return label ? `${issuer} · ${label}` : issuer;
     }
+    if (issuer && label && !label.toLowerCase().includes(issuer.toLowerCase())) return `${issuer} · ${label}`;
     return label || issuer || "TOTP";
   }
 
+  function migrationEntryKey(entry, name = suggestedName(entry)) {
+    return [
+      String(entry.secret || ""),
+      String(entry.issuer || ""),
+      String(name || ""),
+      String(entry.algorithm || "SHA-1"),
+      String(entry.digits || 6),
+      String(entry.period || 30)
+    ].join("\u0000");
+  }
+
+  function dedupeMigrationEntries(entries) {
+    const seen = new Set();
+    return entries.filter((entry) => {
+      const key = migrationEntryKey(entry);
+      if (!entry.secret || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function migrationParts() {
+    if (!migrationBatch) return [];
+    return [...migrationBatch.parts.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([, part]) => part);
+  }
+
+  function renderMigrationReview({ complete }) {
+    const review = byId("qrMigrationReview");
+    const list = byId("qrMigrationList");
+    const summary = byId("qrMigrationSummary");
+    const count = byId("qrMigrationCount");
+    const batchInfo = byId("qrMigrationBatchInfo");
+    const importBtn = byId("qrMigrationImportBtn");
+    if (!review || !list || !summary || !count || !batchInfo || !importBtn) return;
+
+    const entries = dedupeMigrationEntries(pendingMigrationEntries);
+    list.replaceChildren();
+
+    for (const entry of entries) {
+      const row = document.createElement("div");
+      row.className = "qr-migration-item";
+
+      const copy = document.createElement("div");
+      copy.className = "qr-migration-item-copy";
+      const strong = document.createElement("strong");
+      strong.textContent = suggestedName(entry);
+      const small = document.createElement("small");
+      small.textContent = `${entry.algorithm} · ${entry.digits} ${tr("digitsShort", undefined, "dígitos")}`;
+      copy.append(strong, small);
+
+      const badge = document.createElement("span");
+      badge.className = "qr-migration-badge";
+      badge.textContent = "TOTP";
+      row.append(copy, badge);
+      list.appendChild(row);
+    }
+
+    count.textContent = String(entries.length);
+    summary.textContent = entries.length === 1
+      ? tr("qrMigrationOneFound", undefined, "1 cuenta TOTP detectada.")
+      : tr("qrMigrationManyFound", [String(entries.length)], `${entries.length} cuentas TOTP detectadas.`);
+
+    if (pendingMigrationUnsupported > 0) {
+      summary.textContent += " " + (pendingMigrationUnsupported === 1
+        ? tr("qrMigrationUnsupportedOne", undefined, "Se omitirá 1 entrada no compatible.")
+        : tr(
+            "qrMigrationUnsupportedMany",
+            [String(pendingMigrationUnsupported)],
+            `Se omitirán ${pendingMigrationUnsupported} entradas no compatibles.`
+          ));
+    }
+
+    if (migrationBatch?.batchSize > 1) {
+      batchInfo.classList.remove("hidden");
+      if (complete) {
+        batchInfo.textContent = tr(
+          "qrMigrationBatchComplete",
+          [String(migrationBatch.batchSize)],
+          `Lote completo: ${migrationBatch.batchSize} QR recibidos.`
+        );
+      } else {
+        batchInfo.textContent = tr(
+          "qrMigrationBatchWaiting",
+          [String(migrationBatch.parts.size), String(migrationBatch.batchSize)],
+          `Recibidos ${migrationBatch.parts.size} de ${migrationBatch.batchSize} QR. Escanea los restantes para continuar.`
+        );
+      }
+    } else {
+      batchInfo.classList.add("hidden");
+      batchInfo.textContent = "";
+    }
+
+    importBtn.textContent = entries.length === 1
+      ? tr("qrMigrationImportOne", undefined, "Importar 1 cuenta")
+      : tr("qrMigrationImportMany", [String(entries.length)], `Importar ${entries.length} cuentas`);
+    importBtn.disabled = !complete || entries.length === 0;
+    review.classList.remove("hidden");
+    const panel = byId("qrPanel");
+    if (panel) panel.scrollTop = 0;
+  }
+
+  function reviewMigrationPayload(raw) {
+    let decoded;
+    try {
+      decoded = globalThis.TotpMigration?.decodeUri?.(raw);
+    } catch {
+      throw new Error(tr("qrMigrationInvalid", undefined, "No se pudo interpretar la exportación de Google Authenticator."));
+    }
+    if (!decoded) throw new Error(tr("qrMigrationInvalid", undefined, "No se pudo interpretar la exportación de Google Authenticator."));
+
+    if (decoded.batchIndex >= decoded.batchSize) {
+      throw new Error(tr("qrMigrationInvalid", undefined, "No se pudo interpretar la exportación de Google Authenticator."));
+    }
+
+    const batchKey = `${decoded.batchId}:${decoded.batchSize}`;
+    if (!migrationBatch || migrationBatch.key !== batchKey) {
+      migrationBatch = {
+        key: batchKey,
+        batchId: decoded.batchId,
+        batchSize: decoded.batchSize,
+        parts: new Map()
+      };
+    }
+
+    migrationBatch.parts.set(decoded.batchIndex, decoded);
+    const parts = migrationParts();
+    pendingMigrationEntries = parts.flatMap((part) => part.entries);
+    pendingMigrationUnsupported = parts.reduce((total, part) => total + part.unsupportedCount, 0);
+
+    const complete = migrationBatch.parts.size >= migrationBatch.batchSize;
+    if (complete && !pendingMigrationEntries.length) {
+      throw new Error(tr("qrMigrationNoTotp", undefined, "La exportación no contiene cuentas TOTP compatibles."));
+    }
+
+    renderMigrationReview({ complete });
+    hideMessage("#qrMessage");
+  }
+
   function reviewPayload(value, sourceLabel) {
-    const { raw, parsed } = parseQrPayload(value);
+    const raw = String(value || "").trim();
+    if (isMigrationPayload(raw)) {
+      reviewMigrationPayload(raw);
+      return;
+    }
+
+    const { parsed } = parseQrPayload(raw);
     resetAddForm();
     byId("name").value = suggestedName(parsed);
     byId("secret").value = raw;
@@ -79,6 +251,82 @@
     showQrPanel(false);
     showAdd(true);
     showMessage("#formError", tr("qrReadReview", [sourceLabel], `QR leído desde ${sourceLabel}. Revisa los datos y pulsa Guardar para añadirlo.`), "ok");
+  }
+
+  async function importMigrationEntries() {
+    ensureUnlocked();
+    if (!migrationBatch || migrationBatch.parts.size < migrationBatch.batchSize) return;
+
+    const decodedEntries = dedupeMigrationEntries(pendingMigrationEntries);
+    const existingKeys = new Set(state.entries.map((entry) => migrationEntryKey(entry, entry.name)));
+    const additions = [];
+    let duplicates = 0;
+    let invalid = 0;
+
+    for (const parsed of decodedEntries) {
+      const parsedName = suggestedName(parsed);
+      const parsedKey = migrationEntryKey(parsed, parsedName);
+      if (existingKeys.has(parsedKey)) {
+        duplicates++;
+        continue;
+      }
+
+      try {
+        await generateTotp(parsed.secret, parsed.period, parsed.digits, parsed.algorithm);
+      } catch {
+        invalid++;
+        continue;
+      }
+
+      additions.push({
+        id: crypto.randomUUID(),
+        name: parsedName,
+        secret: parsed.secret,
+        period: parsed.period,
+        digits: parsed.digits,
+        algorithm: parsed.algorithm,
+        issuer: parsed.issuer || "",
+        icon: { type: "auto" },
+        createdAt: Date.now()
+      });
+      existingKeys.add(parsedKey);
+    }
+
+    if (!additions.length) {
+      const skipped = duplicates + invalid + pendingMigrationUnsupported;
+      qrMessage(
+        skipped
+          ? tr("qrMigrationNothingNew", undefined, "No hay cuentas TOTP nuevas que importar.")
+          : tr("qrMigrationNoTotp", undefined, "La exportación no contiene cuentas TOTP compatibles."),
+        "error"
+      );
+      return;
+    }
+
+    const skipped = duplicates + invalid + pendingMigrationUnsupported;
+    const base = additions.length === 1
+      ? tr("qrMigrationImportedOne", undefined, "1 cuenta importada desde Google Authenticator.")
+      : tr("qrMigrationImportedMany", [String(additions.length)], `${additions.length} cuentas importadas desde Google Authenticator.`);
+    const successMessage = skipped > 0
+      ? base + " " + (skipped === 1
+          ? tr("qrMigrationSkippedOne", undefined, "1 omitida.")
+          : tr("qrMigrationSkippedMany", [String(skipped)], `${skipped} omitidas.`))
+      : base;
+
+    state.entries.push(...additions);
+    await persistVault();
+    showQrPanel(false);
+    render();
+
+    // showQrPanel touches the session asynchronously and refreshes vaultStatus.
+    // Queue the import result afterwards so it remains visible to the user.
+    setTimeout(() => {
+      const status = byId("vaultStatus");
+      if (!status) return;
+      status.textContent = successMessage;
+      clearTimeout(status._migrationTimer);
+      status._migrationTimer = setTimeout(() => updateVaultStatus(), 4200);
+    }, 0);
   }
 
   function dimensions(source) {
@@ -124,7 +372,7 @@
 
   async function decodeImageSource(source) {
     const nativeValues = await decodeWithNative(source);
-    const compatible = nativeValues.find(isTotpPayload);
+    const compatible = nativeValues.find(isSupportedQrPayload);
     if (compatible) return compatible;
 
     const fallback = decodeWithJsQr(source);
@@ -205,7 +453,7 @@
 
   async function fetchImageUrl(rawUrl) {
     const value = String(rawUrl || "").trim();
-    if (isTotpPayload(value)) {
+    if (isSupportedQrPayload(value)) {
       reviewPayload(value, tr("sourceLink", undefined, "el enlace"));
       return;
     }
@@ -234,7 +482,7 @@
     if (!response.ok) throw new Error(tr("imageDownloadFailed", [String(response.status)], `No se pudo descargar la imagen (HTTP ${response.status}).`));
 
     const length = Number(response.headers.get("content-length") || 0);
-    if (length > MAX_QR_IMAGE_BYTES) throw new Error("La imagen no puede superar 12 MB.");
+    if (length > MAX_QR_IMAGE_BYTES) throw new Error(tr("imageTooLarge", undefined, "La imagen no puede superar 12 MB."));
     const blob = await response.blob();
     await scanBlob(blob, tr("sourceUrl", undefined, "la URL"));
   }
@@ -291,6 +539,10 @@
     byId("qrUrlForm")?.addEventListener("submit", (event) => {
       event.preventDefault();
       withTask(() => fetchImageUrl(byId("qrUrlInput")?.value));
+    });
+
+    byId("qrMigrationImportBtn")?.addEventListener("click", () => {
+      withTask(importMigrationEntries);
     });
 
     document.addEventListener("paste", (event) => {

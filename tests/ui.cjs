@@ -61,6 +61,49 @@ function testQrSvg() {
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="450" height="450"><rect width="100%" height="100%" fill="white"/><path d="${cells.join('')}" fill="black"/></svg>`;
 }
+
+function protoVarint(value) {
+  let n = BigInt(value);
+  const out = [];
+  do {
+    let byte = Number(n & 0x7fn);
+    n >>= 7n;
+    if (n) byte |= 0x80;
+    out.push(byte);
+  } while (n);
+  return Buffer.from(out);
+}
+
+function protoFieldVarint(field, value) {
+  return Buffer.concat([protoVarint((field << 3) | 0), protoVarint(value)]);
+}
+
+function protoFieldBytes(field, value) {
+  const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
+  return Buffer.concat([protoVarint((field << 3) | 2), protoVarint(bytes.length), bytes]);
+}
+
+function migrationOtp({ secret, name, issuer, algorithm = 1, digits = 1, type = 2 }) {
+  return Buffer.concat([
+    protoFieldBytes(1, secret),
+    protoFieldBytes(2, Buffer.from(name, 'utf8')),
+    protoFieldBytes(3, Buffer.from(issuer, 'utf8')),
+    protoFieldVarint(4, algorithm),
+    protoFieldVarint(5, digits),
+    protoFieldVarint(6, type)
+  ]);
+}
+
+function migrationUri(entries, { batchSize = 1, batchIndex = 0, batchId = 4242 } = {}) {
+  const payload = Buffer.concat([
+    ...entries.map(entry => protoFieldBytes(1, migrationOtp(entry))),
+    protoFieldVarint(2, 1),
+    protoFieldVarint(3, batchSize),
+    protoFieldVarint(4, batchIndex),
+    protoFieldVarint(5, batchId)
+  ]);
+  return `otpauth-migration://offline?data=${encodeURIComponent(payload.toString('base64'))}`;
+}
 const server = http.createServer(async (req, res) => {
   try {
     const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -124,14 +167,14 @@ async function mockChrome() {
   assert.equal(manifest.default_locale, 'es');
   assert.equal(manifest.name, '__MSG_extensionName__');
   assert.equal(manifest.description, '__MSG_extensionDescription__');
-  assert.equal(manifest.version, '2.14.0');
+  assert.equal(manifest.version, '2.15.0');
   const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
   const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
   assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());
   assert.equal(esLocale.extensionDescription.message.length <= 132, true);
   assert.equal(enLocale.extensionDescription.message.length <= 132, true);
   const localizedSources = await Promise.all(
-    ['popup-core.js','popup-ui.js','popup-qr.js','popup.js','visibility.js','content.js','service_worker.js']
+    ['popup-core.js','popup-ui.js','popup-qr.js','popup-migration.js','popup.js','visibility.js','content.js','service_worker.js']
       .map(file => fs.readFile(path.join(root, file), 'utf8'))
   );
   const usedLocaleKeys = new Set();
@@ -277,6 +320,49 @@ async function mockChrome() {
     await shot('qr-import-en');
     await setLanguage('es');
 
+    // Google Authenticator migration exports use a protobuf payload inside
+    // otpauth-migration://. Multi-QR batches are accumulated before importing.
+    const migrationPart1 = migrationUri([
+      { secret: Buffer.from('Hello!\\xde\\xad\\xbe\\xef', 'binary'), name: 'demo@example.com', issuer: 'Google', algorithm: 1, digits: 1, type: 2 },
+      { secret: Buffer.from('HOTP-secret', 'utf8'), name: 'legacy', issuer: 'Legacy', algorithm: 1, digits: 1, type: 1 }
+    ], { batchSize: 2, batchIndex: 0, batchId: 77 });
+    const migrationPart2 = migrationUri([
+      { secret: Buffer.from('1234567890', 'utf8'), name: 'demo-user', issuer: 'GitHub', algorithm: 2, digits: 2, type: 2 }
+    ], { batchSize: 2, batchIndex: 1, batchId: 77 });
+
+    await page.locator('#qrImportBtn').click();
+    await page.locator('#qrUrlInput').fill(migrationPart1);
+    await page.locator('#qrUrlBtn').click();
+    await page.locator('#qrMigrationReview:not(.hidden)').waitFor();
+    assert.equal(await page.locator('#qrMigrationCount').innerText(), '1');
+    assert.equal(await page.locator('#qrMigrationImportBtn').isDisabled(), true);
+    assert.match(await page.locator('#qrMigrationBatchInfo').innerText(), /1 de 2/);
+
+    await page.locator('#qrUrlInput').fill(migrationPart2);
+    await page.locator('#qrUrlBtn').click();
+    assert.equal(await page.locator('#qrMigrationCount').innerText(), '2');
+    assert.equal(await page.locator('.qr-migration-item').count(), 2);
+    assert.equal(await page.locator('#qrMigrationImportBtn').isEnabled(), true);
+    assert.match(await page.locator('#qrMigrationSummary').innerText(), /1 entrada no compatible/);
+    await shot('qr-google-authenticator');
+
+    await page.locator('#qrMigrationImportBtn').click();
+    await page.locator('#qrPanel.hidden').waitFor({ state: 'attached' });
+    assert.equal(await page.locator('.totp-card').count(), 2);
+    assert.deepEqual(
+      (await page.locator('.card-title').allInnerTexts()).sort(),
+      ['GitHub · demo-user', 'Google · demo@example.com'].sort()
+    );
+    assert.match(await page.locator('#vaultStatus').innerText(), /2 cuentas importadas/);
+
+    // Remove migration fixtures before the rest of the CRUD tests.
+    while (await page.locator('.totp-card').count()) {
+      await page.locator('.menu-btn').first().click();
+      await page.locator('.delete-item').first().click();
+      await page.waitForTimeout(20);
+    }
+    assert.equal(await page.locator('.totp-card').count(), 0);
+
     const add = async (name, secret) => {
       await page.locator('#toggleAdd').click();
       await page.locator('#name').fill(name);
@@ -293,7 +379,29 @@ async function mockChrome() {
     await add('VPN · Corp', 'otpauth://totp/VPN:demo?secret=JBSWY3DPEHPK3PXP&digits=8&algorithm=SHA256&period=60');
     assert.equal(await page.locator('.totp-card').count(), 3);
     assert.equal(await page.locator('#accountCount').innerText(), '3');
+    const compactCardHeight = (await page.locator('.totp-card').first().boundingBox()).height;
+    assert.ok(compactCardHeight <= 112, `Expected compact TOTP card, got ${compactCardHeight}px`);
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
+
+    const expiringState = await page.evaluate(async () => {
+      const originalNow = Date.now;
+      Date.now = () => 26000;
+      try {
+        await refreshCodes();
+        await new Promise(resolve => setTimeout(resolve, 240));
+        const timer = document.querySelector('.timer-wrap');
+        return {
+          expiring: timer.classList.contains('is-expiring'),
+          color: getComputedStyle(timer.querySelector('.seconds')).color
+        };
+      } finally {
+        Date.now = originalNow;
+        await refreshCodes();
+      }
+    });
+    assert.equal(expiringState.expiring, true);
+    assert.equal(expiringState.color, 'rgb(201, 97, 106)');
+    await page.waitForTimeout(240);
     await shot('vault-es');
     await setLanguage('en');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
@@ -354,6 +462,13 @@ async function mockChrome() {
     await page.locator('#autoSubmitMode').selectOption('conservative');
     assert.equal(await page.evaluate(async () => (await chrome.storage.local.get('settings')).settings.autoSubmitMode), 'conservative');
     await page.locator('.theme-swatch[data-theme="1c485f"]').click();
+    for (const selector of ['#exportBtn', '#importBtn', '#changePasswordToggle', '#supportLink']) {
+      const fontSize = Number.parseFloat(await page.locator(selector).evaluate(el => getComputedStyle(el).fontSize));
+      assert.ok(fontSize >= 13, `Expected readable settings button text for ${selector}, got ${fontSize}px`);
+    }
+    await page.locator('#supportLink').scrollIntoViewIfNeeded();
+    await shot('settings-bottom-es');
+    await page.locator('#settingsPanel').evaluate(el => { el.scrollTop = 0; });
     await shot('settings-es');
     await setLanguage('en');
     await page.locator('#settingsBtn').click();
