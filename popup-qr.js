@@ -183,6 +183,8 @@
       : tr("qrMigrationImportMany", [String(entries.length)], `Importar ${entries.length} cuentas`);
     importBtn.disabled = !complete || entries.length === 0;
     review.classList.remove("hidden");
+    const panel = byId("qrPanel");
+    if (panel) panel.scrollTop = 0;
   }
 
   function reviewMigrationPayload(raw) {
