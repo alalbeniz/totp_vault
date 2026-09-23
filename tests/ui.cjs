@@ -466,6 +466,9 @@ async function mockChrome() {
       const fontSize = Number.parseFloat(await page.locator(selector).evaluate(el => getComputedStyle(el).fontSize));
       assert.ok(fontSize >= 13, `Expected readable settings button text for ${selector}, got ${fontSize}px`);
     }
+    await page.locator('#supportLink').scrollIntoViewIfNeeded();
+    await shot('settings-bottom-es');
+    await page.locator('#settingsPanel').evaluate(el => { el.scrollTop = 0; });
     await shot('settings-es');
     await setLanguage('en');
     await page.locator('#settingsBtn').click();
