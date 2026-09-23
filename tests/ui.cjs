@@ -388,6 +388,7 @@ async function mockChrome() {
       Date.now = () => 26000;
       try {
         await refreshCodes();
+        await new Promise(resolve => setTimeout(resolve, 240));
         const timer = document.querySelector('.timer-wrap');
         return {
           expiring: timer.classList.contains('is-expiring'),
