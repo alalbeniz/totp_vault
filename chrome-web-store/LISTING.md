@@ -1,4 +1,4 @@
-# Chrome Web Store — TOTP Vault v2.14.0
+# Chrome Web Store — TOTP Vault v2.15.0
 
 Ficha optimizada siguiendo las recomendaciones de Google para una listing clara, concisa, localizada y centrada en las funciones principales.
 
@@ -27,7 +27,7 @@ TOTP Vault es un autenticador TOTP para Chrome pensado para usar tus códigos 2F
 
 Funciones principales:
 
-• Importa cuentas desde un QR visible, una imagen, el portapapeles, una URL o un enlace otpauth://.  
+• Importa cuentas desde un QR visible, una imagen, el portapapeles, una URL, un enlace otpauth:// o una exportación de Google Authenticator.  
 • Genera códigos de 6 u 8 dígitos con SHA-1, SHA-256 y SHA-512.  
 • Copia códigos o rellénalos directamente con un clic.  
 • Usa un selector opcional junto a campos OTP/TOTP.  
@@ -47,7 +47,7 @@ TOTP Vault is a TOTP authenticator for Chrome designed to let you use your 2FA c
 
 Main features:
 
-• Import accounts from a visible QR code, image, clipboard, URL, or otpauth:// link.  
+• Import accounts from a visible QR code, image, clipboard, URL, otpauth:// link, or Google Authenticator export.  
 • Generate 6- or 8-digit codes using SHA-1, SHA-256, or SHA-512.  
 • Copy codes or fill them directly with one click.  
 • Use an optional inline picker next to OTP/TOTP fields.  
@@ -70,6 +70,16 @@ TOTP Vault includes no first-party analytics, advertising, or telemetry.
 ### EN
 
 > TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
+
+## Novedades v2.15.0
+
+### ES
+
+> Añadida importación de exportaciones de Google Authenticator, incluyendo múltiples cuentas y lotes divididos en varios QR. También se ha compactado el diseño de las tarjetas TOTP, aumentado la legibilidad de los botones de Ajustes y el contador cambia a un rojo suave cuando quedan menos de 5 segundos.
+
+### EN
+
+> Added Google Authenticator export import, including multiple accounts and exports split across several QR codes. TOTP cards are now more compact, Settings buttons are easier to read, and the countdown changes to a soft red when fewer than 5 seconds remain.
 
 ## Novedades v2.14.0
 
