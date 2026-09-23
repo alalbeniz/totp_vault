@@ -52,6 +52,12 @@ El lector usa la API nativa `BarcodeDetector` cuando está disponible y `jsQR` c
 
 Las exportaciones `otpauth-migration://` de Google Authenticator se decodifican localmente. Las cuentas TOTP compatibles se muestran para revisión antes de importarlas; los lotes divididos en varios QR se acumulan hasta recibirlos todos. Las entradas HOTP o con parámetros no compatibles se omiten y se informa al usuario.
 
+## Novedades de v2.15.1
+
+- Nuevo layout de tarjetas basado en la opción C: identidad a la izquierda y código TOTP, visibilidad y contador en la misma fila principal.
+- Menos espacio en blanco y mejor aprovechamiento horizontal sin aumentar la altura de las tarjetas.
+- El contador circular pasa al color de aviso cuando quedan **5 segundos o menos**.
+
 ## Novedades de v2.15.0
 
 - Importación directa de exportaciones de Google Authenticator, incluidas exportaciones con varias cuentas y lotes de varios QR.

@@ -1541,7 +1541,7 @@ async function refreshCodes() {
       const { code, remaining, fraction } = await getCurrentCode(entry);
       card.querySelector(".code").textContent = groupCode(code);
       card.querySelector(".seconds").textContent = remaining;
-      card.querySelector(".timer-wrap")?.classList.toggle("is-expiring", remaining < 5);
+      card.querySelector(".timer-wrap")?.classList.toggle("is-expiring", remaining <= 5);
 
       const circumference = 2 * Math.PI * 15;
       card.querySelector(".timer-progress").style.strokeDashoffset =
