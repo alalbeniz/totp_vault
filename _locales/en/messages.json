@@ -777,5 +777,88 @@
   },
   "supportButton": {
     "message": "Buy me a beer"
+  },
+  "qrMigrationTitle": {
+    "message": "Review import"
+  },
+  "qrMigrationOneFound": {
+    "message": "1 TOTP account detected."
+  },
+  "qrMigrationManyFound": {
+    "message": "$COUNT$ TOTP accounts detected.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationUnsupportedSkipped": {
+    "message": "$COUNT$ unsupported entries will be skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchComplete": {
+    "message": "Batch complete: $COUNT$ QR codes received.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchWaiting": {
+    "message": "Received $CURRENT$ of $TOTAL$ QR codes. Scan the remaining codes to continue.",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "qrMigrationImportOne": {
+    "message": "Import 1 account"
+  },
+  "qrMigrationImportMany": {
+    "message": "Import $COUNT$ accounts",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationInvalid": {
+    "message": "Could not parse the Google Authenticator export."
+  },
+  "qrMigrationNoTotp": {
+    "message": "The export does not contain compatible TOTP accounts."
+  },
+  "qrMigrationNothingNew": {
+    "message": "There are no new TOTP accounts to import."
+  },
+  "qrMigrationImportedOne": {
+    "message": "1 account imported from Google Authenticator."
+  },
+  "qrMigrationImportedMany": {
+    "message": "$COUNT$ accounts imported from Google Authenticator.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationSkippedCount": {
+    "message": "$COUNT$ skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "digitsShort": {
+    "message": "digits"
   }
 }
