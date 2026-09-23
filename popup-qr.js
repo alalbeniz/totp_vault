@@ -95,11 +95,22 @@
     return label || issuer || "TOTP";
   }
 
+  function migrationEntryKey(entry, name = suggestedName(entry)) {
+    return [
+      String(entry.secret || ""),
+      String(entry.issuer || ""),
+      String(name || ""),
+      String(entry.algorithm || "SHA-1"),
+      String(entry.digits || 6),
+      String(entry.period || 30)
+    ].join("\u0000");
+  }
+
   function dedupeMigrationEntries(entries) {
     const seen = new Set();
     return entries.filter((entry) => {
-      const key = String(entry.secret || "");
-      if (!key || seen.has(key)) return false;
+      const key = migrationEntryKey(entry);
+      if (!entry.secret || seen.has(key)) return false;
       seen.add(key);
       return true;
     });
@@ -247,13 +258,15 @@
     if (!migrationBatch || migrationBatch.parts.size < migrationBatch.batchSize) return;
 
     const decodedEntries = dedupeMigrationEntries(pendingMigrationEntries);
-    const existingSecrets = new Set(state.entries.map((entry) => String(entry.secret || "")));
+    const existingKeys = new Set(state.entries.map((entry) => migrationEntryKey(entry, entry.name)));
     const additions = [];
     let duplicates = 0;
     let invalid = 0;
 
     for (const parsed of decodedEntries) {
-      if (existingSecrets.has(parsed.secret)) {
+      const parsedName = suggestedName(parsed);
+      const parsedKey = migrationEntryKey(parsed, parsedName);
+      if (existingKeys.has(parsedKey)) {
         duplicates++;
         continue;
       }
@@ -267,7 +280,7 @@
 
       additions.push({
         id: crypto.randomUUID(),
-        name: suggestedName(parsed),
+        name: parsedName,
         secret: parsed.secret,
         period: parsed.period,
         digits: parsed.digits,
@@ -276,7 +289,7 @@
         icon: { type: "auto" },
         createdAt: Date.now()
       });
-      existingSecrets.add(parsed.secret);
+      existingKeys.add(parsedKey);
     }
 
     if (!additions.length) {
