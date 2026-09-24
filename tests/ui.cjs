@@ -200,14 +200,14 @@ async function mockChrome() {
 
   const popupCss = await fs.readFile(path.join(root, 'popup-core.css'), 'utf8');
   const rootSizing = popupCss.match(/html\s*\{[\s\S]*?\}\s*body\s*\{[\s\S]*?\}/)?.[0] || '';
-  assert.match(rootSizing, /width:\s*420px/);
+  assert.match(rootSizing, /width:\s*600px/);
   assert.match(rootSizing, /height:\s*600px/);
   assert.doesNotMatch(rootSizing, /\b(?:vw|vh|dvh|svh|lvh)\b/);
 
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext({ viewport: { width: 420, height: 600 }, deviceScaleFactor: 2 });
+    const context = await browser.newContext({ viewport: { width: 600, height: 600 }, deviceScaleFactor: 2 });
     await context.addInitScript(mockChrome);
     const page = await context.newPage();
     const errors = [];
@@ -380,12 +380,12 @@ async function mockChrome() {
     assert.equal(await page.locator('.totp-card').count(), 3);
     assert.equal(await page.locator('#accountCount').innerText(), '3');
     const compactCardHeight = (await page.locator('.totp-card').first().boundingBox()).height;
-    assert.ok(compactCardHeight <= 112, `Expected compact TOTP card, got ${compactCardHeight}px`);
+    assert.ok(compactCardHeight <= 170, `Expected horizontal TOTP card, got ${compactCardHeight}px`);
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
 
     const expiringState = await page.evaluate(async () => {
       const originalNow = Date.now;
-      Date.now = () => 26000;
+      Date.now = () => 25000;
       try {
         await refreshCodes();
         await new Promise(resolve => setTimeout(resolve, 240));
@@ -402,6 +402,39 @@ async function mockChrome() {
     assert.equal(expiringState.expiring, true);
     assert.equal(expiringState.color, 'rgb(201, 97, 106)');
     await page.waitForTimeout(240);
+    // Check readable names and disjoint identity/code/controls at real card widths.
+    for (const width of [600, 390, 320]) {
+      await page.setViewportSize({ width, height: 600 });
+      await page.evaluate(width => {
+        document.documentElement.style.width = `${width}px`;
+        document.body.style.width = `${width}px`;
+        document.querySelectorAll('.card-title').forEach(el => {
+          el.dataset.originalTitle = el.textContent;
+          el.textContent = 'Outlook · Cuenta de trabajo con un nombre largo para comprobar la tarjeta';
+        });
+      }, width);
+      const geometry = await page.locator('.totp-card').evaluateAll(cards => cards.map(card => {
+        const rect = selector => card.querySelector(selector).getBoundingClientRect();
+        const identity = rect('.card-identity'), live = rect('.card-live');
+        const code = rect('.code'), eye = rect('.code-visibility-btn'), timer = rect('.timer-wrap');
+        const title = card.querySelector('.card-title');
+        const range = document.createRange(); range.selectNodeContents(card.querySelector('.code'));
+        return {
+          separated: identity.right <= live.left || identity.bottom <= live.top,
+          readable: title.scrollWidth <= title.clientWidth + 1 && title.scrollHeight <= title.clientHeight + 1,
+          controls: code.right <= eye.left && eye.right <= timer.left,
+          codeFits: range.getBoundingClientRect().right <= eye.left,
+          contained: timer.right <= card.getBoundingClientRect().right
+        };
+      }));
+      for (const result of geometry) assert.ok(Object.values(result).every(Boolean), `${width}px layout: ${JSON.stringify(result)}`);
+      await shot(`cards-long-${width}`);
+      await page.evaluate(() => document.querySelectorAll('.card-title').forEach(el => { el.textContent = el.dataset.originalTitle; }));
+    }
+    await page.setViewportSize({ width: 600, height: 600 });
+    await page.evaluate(() => {
+      document.documentElement.style.removeProperty('width'); document.body.style.removeProperty('width');
+    });
     await shot('vault-es');
     await setLanguage('en');
     await page.waitForFunction(() => [...document.querySelectorAll('.code')].every(el => /^\d{3,4} \d{3,4}$/.test(el.textContent)));
@@ -523,7 +556,7 @@ async function mockChrome() {
     await page.locator('#changePasswordForm button[type=submit]').scrollIntoViewIfNeeded();
     assert.equal(await page.locator('#changePasswordForm button[type=submit]').isVisible(), true);
     await page.locator('#closeSettings').click();
-    await page.setViewportSize({ width: 420, height: 600 });
+    await page.setViewportSize({ width: 600, height: 600 });
     await page.locator('#searchInput').fill('');
     await page.locator('.menu-btn').last().click();
     await page.locator('.delete-item').last().click();

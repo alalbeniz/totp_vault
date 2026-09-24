@@ -1507,7 +1507,7 @@ function render() {
     node.dataset.id = entry.id;
     node.querySelector(".card-title").textContent = entry.name;
     node.querySelector(".card-meta").textContent =
-      entry.issuer || tvt("totpMeta", [String(entry.digits), String(entry.period)], `${entry.digits} dígitos · ${entry.period}s`);
+      tvt("totpMeta", [String(entry.digits), String(entry.period)], `${entry.digits} dígitos · ${entry.period}s`);
     const badge = node.querySelector(".card-badge");
     renderIconInto(badge, entry);
 
@@ -1541,7 +1541,7 @@ async function refreshCodes() {
       const { code, remaining, fraction } = await getCurrentCode(entry);
       card.querySelector(".code").textContent = groupCode(code);
       card.querySelector(".seconds").textContent = remaining;
-      card.querySelector(".timer-wrap")?.classList.toggle("is-expiring", remaining < 5);
+      card.querySelector(".timer-wrap")?.classList.toggle("is-expiring", remaining <= 5);
 
       const circumference = 2 * Math.PI * 15;
       card.querySelector(".timer-progress").style.strokeDashoffset =
