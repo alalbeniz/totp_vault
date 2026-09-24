@@ -1,0 +1,873 @@
+{
+  "extensionName": {
+    "message": "TOTP Vault"
+  },
+  "extensionDescription": {
+    "message": "Codici 2FA (TOTP) in una cassaforte locale cifrata. Importa QR, copia o inserisci codici e mantieni il controllo degli account."
+  },
+  "loadingOpeningVault": {
+    "message": "Apertura della cassaforte…"
+  },
+  "digitalKeyring": {
+    "message": "IL TUO PORTACHIAVI DIGITALE"
+  },
+  "setupTitle": {
+    "message": "Tutto inizia con una chiave."
+  },
+  "setupLead": {
+    "message": "Crea una password principale per proteggere i tuoi account in questo browser."
+  },
+  "masterPassword": {
+    "message": "Password principale"
+  },
+  "repeatPassword": {
+    "message": "Ripeti la password"
+  },
+  "showPassword": {
+    "message": "Mostra password"
+  },
+  "createVault": {
+    "message": "Crea cassaforte"
+  },
+  "or": {
+    "message": "o"
+  },
+  "importEncryptedBackup": {
+    "message": "Importa backup cifrato"
+  },
+  "unlockEyebrow": {
+    "message": "TOTP VAULT · ACCESSO SICURO"
+  },
+  "unlockTitle": {
+    "message": "I tuoi codici, a portata di mano."
+  },
+  "unlockLead": {
+    "message": "Sblocca la cassaforte per riprendere da dove eri rimasto."
+  },
+  "unlock": {
+    "message": "Sblocca"
+  },
+  "securityNote": {
+    "message": "Solo tu hai la chiave. La password non viene salvata ed è necessaria per recuperare i tuoi account."
+  },
+  "vaultUnlocked": {
+    "message": "Cassaforte sbloccata"
+  },
+  "hideAllCodes": {
+    "message": "Nascondi tutti i codici"
+  },
+  "showAllCodes": {
+    "message": "Mostra tutti i codici"
+  },
+  "settings": {
+    "message": "Impostazioni"
+  },
+  "lockNow": {
+    "message": "Blocca ora"
+  },
+  "lock": {
+    "message": "Blocca"
+  },
+  "myCodes": {
+    "message": "I miei codici"
+  },
+  "importFromQr": {
+    "message": "Importa da QR"
+  },
+  "add": {
+    "message": "Aggiungi"
+  },
+  "addTotp": {
+    "message": "Aggiungi TOTP"
+  },
+  "searchAccount": {
+    "message": "Cerca un account…"
+  },
+  "searchAccounts": {
+    "message": "Cerca account"
+  },
+  "close": {
+    "message": "Chiudi"
+  },
+  "qrEyebrow": {
+    "message": "LETTURA LOCALE"
+  },
+  "qrTitle": {
+    "message": "Importa da QR"
+  },
+  "qrIntro": {
+    "message": "Leggi un QR TOTP senza inviare l’immagine fuori dal browser. Potrai verificare i dati prima di salvarli."
+  },
+  "qrCurrentPage": {
+    "message": "Questa pagina"
+  },
+  "qrCurrentPageHelp": {
+    "message": "Cerca un QR visibile nella scheda corrente."
+  },
+  "chooseImage": {
+    "message": "Scegli immagine"
+  },
+  "qrFileHelp": {
+    "message": "PNG, JPG, WebP, GIF o SVG."
+  },
+  "pasteImage": {
+    "message": "Incolla immagine"
+  },
+  "qrPasteHelp": {
+    "message": "Dopo il clic, premi Ctrl+V o Cmd+V."
+  },
+  "qrPasteNow": {
+    "message": "Ora incolla l’immagine con Ctrl+V o Cmd+V."
+  },
+  "qrUrlLabel": {
+    "message": "URL dell’immagine o link otpauth://"
+  },
+  "read": {
+    "message": "Leggi"
+  },
+  "qrSecurity": {
+    "message": "Elaborazione locale · URL: autorizzazione solo per quel dominio."
+  },
+  "addEyebrow": {
+    "message": "UNA CHIAVE IN PIÙ"
+  },
+  "nameDescription": {
+    "message": "Nome o descrizione"
+  },
+  "nameExample": {
+    "message": "Es. VPN aziendale"
+  },
+  "secretLabel": {
+    "message": "Segreto Base32 o otpauth://"
+  },
+  "showSecret": {
+    "message": "Mostra segreto"
+  },
+  "icon": {
+    "message": "Icona"
+  },
+  "accountIcon": {
+    "message": "Icona dell’account"
+  },
+  "automatic": {
+    "message": "Automatico"
+  },
+  "generic": {
+    "message": "Generico"
+  },
+  "custom": {
+    "message": "Personalizzata…"
+  },
+  "remove": {
+    "message": "Rimuovi"
+  },
+  "iconHelp": {
+    "message": "PNG, JPG o WebP · salvata cifrata e ridotta a 96×96."
+  },
+  "cancel": {
+    "message": "Annulla"
+  },
+  "save": {
+    "message": "Salva"
+  },
+  "settingsEyebrow": {
+    "message": "A MODO TUO"
+  },
+  "settingsTitle": {
+    "message": "Impostazioni e sicurezza"
+  },
+  "vaultColor": {
+    "message": "Il colore della cassaforte"
+  },
+  "pastelThemes": {
+    "message": "10 temi pastello"
+  },
+  "colorTheme": {
+    "message": "Tema colore"
+  },
+  "themePorcelain": {
+    "message": "Porcellana"
+  },
+  "themeSky": {
+    "message": "Cielo"
+  },
+  "themeMint": {
+    "message": "Menta"
+  },
+  "themeOat": {
+    "message": "Avena"
+  },
+  "themeLavender": {
+    "message": "Lavanda"
+  },
+  "themeGraphite": {
+    "message": "Grafite"
+  },
+  "themeSage": {
+    "message": "Salvia"
+  },
+  "themeVanilla": {
+    "message": "Vaniglia"
+  },
+  "themePeach": {
+    "message": "Pesca"
+  },
+  "themeRose": {
+    "message": "Rosa"
+  },
+  "security": {
+    "message": "Sicurezza"
+  },
+  "autoLock": {
+    "message": "Blocco automatico"
+  },
+  "untilBrowserClose": {
+    "message": "Fino alla chiusura del browser"
+  },
+  "oneMinute": {
+    "message": "1 minuto"
+  },
+  "fiveMinutes": {
+    "message": "5 minuti"
+  },
+  "fifteenMinutes": {
+    "message": "15 minuti"
+  },
+  "thirtyMinutes": {
+    "message": "30 minuti"
+  },
+  "oneHour": {
+    "message": "1 ora"
+  },
+  "onSignIn": {
+    "message": "All’accesso"
+  },
+  "inlinePicker": {
+    "message": "Selettore accanto ai campi OTP/TOTP"
+  },
+  "disabled": {
+    "message": "Disattivato"
+  },
+  "authorizedSitesOnly": {
+    "message": "Solo siti autorizzati"
+  },
+  "allWebsites": {
+    "message": "Tutti i siti web"
+  },
+  "inlineHelp": {
+    "message": "Mostra un piccolo pulsante TOTP Vault accanto ai campi di verifica rilevati. Non associa gli account agli URL."
+  },
+  "authorizeCurrentSite": {
+    "message": "Autorizza sito corrente"
+  },
+  "afterFill": {
+    "message": "Dopo l’inserimento di un TOTP"
+  },
+  "doNotSubmit": {
+    "message": "Non inviare"
+  },
+  "submitUnambiguous": {
+    "message": "Invia se inequivocabile"
+  },
+  "maximumCompatibility": {
+    "message": "Compatibilità massima"
+  },
+  "autoSubmitHelp": {
+    "message": "Inequivocabile: usa solo un unico pulsante di invio chiaramente identificato nel modulo. Compatibilità massima: se non funziona, cerca il pulsante di verifica o continuazione più probabile vicino all’OTP, anche nei moduli SPA e tra i pulsanti personalizzati."
+  },
+  "backupTitle": {
+    "message": "Il tuo backup"
+  },
+  "exportEncrypted": {
+    "message": "Esporta cifrato"
+  },
+  "importEncrypted": {
+    "message": "Importa cifrato"
+  },
+  "changeMasterPassword": {
+    "message": "Cambia password principale"
+  },
+  "currentPassword": {
+    "message": "Password attuale"
+  },
+  "newPassword": {
+    "message": "Nuova password"
+  },
+  "repeatNewPassword": {
+    "message": "Ripeti la nuova password"
+  },
+  "updatePassword": {
+    "message": "Aggiorna password"
+  },
+  "noTotpSaved": {
+    "message": "Nessun account TOTP salvato"
+  },
+  "addFirst": {
+    "message": "Premi + per aggiungere il primo."
+  },
+  "localEncryptedOnly": {
+    "message": "Cifratura locale · Solo nel browser"
+  },
+  "moreOptions": {
+    "message": "Altre opzioni"
+  },
+  "edit": {
+    "message": "Modifica"
+  },
+  "delete": {
+    "message": "Elimina"
+  },
+  "fill": {
+    "message": "Inserisci"
+  },
+  "copy": {
+    "message": "Copia"
+  },
+  "copyCode": {
+    "message": "Copia codice"
+  },
+  "hideCode": {
+    "message": "Nascondi codice"
+  },
+  "showCode": {
+    "message": "Mostra codice"
+  },
+  "secondsRemaining": {
+    "message": "Secondi rimanenti"
+  },
+  "hideContent": {
+    "message": "Nascondi contenuto"
+  },
+  "showContent": {
+    "message": "Mostra contenuto"
+  },
+  "createVaultError": {
+    "message": "Impossibile creare la cassaforte."
+  },
+  "vaultMissing": {
+    "message": "Non esiste alcuna cassaforte."
+  },
+  "incorrectMasterPassword": {
+    "message": "Password principale errata."
+  },
+  "unlockError": {
+    "message": "Impossibile sbloccare."
+  },
+  "browserClose": {
+    "message": "alla chiusura del browser"
+  },
+  "hourShort": {
+    "message": "1 h"
+  },
+  "minutesShort": {
+    "message": "$MINUTES$ min",
+    "placeholders": {
+      "minutes": {
+        "content": "$1"
+      }
+    }
+  },
+  "vaultUnlockedAutoLock": {
+    "message": "Sbloccata · blocco $LABEL$",
+    "placeholders": {
+      "label": {
+        "content": "$1"
+      }
+    }
+  },
+  "editTotp": {
+    "message": "Modifica TOTP"
+  },
+  "update": {
+    "message": "Aggiorna"
+  },
+  "autoLockUpdated": {
+    "message": "Blocco automatico aggiornato."
+  },
+  "allSitesPermissionDenied": {
+    "message": "Chrome non ha autorizzato l’accesso a tutti i siti."
+  },
+  "inlineDisabled": {
+    "message": "Selettore integrato disattivato."
+  },
+  "authorizeSitesHelp": {
+    "message": "Autorizza i siti su cui vuoi usare il selettore."
+  },
+  "inlineAllSites": {
+    "message": "Selettore attivato su tutti i siti web."
+  },
+  "inlineUpdateError": {
+    "message": "Impossibile aggiornare il selettore."
+  },
+  "incompatibleTab": {
+    "message": "La scheda corrente non è una pagina http/https compatibile."
+  },
+  "originPermissionDenied": {
+    "message": "Chrome non ha autorizzato l’accesso a $ORIGIN$.",
+    "placeholders": {
+      "origin": {
+        "content": "$1"
+      }
+    }
+  },
+  "originRemoved": {
+    "message": "Accesso rimosso per $ORIGIN$.",
+    "placeholders": {
+      "origin": {
+        "content": "$1"
+      }
+    }
+  },
+  "originEnabled": {
+    "message": "Selettore attivato su $ORIGIN$.",
+    "placeholders": {
+      "origin": {
+        "content": "$1"
+      }
+    }
+  },
+  "sitePermissionError": {
+    "message": "Impossibile modificare l’autorizzazione del sito."
+  },
+  "openHttpSite": {
+    "message": "Apri un sito http/https per autorizzarlo."
+  },
+  "removeSite": {
+    "message": "Rimuovi sito"
+  },
+  "originAuthorized": {
+    "message": "$ORIGIN$ autorizzato",
+    "placeholders": {
+      "origin": {
+        "content": "$1"
+      }
+    }
+  },
+  "enterName": {
+    "message": "Inserisci un nome o una descrizione."
+  },
+  "enterSecret": {
+    "message": "Inserisci il segreto TOTP."
+  },
+  "chooseCustomIcon": {
+    "message": "Scegli un’immagine per l’icona personalizzata."
+  },
+  "saveTotpError": {
+    "message": "Impossibile salvare il TOTP."
+  },
+  "confirmDelete": {
+    "message": "Eliminare «$NAME$»?",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "codeCopied": {
+    "message": "Codice copiato."
+  },
+  "copyFailed": {
+    "message": "Impossibile copiare."
+  },
+  "activeTabError": {
+    "message": "Impossibile accedere alla scheda attiva."
+  },
+  "internalPageFillError": {
+    "message": "Chrome non consente di compilare i campi delle pagine interne."
+  },
+  "codeFilled": {
+    "message": "Codice inserito."
+  },
+  "otpFieldNotFound": {
+    "message": "Nessun campo TOTP/OTP riconoscibile trovato."
+  },
+  "fillFailed": {
+    "message": "Impossibile compilare il campo."
+  },
+  "iframeBlocked": {
+    "message": "Il sito blocca l’accesso al modulo oppure il modulo si trova in un iframe di un’altra origine."
+  },
+  "editableOtpNotFound": {
+    "message": "Nessun campo OTP modificabile e accessibile in questo frame."
+  },
+  "filledSlots": {
+    "message": "Compilati $COUNT$ campi OTP.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "pickerInstruction": {
+    "message": "Rilevamento automatico non riuscito. Fai clic ora sul campo OTP del sito."
+  },
+  "fieldDetected": {
+    "message": "campo rilevato"
+  },
+  "filledInField": {
+    "message": "Inserito in: $FIELD$",
+    "placeholders": {
+      "field": {
+        "content": "$1"
+      }
+    }
+  },
+  "backupExported": {
+    "message": "Backup cifrato esportato."
+  },
+  "exportFailed": {
+    "message": "Impossibile esportare."
+  },
+  "invalidBackup": {
+    "message": "Il file non è un backup TOTP Vault valido."
+  },
+  "newerBackup": {
+    "message": "Il backup proviene da una versione più recente dell’estensione."
+  },
+  "importConfirm": {
+    "message": "L’importazione sostituirà la cassaforte attuale. Continuare?"
+  },
+  "importSuccess": {
+    "message": "Backup importato. Sbloccalo con la password di quel backup."
+  },
+  "importFailed": {
+    "message": "Impossibile importare."
+  },
+  "currentPasswordWrong": {
+    "message": "La password attuale è errata."
+  },
+  "masterPasswordUpdated": {
+    "message": "Password principale aggiornata."
+  },
+  "passwordChangeFailed": {
+    "message": "Impossibile cambiare la password."
+  },
+  "passwordMin8": {
+    "message": "Usa una password di almeno 8 caratteri."
+  },
+  "passwordsMismatch": {
+    "message": "Le password non coincidono."
+  },
+  "invalidVaultFormat": {
+    "message": "Formato della cassaforte non valido."
+  },
+  "invalidOtpauthSecret": {
+    "message": "Il link otpauth:// non contiene un segreto valido."
+  },
+  "invalidSecretFormat": {
+    "message": "Il segreto deve essere in Base32 o un link otpauth:// valido."
+  },
+  "unsupportedAlgorithm": {
+    "message": "Algoritmo TOTP non supportato: $ALGORITHM$",
+    "placeholders": {
+      "algorithm": {
+        "content": "$1"
+      }
+    }
+  },
+  "noMatches": {
+    "message": "Nessun risultato"
+  },
+  "tryAnotherSearch": {
+    "message": "Prova un altro termine di ricerca."
+  },
+  "invalidBase32": {
+    "message": "Segreto Base32 non valido."
+  },
+  "base32TooShort": {
+    "message": "Il segreto Base32 è troppo corto."
+  },
+  "vaultLocked": {
+    "message": "La cassaforte è bloccata."
+  },
+  "accountCountOne": {
+    "message": "1 account"
+  },
+  "accountCountMany": {
+    "message": "$COUNT$ account",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "optionsFor": {
+    "message": "Opzioni per $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "copyCodeFor": {
+    "message": "Copia codice di $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "submissionPreferenceUpdated": {
+    "message": "Preferenza di invio aggiornata."
+  },
+  "savePreferenceFailed": {
+    "message": "Impossibile salvare la preferenza."
+  },
+  "qrNotTotp": {
+    "message": "Il QR non contiene un account TOTP compatibile."
+  },
+  "qrReadReview": {
+    "message": "QR letto da $SOURCE$. Verifica i dati e premi Salva per aggiungerlo.",
+    "placeholders": {
+      "source": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrReaderUnavailable": {
+    "message": "Il lettore QR locale non è disponibile."
+  },
+  "imageSizeReadFailed": {
+    "message": "Impossibile leggere le dimensioni dell’immagine."
+  },
+  "imageAnalyzeFailed": {
+    "message": "Impossibile analizzare l’immagine."
+  },
+  "qrFoundNotTotp": {
+    "message": "È stato trovato un QR, ma non contiene un account TOTP compatibile."
+  },
+  "qrNotFound": {
+    "message": "Nessun QR leggibile trovato nell’immagine."
+  },
+  "noImage": {
+    "message": "Nessuna immagine ricevuta."
+  },
+  "imageTooLarge": {
+    "message": "L’immagine non può superare 12 MB."
+  },
+  "notImage": {
+    "message": "Il file non sembra essere un’immagine."
+  },
+  "imageOpenFailed": {
+    "message": "Impossibile aprire l’immagine."
+  },
+  "qrReadFailed": {
+    "message": "Impossibile leggere il QR."
+  },
+  "activeTabIdentifyFailed": {
+    "message": "Impossibile identificare la scheda attiva."
+  },
+  "capturePageDenied": {
+    "message": "Chrome non consente di acquisire questa pagina."
+  },
+  "sourceCurrentPage": {
+    "message": "questa pagina"
+  },
+  "sourceLink": {
+    "message": "questo link"
+  },
+  "invalidImageUrl": {
+    "message": "Inserisci un URL di immagine valido."
+  },
+  "httpUrlRequired": {
+    "message": "L’URL deve usare http:// o https://."
+  },
+  "imageDomainPermissionDenied": {
+    "message": "Chrome non ha autorizzato la lettura di questa immagine."
+  },
+  "imageDownloadFailed": {
+    "message": "Impossibile scaricare l’immagine (HTTP $STATUS$).",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "sourceUrl": {
+    "message": "questo URL"
+  },
+  "sourceClipboard": {
+    "message": "questi appunti"
+  },
+  "clipboardEmpty": {
+    "message": "Gli appunti non contengono un’immagine o un link TOTP."
+  },
+  "sourceImage": {
+    "message": "questa immagine"
+  },
+  "clipboardReadFailed": {
+    "message": "Impossibile leggere gli appunti."
+  },
+  "themeSaveFailed": {
+    "message": "Impossibile salvare il tema. Riprova."
+  },
+  "codeVisible": {
+    "message": "Codice TOTP visibile"
+  },
+  "codeHidden": {
+    "message": "Codice TOTP nascosto"
+  },
+  "chooseTotp": {
+    "message": "Scegli TOTP"
+  },
+  "loading": {
+    "message": "Caricamento…"
+  },
+  "openTotpVault": {
+    "message": "Apri TOTP Vault"
+  },
+  "unlockVaultHelp": {
+    "message": "Sblocca TOTP Vault per scegliere un account."
+  },
+  "updatesAutomatically": {
+    "message": "Si aggiornerà automaticamente dopo lo sblocco."
+  },
+  "inlineVaultOpenError": {
+    "message": "Impossibile leggere la cassaforte."
+  },
+  "inlineCodeError": {
+    "message": "Impossibile generare il codice."
+  },
+  "totpAccountMissing": {
+    "message": "L’account TOTP non esiste più."
+  },
+  "imageReadError": {
+    "message": "Impossibile leggere l’immagine."
+  },
+  "iconProcessError": {
+    "message": "Impossibile elaborare l’icona."
+  },
+  "pickerBanner": {
+    "message": "TOTP Vault: fai clic sul campo del codice per compilarlo · Esc per annullare"
+  },
+  "totpMeta": {
+    "message": "$DIGITS$ cifre · $PERIOD$s",
+    "placeholders": {
+      "digits": {
+        "content": "$1"
+      },
+      "period": {
+        "content": "$2"
+      }
+    }
+  },
+  "qrPasteLead": {
+    "message": "Ora incolla l’immagine con"
+  },
+  "language": {
+    "message": "Lingua"
+  },
+  "languageSystem": {
+    "message": "Sistema"
+  },
+  "languageSpanish": {
+    "message": "Spagnolo"
+  },
+  "languageEnglish": {
+    "message": "Inglese"
+  },
+  "supportTitle": {
+    "message": "Sostieni TOTP Vault"
+  },
+  "supportText": {
+    "message": "Se TOTP Vault ti è utile, puoi sostenerne lo sviluppo."
+  },
+  "supportButton": {
+    "message": "Offrimi una birra"
+  },
+  "qrMigrationTitle": {
+    "message": "Verifica importazione"
+  },
+  "qrMigrationOneFound": {
+    "message": "Rilevato 1 account TOTP."
+  },
+  "qrMigrationManyFound": {
+    "message": "Rilevati $COUNT$ account TOTP.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchComplete": {
+    "message": "Lotto completo: $COUNT$ QR ricevuti.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationBatchWaiting": {
+    "message": "Ricevuti $CURRENT$ QR su $TOTAL$. Scansiona i QR rimanenti per continuare.",
+    "placeholders": {
+      "current": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "qrMigrationImportOne": {
+    "message": "Importa 1 account"
+  },
+  "qrMigrationImportMany": {
+    "message": "Importa $COUNT$ account",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationInvalid": {
+    "message": "Impossibile leggere l’esportazione di Google Authenticator."
+  },
+  "qrMigrationNoTotp": {
+    "message": "L’esportazione non contiene account TOTP compatibili."
+  },
+  "qrMigrationNothingNew": {
+    "message": "Non ci sono nuovi account TOTP da importare."
+  },
+  "qrMigrationImportedOne": {
+    "message": "1 account importato da Google Authenticator."
+  },
+  "qrMigrationImportedMany": {
+    "message": "$COUNT$ account importati da Google Authenticator.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "digitsShort": {
+    "message": "cifre"
+  },
+  "qrMigrationUnsupportedOne": {
+    "message": "1 voce non supportata verrà ignorata."
+  },
+  "qrMigrationUnsupportedMany": {
+    "message": "$COUNT$ voci non supportate verranno ignorate.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "qrMigrationSkippedOne": {
+    "message": "1 ignorata."
+  },
+  "qrMigrationSkippedMany": {
+    "message": "$COUNT$ ignorate.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "languageFrench": {
+    "message": "Francese"
+  },
+  "languageItalian": {
+    "message": "Italiano"
+  }
+}

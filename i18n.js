@@ -1,5 +1,5 @@
 (() => {
-  const SUPPORTED = new Set(["es", "en"]);
+  const SUPPORTED = new Set(["es", "en", "fr", "it"]);
   const DEFAULT_LANGUAGE = "es";
   const textKeys = new Map([
     ["Abriendo bóveda…","loadingOpeningVault"],["TU LLAVERO DIGITAL","digitalKeyring"],
@@ -17,7 +17,7 @@
     ["Nombre o descripción","nameDescription"],["Secreto Base32 u otpauth://","secretLabel"],["Icono","icon"],["Automático","automatic"],
     ["Personalizado…","custom"],["Quitar","remove"],["PNG, JPG o WebP · se guarda cifrado y reducido a 96×96.","iconHelp"],
     ["Cancelar","cancel"],["Guardar","save"],["A TU MANERA","settingsEyebrow"],["Ajustes y seguridad","settingsTitle"],
-    ["Idioma","language"],["Sistema","languageSystem"],["Español","languageSpanish"],["English","languageEnglish"],
+    ["Idioma","language"],["Sistema","languageSystem"],["Español","languageSpanish"],["English","languageEnglish"],["Français","languageFrench"],["Italiano","languageItalian"],
     ["El color de tu bóveda","vaultColor"],["10 temas pastel","pastelThemes"],["Porcelana","themePorcelain"],["Cielo","themeSky"],
     ["Menta","themeMint"],["Avena","themeOat"],["Lavanda","themeLavender"],["Grafito","themeGraphite"],["Salvia","themeSage"],
     ["Vainilla","themeVanilla"],["Melocotón","themePeach"],["Rosa","themeRose"],["Seguridad","security"],["Bloqueo automático","autoLock"],

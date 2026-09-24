@@ -8,7 +8,7 @@ let languagePreference = "system";
 let forcedLocaleCatalog = null;
 
 function normalizeLanguagePreference(value) {
-  return ["es", "en"].includes(value) ? value : "system";
+  return ["es", "en", "fr", "it"].includes(value) ? value : "system";
 }
 
 function formatLocaleEntry(entry, substitutions) {

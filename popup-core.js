@@ -353,7 +353,7 @@ async function loadSettings() {
   const data = await chrome.storage.local.get(STORAGE_SETTINGS);
   state.settings = { ...DEFAULT_SETTINGS, ...(data[STORAGE_SETTINGS] || {}) };
   if (!Array.isArray(state.settings.inlineAllowedOrigins)) state.settings.inlineAllowedOrigins = [];
-  if (!["system", "es", "en"].includes(state.settings.language)) state.settings.language = "system";
+  if (!["system", "es", "en", "fr", "it"].includes(state.settings.language)) state.settings.language = "system";
   $("#languageSelect").value = state.settings.language;
   $("#autoLockSelect").value = String(state.settings.autoLockMinutes);
   $("#inlinePickerMode").value = state.settings.inlinePickerMode || "off";

@@ -171,6 +171,17 @@ async function mockChrome() {
   const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
   const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
   assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());
+  for (const lang of ['fr', 'it']) {
+    const catalog = JSON.parse(await fs.readFile(path.join(root, '_locales', lang, 'messages.json'), 'utf8'));
+    assert.deepEqual(Object.keys(catalog).sort(), Object.keys(esLocale).sort());
+    assert.ok(catalog.extensionDescription.message.length <= 132);
+    for (const [key, entry] of Object.entries(enLocale)) {
+      assert.ok(catalog[key].message.trim(), `${lang}: empty ${key}`);
+      assert.deepEqual(catalog[key].placeholders, entry.placeholders, `${lang}: placeholders for ${key}`);
+      assert.deepEqual((catalog[key].message.match(/\$[A-Z_]+\$/g) || []).sort(), (entry.message.match(/\$[A-Z_]+\$/g) || []).sort(), `${lang}: substitutions for ${key}`);
+    }
+  }
+
   assert.equal(esLocale.extensionDescription.message.length <= 132, true);
   assert.equal(enLocale.extensionDescription.message.length <= 132, true);
   const localizedSources = await Promise.all(
@@ -507,6 +518,29 @@ async function mockChrome() {
     await page.locator('#settingsBtn').click();
     await page.locator('#settingsPanel:not(.hidden)').waitFor();
     await shot('settings-en');
+    for (const [lang, heading, fill, copy, setting] of [
+      ['fr', 'Mes codes', 'Remplir', 'Copier', 'Paramètres et sécurité'],
+      ['it', 'I miei codici', 'Inserisci', 'Copia', 'Impostazioni e sicurezza']
+    ]) {
+      await page.locator('#languageSelect').selectOption(lang);
+      await page.waitForFunction(lang => document.documentElement.lang === lang, lang);
+      await page.locator('#vaultView:not(.hidden)').waitFor();
+      assert.ok((await page.locator('.collection-heading h2').innerText()).includes(heading));
+      assert.equal(await page.locator('.fill-btn span').first().innerText(), fill);
+      assert.equal(await page.locator('.copy-btn span').first().innerText(), copy);
+      const meta = await page.evaluate(() => TotpI18n.t('totpMeta', ['8', '60']));
+      assert.equal(meta, lang === 'fr' ? '8 chiffres · 60s' : '8 cifre · 60s');
+      await shot(`vault-${lang}`);
+      await page.reload();
+      await page.locator('#vaultView:not(.hidden)').waitFor();
+      assert.equal(await page.locator('html').getAttribute('lang'), lang);
+      await page.locator('#settingsBtn').click();
+      await page.locator('#settingsPanel:not(.hidden)').waitFor();
+      assert.equal(await page.locator('#languageSelect').inputValue(), lang);
+      assert.ok((await page.locator('#settingsPanel').innerText()).includes(setting));
+      await shot(`settings-${lang}`);
+    }
+
     await setLanguage('es');
     await page.locator('#settingsBtn').click();
     await page.locator('#settingsPanel:not(.hidden)').waitFor();

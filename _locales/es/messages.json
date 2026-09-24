@@ -863,5 +863,11 @@
         "content": "$1"
       }
     }
+  },
+  "languageFrench": {
+    "message": "Francés"
+  },
+  "languageItalian": {
+    "message": "Italiano"
   }
 }
