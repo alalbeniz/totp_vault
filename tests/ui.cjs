@@ -200,14 +200,14 @@ async function mockChrome() {
 
   const popupCss = await fs.readFile(path.join(root, 'popup-core.css'), 'utf8');
   const rootSizing = popupCss.match(/html\s*\{[\s\S]*?\}\s*body\s*\{[\s\S]*?\}/)?.[0] || '';
-  assert.match(rootSizing, /width:\s*600px/);
+  assert.match(rootSizing, /width:\s*420px/);
   assert.match(rootSizing, /height:\s*600px/);
   assert.doesNotMatch(rootSizing, /\b(?:vw|vh|dvh|svh|lvh)\b/);
 
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const browser = await chromium.launch({ headless: true });
   try {
-    const context = await browser.newContext({ viewport: { width: 600, height: 600 }, deviceScaleFactor: 2 });
+    const context = await browser.newContext({ viewport: { width: 420, height: 600 }, deviceScaleFactor: 2 });
     await context.addInitScript(mockChrome);
     const page = await context.newPage();
     const errors = [];
@@ -403,7 +403,7 @@ async function mockChrome() {
     assert.equal(expiringState.color, 'rgb(201, 97, 106)');
     await page.waitForTimeout(240);
     // Check readable names and disjoint identity/code/controls at real card widths.
-    for (const width of [600, 390, 320]) {
+    for (const width of [420, 390, 320]) {
       await page.setViewportSize({ width, height: 600 });
       await page.evaluate(width => {
         document.documentElement.style.width = `${width}px`;
@@ -431,7 +431,7 @@ async function mockChrome() {
       await shot(`cards-long-${width}`);
       await page.evaluate(() => document.querySelectorAll('.card-title').forEach(el => { el.textContent = el.dataset.originalTitle; }));
     }
-    await page.setViewportSize({ width: 600, height: 600 });
+    await page.setViewportSize({ width: 420, height: 600 });
     await page.evaluate(() => {
       document.documentElement.style.removeProperty('width'); document.body.style.removeProperty('width');
     });
@@ -556,7 +556,7 @@ async function mockChrome() {
     await page.locator('#changePasswordForm button[type=submit]').scrollIntoViewIfNeeded();
     assert.equal(await page.locator('#changePasswordForm button[type=submit]').isVisible(), true);
     await page.locator('#closeSettings').click();
-    await page.setViewportSize({ width: 600, height: 600 });
+    await page.setViewportSize({ width: 420, height: 600 });
     await page.locator('#searchInput').fill('');
     await page.locator('.menu-btn').last().click();
     await page.locator('.delete-item').last().click();
