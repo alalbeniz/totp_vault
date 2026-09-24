@@ -2,13 +2,13 @@ TOTP Vault es un autenticador TOTP para Chrome pensado para usar tus códigos 2F
 
 Funciones principales:
 
-• Importa cuentas desde un QR visible, una imagen, el portapapeles, una URL o un enlace otpauth://.
+• Importa cuentas desde un QR visible, una imagen, el portapapeles, una URL, un enlace otpauth:// o una exportación de Google Authenticator.
 • Genera códigos de 6 u 8 dígitos con SHA-1, SHA-256 y SHA-512.
 • Copia códigos o rellénalos directamente con un clic.
 • Usa un selector opcional junto a campos OTP/TOTP.
 • Protege la bóveda con contraseña maestra y bloqueo automático.
 • Exporta e importa copias de seguridad cifradas.
-• Usa español, inglés o sigue automáticamente el idioma de Chrome.
+• Usa español, inglés, francés e italiano o sigue automáticamente el idioma de Chrome.
 
 Privacidad y seguridad:
 

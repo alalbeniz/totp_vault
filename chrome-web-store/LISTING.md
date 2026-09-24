@@ -1,4 +1,4 @@
-# Chrome Web Store — TOTP Vault v2.15.0
+# Chrome Web Store — TOTP Vault v2.16.0
 
 Ficha optimizada siguiendo las recomendaciones de Google para una listing clara, concisa, localizada y centrada en las funciones principales.
 
@@ -6,7 +6,7 @@ Ficha optimizada siguiendo las recomendaciones de Google para una listing clara,
 
 **Nombre:** TOTP Vault  
 **Categoría:** Productividad / Productivity  
-**Idiomas:** Español (`es`) e Inglés (`en`)  
+**Idiomas:** Español (`es`), inglés (`en`), francés (`fr`) e italiano (`it`)  
 **Idioma por defecto:** Español
 
 ## Resumen / Summary
@@ -33,7 +33,7 @@ Funciones principales:
 • Usa un selector opcional junto a campos OTP/TOTP.  
 • Protege la bóveda con contraseña maestra y bloqueo automático.  
 • Exporta e importa copias de seguridad cifradas.  
-• Usa español, inglés o sigue automáticamente el idioma de Chrome.
+• Usa español, inglés, francés e italiano o sigue automáticamente el idioma de Chrome.
 
 Privacidad y seguridad:
 
@@ -53,7 +53,7 @@ Main features:
 • Use an optional inline picker next to OTP/TOTP fields.  
 • Protect your vault with a master password and automatic locking.  
 • Import and export encrypted backups.  
-• Use Spanish, English, or automatically follow Chrome's language.
+• Use Spanish, English, French, Italian, or automatically follow Chrome's language.
 
 Privacy and security:
 
@@ -70,6 +70,10 @@ TOTP Vault includes no first-party analytics, advertising, or telemetry.
 ### EN
 
 > TOTP Vault locally stores encrypted TOTP accounts and lets users generate, import, copy, and fill two-factor authentication codes.
+
+## Novedades v2.16.0
+
+Francés e italiano añadidos. Tarjetas con altura adaptable en el popup de 420 px y aviso de caducidad a los 5 segundos. Véase UPDATE_v2.16.0.md y DESCRIPTION_FR.txt / DESCRIPTION_IT.txt para la actualización de la ficha.
 
 ## Novedades v2.15.0
 

@@ -167,7 +167,7 @@ async function mockChrome() {
   assert.equal(manifest.default_locale, 'es');
   assert.equal(manifest.name, '__MSG_extensionName__');
   assert.equal(manifest.description, '__MSG_extensionDescription__');
-  assert.equal(manifest.version, '2.15.0');
+  assert.equal(manifest.version, '2.16.0');
   const esLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'es', 'messages.json'), 'utf8'));
   const enLocale = JSON.parse(await fs.readFile(path.join(root, '_locales', 'en', 'messages.json'), 'utf8'));
   assert.deepEqual(Object.keys(enLocale).sort(), Object.keys(esLocale).sort());

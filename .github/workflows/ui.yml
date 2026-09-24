@@ -38,7 +38,9 @@ jobs:
           unzip -l "dist/${PACKAGE}-cws.zip" | grep -qE '[[:space:]]manifest\.json$'
           unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx 'i18n.js'
           unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/es/messages.json'
-          unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx '_locales/en/messages.json'
+          for locale in en fr it; do
+            unzip -Z1 "dist/${PACKAGE}-cws.zip" | grep -qx "_locales/${locale}/messages.json"
+          done
 
           echo "package_name=${PACKAGE}" >> "$GITHUB_ENV"
       - uses: actions/upload-artifact@v4
